@@ -1,4 +1,4 @@
-package algorithm;
+package playground.algorithm;
 
 import org.junit.jupiter.api.Test;
 

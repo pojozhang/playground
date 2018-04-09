@@ -1,4 +1,4 @@
-package algorithm;
+package playground.algorithm;
 
 public class TwoSum {
 
