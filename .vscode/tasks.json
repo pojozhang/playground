@@ -10,7 +10,11 @@
             "command": "go run ${file}",
             "problemMatcher": [
                 "$go"
-            ]
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
         },
         {
             "label": "go test",
