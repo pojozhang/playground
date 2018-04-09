@@ -1,4 +1,4 @@
-[Two Sum](https://leetcode-cn.com/problems/two-sum/description/)
+# [Two Sum](https://leetcode-cn.com/problems/two-sum/description/)
 
 给定一个整数数列，找出其中和为特定值的那两个数。
 
@@ -13,6 +13,6 @@
 所以返回 [0, 1]
 ```
 
-**解法**
+## 解法
 - [Java](https://github.com/pojozhang/playground/blob/master/solutions/java/src/main/java/playground/algorithm/TwoSum.java)
 - [Go](https://github.com/pojozhang/playground/blob/master/solutions/go/src/playground/algorithm/two_sum.go)
