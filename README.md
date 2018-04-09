@@ -1,6 +1,6 @@
 # Playground
 
 ## 目录
-- [数据结构](problems/algorithm)
-- 算法
-- 设计模式
+- [数据结构](problems/structure)
+- [算法](problems/algorithm)
+- [设计模式](problems/pattern)
