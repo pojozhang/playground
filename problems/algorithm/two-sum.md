@@ -14,5 +14,5 @@
 ```
 
 ### 解法
-- [Java](https://github.com/pojozhang/playground/solutions/java/src/main/java/playground/algorithm/TwoSum.java)
-- [Go]()
+- [Java](https://github.com/pojozhang/playground/blob/master/solutions/java/src/main/java/playground/algorithm/TwoSum.java)
+- [Go](https://github.com/pojozhang/playground/blob/master/solutions/go/src/playground/algorithm/two_sum.go)
