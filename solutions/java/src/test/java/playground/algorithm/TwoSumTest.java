@@ -2,7 +2,7 @@ package playground.algorithm;
 
 import org.junit.jupiter.api.Test;
 
-import java.util.Arrays;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 
 class TwoSumTest {
 
@@ -12,7 +12,7 @@ class TwoSumTest {
         int[] nums = new int[]{2, 1, 7, 20};
         int target = 9;
 
-        assert Arrays.equals(new int[]{0, 2}, twoSum.twoSum(nums, target));
+        assertArrayEquals(new int[]{0, 2}, twoSum.twoSum(nums, target));
     }
 
     @Test
@@ -21,6 +21,6 @@ class TwoSumTest {
         int[] nums = new int[]{1, 5, 5, 20};
         int target = 10;
 
-        assert Arrays.equals(new int[]{1, 1}, twoSum.twoSum(nums, target));
+        assertArrayEquals(new int[]{1, 2}, twoSum.twoSum(nums, target));
     }
 }
