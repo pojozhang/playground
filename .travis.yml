@@ -17,7 +17,7 @@ matrix:
       go: 1.10.x
       go_import_path: playground
       install:
-        - export GOPATH="${TRAVIS_BUILD_DIR}/solutions/go/fix"
+        - export GOPATH="${TRAVIS_BUILD_DIR}/solutions/go/"
       before_script:
         - cd solutions/go/src/playground
         - go get -u github.com/golang/dep/cmd/dep
