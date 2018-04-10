@@ -1,15 +1,13 @@
 matrix:
   include:
     - language: java
-      jdk: 
-        - openjdk8
+      jdk: oraclejdk8
       before_script:
         - cd solutions/java
       script:
         - ./gradlew clean build
     - language: go
-      go:
-        - 1.10.x
+      go: 1.10.x
       go_import_path: playground
       before_script:
         - cd solutions/go/src/playground
