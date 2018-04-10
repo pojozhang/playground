@@ -3,12 +3,12 @@ matrix:
     - language: java
       jdk: oraclejdk8
       before_cache:
-        - rm -f  $HOME/solutions/java/.gradle/caches/modules-2/modules-2.lock
-        - rm -fr $HOME/solutions/java/.gradle/caches/*/plugin-resolution/
+        - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
+        - rm -fr $HOME/.gradle/caches/*/plugin-resolution/
       cache:
         directories:
-          - $HOME/solutions/java/.gradle/caches/
-          - $HOME/solutions/java/.gradle/wrapper/
+          - $HOME/.gradle/caches/
+          - $HOME/.gradle/wrapper/
       before_script:
         - cd solutions/java
       script:
