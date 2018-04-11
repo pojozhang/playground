@@ -11,3 +11,6 @@
 你的函数应该返回新长度 2, 并且原数组nums的前两个元素必须是1和2
 不需要理会新的数组长度后面的元素
 ```
+
+### 参考
+- [Java](https://github.com/pojozhang/playground/blob/master/solutions/java/src/main/java/playground/algorithm/RemoveDuplicates.java)
