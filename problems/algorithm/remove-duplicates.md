@@ -12,5 +12,5 @@
 不需要理会新的数组长度后面的元素
 ```
 
-### 参考
+#### 参考
 - [Java](https://github.com/pojozhang/playground/blob/master/solutions/java/src/main/java/playground/algorithm/RemoveDuplicates.java)
