@@ -25,11 +25,10 @@ public class AddTwoNumbers {
             root.next = new ListNode(t % 10);
             add(l1 == null ? null : l1.next, l2 == null ? null : l2.next, root.next, t / 10);
         } else {
-            if (t >= 10) {
+            if (t > 0) {
                 root.next = new ListNode(t % 10);
+            } else if (t >= 10) {
                 root.next.next = new ListNode(t / 10);
-            } else if (t < 10 && t > 0) {
-                root.next = new ListNode(t % 10);
             }
         }
     }
