@@ -33,60 +33,7 @@ public class AddTwoNumbers {
         }
     }
 
-    public long buildNum(ListNode listNode) {
-        int index = 10;
-        int num = listNode.val;
-        while (listNode.next != null) {
-            num += listNode.next.val * index;
-            index *= 10;
-            listNode = listNode.next;
-        }
-        return num;
-    }
-
-    public ListNode buildNode(int[] num) {
-        if (num.length == 1) {
-            return new ListNode(num[0]);
-        }
-
-        ListNode root = new ListNode(num[0]);
-        build(root, 1, num);
-        return root;
-    }
-
-    public void build(ListNode root, int i, int[] num) {
-        if (i < num.length) {
-            ListNode tmp = new ListNode(num[i]);
-            i++;
-            root.next = tmp;
-            build(tmp, i, num);
-        }
-    }
-
-    public ListNode buildNode(long num) {
-        if (num < 10) {
-            return new ListNode((int) num);
-        }
-
-        ListNode root = new ListNode((int) num % 10);
-        num /= 10;
-
-        build(root, num);
-        return root;
-    }
-
-    private void build(ListNode root, long num) {
-        if (num / 10 > 0) {
-            ListNode tmp = new ListNode((int) num % 10);
-            root.next = tmp;
-            num /= 10;
-            build(tmp, num);
-        } else {
-            root.next = new ListNode((int) num);
-        }
-    }
-
-    public class ListNode {
+    public static class ListNode {
         public int val;
         public ListNode next;
 
