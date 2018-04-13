@@ -26,7 +26,7 @@ public class QuickSort {
             Utils.Swap(nums, left, right);
         }
         Utils.Swap(nums, start, left);
-        sortRecursive(nums, start, left - 1);
-        sortRecursive(nums, left + 1, end);
+        sort(nums, start, left - 1);
+        sort(nums, left + 1, end);
     }
 }
