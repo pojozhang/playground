@@ -5,10 +5,10 @@ import playground.util.*;
 public class QuickSort {
 
     public void sort(int[] nums) {
-        sortRecursive(nums, 0, nums.length - 1);
+        sort(nums, 0, nums.length - 1);
     }
 
-    private void sortRecursive(int[] nums, int start, int end) {
+    private void sort(int[] nums, int start, int end) {
         if (start >= end) {
             return;
         }
