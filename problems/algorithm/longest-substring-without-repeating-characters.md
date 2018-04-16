@@ -9,3 +9,6 @@
 给定 `bbbbb` ，最长的子串就是 `b` ，长度是1。
 
 给定 `pwwkew` ，最长子串是 `wke` ，长度是3。请注意答案必须是一个子串，`pwke` 是子序列而不是子串。
+
+#### 实现
+- [Java](https://github.com/pojozhang/playground/blob/master/solutions/java/src/main/java/playground/algorithm/LongestSubstringWithoutRepeatingCharacters.java)
