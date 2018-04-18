@@ -1,6 +1,6 @@
 # 算法
 
-## Sprint 2018-04-09
+## Week 1
 - [x] [快速排序](quick-sort.md)
 - [x] [堆排序](heap-sort.md)
 - [x] [二分查找](binary-search.md)
@@ -8,7 +8,7 @@
 - [x] [两数相加](add-two-numbers.md)
 - [x] [从排序数组中删除重复项](remove-duplicates.md)
 
-## Sprint 2018-04-16
+## Week 2
 - [x] [反转整数](reverse-integer.md)
 - [x] [回文数](palindrome-number.md)
 - [ ] [罗马数字转整数](roman-to-integer.md)
@@ -16,7 +16,7 @@
 - [ ] [最长回文子串](longest-palindromic-substring.md)
 - [ ] [两个排序数组的中位数](median-of-two-sorted-arrays)
 
-## Sprint 2018-04-23
+## Week 3
 - [ ] [最长公共前缀](longest-common-prefix.md)
 - [ ] [有效的括号](valid-parentheses.md)
 - [ ] [合并两个有序链表](merge-two-sorted-lists.md)
