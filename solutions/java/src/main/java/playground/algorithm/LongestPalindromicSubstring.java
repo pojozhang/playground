@@ -1,6 +1,7 @@
 
 package playground.algorithm;
 
+import java.util.Arrays;
 import java.util.StringJoiner;
 
 public class LongestPalindromicSubstring {
@@ -16,8 +17,29 @@ public class LongestPalindromicSubstring {
             joiner.add(array[i]);
         }
 
+        String encoded = joiner.toString();
+        System.out.println(encoded);
 
+        int[] p = new int[encoded.length()];
+        int id = -1, mx = -1;
+        for (int i = 0; i < encoded.length(); i++) {
+            p[i] = (i <= mx ? Math.min(p[2 * id - i], mx - i) : 1);
 
-        return joiner.toString();
+            while (i + p[i] < encoded.length() && i - p[i] >= 0
+                    && encoded.charAt(i + p[i]) == encoded.charAt(i - p[i])) {
+                p[i]++;
+            }
+
+            if (i + p[i] - 1 > mx) {
+                mx = i + p[i] - 1;
+                id = i;
+            }
+        }
+
+        mx--;
+
+        System.out.println(Arrays.toString(p));
+
+        return "";
     }
 }
