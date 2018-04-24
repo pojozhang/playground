@@ -17,7 +17,7 @@
 - [ ] [两个排序数组的中位数](median-of-two-sorted-arrays)
 
 ## Week 3
-- [ ] [最长公共前缀](longest-common-prefix.md)
+- [x] [最长公共前缀](longest-common-prefix.md)
 - [ ] [有效的括号](valid-parentheses.md)
 - [ ] [合并两个有序链表](merge-two-sorted-lists.md)
 - [ ] [Z字形变换](zigzag-conversion.md)

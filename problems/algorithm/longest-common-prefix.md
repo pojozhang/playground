@@ -22,3 +22,4 @@
 所有输入只包含小写字母 `a-z` 。
 
 #### 实现
+- [Go](https://github.com/pojozhang/playground/blob/master/solutions/go/src/playground/algorithm/longest_common_prefix.go)
