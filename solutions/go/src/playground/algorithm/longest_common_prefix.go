@@ -6,11 +6,7 @@ func longestCommonPrefix(strs []string) string {
 	}
 
 	i := -1
-	for {
-		if i+1 >= len(strs[0]) {
-			break
-		}
-
+	for ; i+1 < len(strs[0]); i++ {
 		key := strs[0][i+1]
 
 		for j := 1; j < len(strs); j++ {
@@ -18,8 +14,6 @@ func longestCommonPrefix(strs []string) string {
 				goto T
 			}
 		}
-
-		i++
 	}
 
 T:
