@@ -7,16 +7,15 @@ import playground.algorithm.AddTwoNumbers.ListNode;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class AddTwoNumbersTest {
-
-
+    
     @Test
-    public void case_3() {
+    void case_1() {
 
         AddTwoNumbers solution = new AddTwoNumbers();
 
-        ListNode l1 = buildNode(new int[] { 0 });
+        ListNode l1 = buildNode(new int[]{0});
 
-        ListNode l2 = buildNode(new int[] { 2, 7, 8 });
+        ListNode l2 = buildNode(new int[]{2, 7, 8});
 
         ListNode result = solution.addTwoNumbers(l1, l2);
         assertEquals(2, result.val, result.toString());

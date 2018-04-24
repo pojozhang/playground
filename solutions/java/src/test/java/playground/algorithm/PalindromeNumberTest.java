@@ -8,30 +8,30 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class PalindromeNumberTest {
 
     @Test
-    public void case_1() {
+    void case_1() {
         PalindromeNumber solution = new PalindromeNumber();
-       
+
         assertFalse(solution.isPalindrome(-121));
     }
 
     @Test
-    public void case_2() {
+    void case_2() {
         PalindromeNumber solution = new PalindromeNumber();
-       
+
         assertTrue(solution.isPalindrome(121));
     }
 
     @Test
-    public void case_3() {
+    void case_3() {
         PalindromeNumber solution = new PalindromeNumber();
-       
+
         assertTrue(solution.isPalindrome(1));
     }
 
     @Test
-    public void case_4() {
+    void case_4() {
         PalindromeNumber solution = new PalindromeNumber();
-       
+
         assertTrue(solution.isPalindrome(1000000001));
     }
 }

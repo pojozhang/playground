@@ -7,7 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 class RemoveDuplicatesTest {
 
     @Test
-    public void case_1() {
+    void case_1() {
         RemoveDuplicates solution = new RemoveDuplicates();
         int[] nums = new int[]{};
 
@@ -17,7 +17,7 @@ class RemoveDuplicatesTest {
     }
 
     @Test
-    public void case_2() {
+    void case_2() {
         RemoveDuplicates solution = new RemoveDuplicates();
         int[] nums = new int[]{1, 1, 2};
 

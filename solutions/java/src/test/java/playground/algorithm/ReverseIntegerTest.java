@@ -7,35 +7,35 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 class ReverseIntegerTest {
 
     @Test
-    public void case_1() {
+    void case_1() {
         ReverseInteger solution = new ReverseInteger();
 
         assertEquals(21, solution.reverse(120));
     }
 
     @Test
-    public void case_2() {
+    void case_2() {
         ReverseInteger solution = new ReverseInteger();
 
         assertEquals(321, solution.reverse(123));
     }
 
     @Test
-    public void case_3() {
+    void case_3() {
         ReverseInteger solution = new ReverseInteger();
 
         assertEquals(-321, solution.reverse(-123));
     }
 
     @Test
-    public void case_4() {
+    void case_4() {
         ReverseInteger solution = new ReverseInteger();
 
         assertEquals(0, solution.reverse(-2147483648));
     }
 
     @Test
-    public void case_5() {
+    void case_5() {
         ReverseInteger solution = new ReverseInteger();
 
         assertEquals(0, solution.reverse(1534236469));
