@@ -28,6 +28,24 @@ class LongestCommonPrefixTest {
     void case_3() {
         LongestCommonPrefix solution = new LongestCommonPrefix();
 
+        String prefix = solution.longestCommonPrefix(new String[]{"a"});
+
+        assertEquals("a", prefix);
+    }
+
+    @Test
+    void case_4() {
+        LongestCommonPrefix solution = new LongestCommonPrefix();
+
+        String prefix = solution.longestCommonPrefix(new String[]{"aa", "a"});
+
+        assertEquals("a", prefix);
+    }
+
+    @Test
+    void case_5() {
+        LongestCommonPrefix solution = new LongestCommonPrefix();
+
         String prefix = solution.longestCommonPrefix(new String[]{});
 
         assertEquals("", prefix);
