@@ -17,3 +17,4 @@
 
 #### 实现
 - [Java](https://github.com/pojozhang/playground/blob/master/solutions/java/src/main/java/playground/algorithm/LongestPalindromicSubstring.java)
+- [Go](https://github.com/pojozhang/playground/blob/master/solutions/go/src/playground/algorithm/longest_palindromic_substring.go)
