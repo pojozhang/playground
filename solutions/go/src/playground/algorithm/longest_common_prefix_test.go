@@ -14,5 +14,9 @@ func TestLongestCommonPrefixCase2(t *testing.T) {
 }
 
 func TestLongestCommonPrefixCase3(t *testing.T) {
+	assert.Equal(t, "a", longestCommonPrefix([]string{"a"}))
+}
+
+func TestLongestCommonPrefixCase4(t *testing.T) {
 	assert.Equal(t, "", longestCommonPrefix([]string{}))
 }
