@@ -10,7 +10,13 @@ public class LongestPalindromicSubstringTest {
     public void case_1() {
         LongestPalindromicSubstring solution = new LongestPalindromicSubstring();
 
-        //assertEquals("bab", solution.longestPalindrome("babad"));
+        assertEquals("bab", solution.longestPalindrome("babad"));
     }
 
+    @Test
+    public void case_2() {
+        LongestPalindromicSubstring solution = new LongestPalindromicSubstring();
+
+        assertEquals("bb", solution.longestPalindrome("bb"));
+    }
 }
