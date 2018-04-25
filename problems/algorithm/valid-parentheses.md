@@ -39,4 +39,5 @@
 ```
 
 #### 实现
+- [Java](https://github.com/pojozhang/playground/blob/master/solutions/java/src/main/java/playground/algorithm/ValidParentheses.java)
 - [Go](https://github.com/pojozhang/playground/blob/master/solutions/go/src/playground/algorithm/valid_parentheses.go)
