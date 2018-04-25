@@ -18,7 +18,7 @@
 
 ## Week 3
 - [x] [最长公共前缀](longest-common-prefix.md)
-- [ ] [有效的括号](valid-parentheses.md)
+- [x] [有效的括号](valid-parentheses.md)
 - [ ] [合并两个有序链表](merge-two-sorted-lists.md)
 - [ ] [Z字形变换](zigzag-conversion.md)
 - [ ] [字符串转整数(atoi)](string-to-integer-atoi.md)
