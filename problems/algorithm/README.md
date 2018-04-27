@@ -11,7 +11,7 @@
 ## Week 2
 - [x] [反转整数](reverse-integer.md)
 - [x] [回文数](palindrome-number.md)
-- [ ] [罗马数字转整数](roman-to-integer.md)
+- [x] [罗马数字转整数](roman-to-integer.md)
 - [x] [无重复字符的最长子串](longest-substring-without-repeating-characters.md)
 - [x] [最长回文子串](longest-palindromic-substring.md) `Manacher`
 - [ ] [两个排序数组的中位数](median-of-two-sorted-arrays)
