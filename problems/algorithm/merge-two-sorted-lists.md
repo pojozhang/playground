@@ -9,3 +9,5 @@
 ```
 
 #### 实现
+- [Java](https://github.com/pojozhang/playground/blob/master/solutions/java/src/main/java/playground/algorithm/MergeTwoSortedLists.java)
+- [Go](https://github.com/pojozhang/playground/blob/master/solutions/go/src/playground/algorithm/merge_two_sorted_lists.go)
