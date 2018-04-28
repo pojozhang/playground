@@ -1,4 +1,4 @@
-<img align="right" height="270px" src="logo.jpg">
+<img align="right" height="200px" src="logo.jpg">
 
 # Playground [![Build Status](https://travis-ci.org/pojozhang/playground.svg?branch=master)](https://travis-ci.org/pojozhang/playground)
 
