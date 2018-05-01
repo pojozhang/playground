@@ -20,6 +20,6 @@
 - [x] [最长公共前缀](longest-common-prefix.md)
 - [x] [有效的括号](valid-parentheses.md)
 - [x] [合并两个有序链表](merge-two-sorted-lists.md)
-- [ ] [Z字形变换](zigzag-conversion.md)
+- [x] [Z字形变换](zigzag-conversion.md)
 - [x] [字符串转整数(atoi)](string-to-integer-atoi.md)
 - [ ] [正则表达式匹配](regular-expression-matching.md)
