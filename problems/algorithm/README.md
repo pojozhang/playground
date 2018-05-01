@@ -23,3 +23,12 @@
 - [x] [Z字形变换](zigzag-conversion.md)
 - [x] [字符串转整数(atoi)](string-to-integer-atoi.md)
 - [ ] [正则表达式匹配](regular-expression-matching.md)
+
+## Week4
+- [ ] [移除元素](remove-element.md)
+- [ ] [实现strStr()](implement-strstr.md)
+- [ ] [搜索插入位置](search-insert-position.md)
+- [ ] [盛最多水的容器](container-with-most-water.md)
+- [ ] [三数之和](3sum.md)
+- [ ] [全排列](permutations.md)
+- [ ] [接雨水](trapping-rain-water.md)
