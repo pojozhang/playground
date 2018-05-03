@@ -27,7 +27,7 @@
 ## Week4
 - [x] [移除元素](remove-element.md)
 - [x] [实现strStr()](implement-strstr.md)
-- [ ] [搜索插入位置](search-insert-position.md)
+- [x] [搜索插入位置](search-insert-position.md)
 - [ ] [盛最多水的容器](container-with-most-water.md)
 - [ ] [三数之和](3sum.md)
 - [ ] [全排列](permutations.md)
