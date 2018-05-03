@@ -20,3 +20,4 @@
 对于本题而言，当 `needle` 是空字符串时我们应当返回 0 。这与C语言的 strstr() 以及 Java的 indexOf() 定义相符。
 
 #### 实现
+- [Java](https://github.com/pojozhang/playground/blob/master/solutions/java/src/main/java/playground/algorithm/ImplementStrstr.java)
