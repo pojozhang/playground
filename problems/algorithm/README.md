@@ -1,12 +1,12 @@
 # 算法
 
 ## Week 1
-- [x] [快速排序](quick-sort.md)
-- [x] [堆排序](heap-sort.md)
+- [x] [快速排序](quick-sort.md) `数组` `排序`
+- [x] [堆排序](heap-sort.md) `数组` `排序`
 - [x] [二分查找](binary-search.md)
-- [x] [两数之和](two-sum.md)
+- [x] [两数之和](two-sum.md) `数组`
 - [x] [两数相加](add-two-numbers.md)
-- [x] [从排序数组中删除重复项](remove-duplicates.md)
+- [x] [从排序数组中删除重复项](remove-duplicates.md) `数组`
 
 ## Week 2
 - [x] [反转整数](reverse-integer.md)
@@ -18,7 +18,7 @@
 
 ## Week 3
 - [x] [最长公共前缀](longest-common-prefix.md)
-- [x] [有效的括号](valid-parentheses.md)
+- [x] [有效的括号](valid-parentheses.md) `栈`
 - [x] [合并两个有序链表](merge-two-sorted-lists.md)
 - [x] [Z字形变换](zigzag-conversion.md)
 - [x] [字符串转整数(atoi)](string-to-integer-atoi.md)
@@ -29,7 +29,7 @@
 - [x] [实现strStr()](implement-strstr.md)
 - [x] [搜索插入位置](search-insert-position.md)
 - [ ] [盛最多水的容器](container-with-most-water.md)
-- [x] [三数之和](3sum.md)
+- [x] [三数之和](3sum.md) `数组`
 - [ ] [全排列](permutations.md)
 - [ ] [接雨水](trapping-rain-water.md)
 - [x] [缺失的第一个正数](first-missing-positive.md)
