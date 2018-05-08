@@ -23,9 +23,9 @@ public class QuickSort {
                 left++;
             }
 
-            Utils.Swap(nums, left, right);
+            Utils.swap(nums, left, right);
         }
-        Utils.Swap(nums, start, left);
+        Utils.swap(nums, start, left);
         sort(nums, start, left - 1);
         sort(nums, left + 1, end);
     }

@@ -8,7 +8,7 @@ public class HeapSort {
         buildMaxHeap(nums);
 
         for (int i = nums.length - 1; i >= 0; i--) {
-            Utils.Swap(nums, 0, i);
+            Utils.swap(nums, 0, i);
             maxHeapify(nums, 0, i);
         }
     }
@@ -32,7 +32,7 @@ public class HeapSort {
         }
 
         if (max != index) {
-            Utils.Swap(nums, max, index);
+            Utils.swap(nums, max, index);
             maxHeapify(nums, max, heapSize);
         }
     }
