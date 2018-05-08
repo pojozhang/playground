@@ -32,4 +32,4 @@
 - [x] [三数之和](3sum.md) `数组`
 - [x] [全排列](permutations.md)
 - [ ] [接雨水](trapping-rain-water.md)
-- [x] [缺失的第一个正数](first-missing-positive.md)
+- [x] [缺失的第一个正数](first-missing-positive.md) `数组`
