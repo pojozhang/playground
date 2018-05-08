@@ -17,4 +17,5 @@
 ```
 
 #### 实现
+- [Java](https://github.com/pojozhang/playground/blob/master/solutions/java/src/main/java/playground/algorithm/Permutations.java)
 - [Go](https://github.com/pojozhang/playground/blob/master/solutions/go/src/playground/algorithm/permutations.go)
