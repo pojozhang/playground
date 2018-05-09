@@ -5,3 +5,4 @@
 
 #### 实现
 - [Java](https://github.com/pojozhang/playground/blob/master/solutions/java/src/main/java/playground/algorithm/ContainerWithMostWater.java)
+- [Go](https://github.com/pojozhang/playground/blob/master/solutions/go/src/playground/algorithm/container_with_most_water.go)
