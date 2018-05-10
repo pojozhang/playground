@@ -1,5 +1,9 @@
 package algorithm
 
+import (
+	"strings"
+)
+
 func longestPalindrome(s string) string {
 	e := "#"
 	for _, t := range s {
@@ -33,12 +37,5 @@ func longestPalindrome(s string) string {
 	}
 
 	len := p[pos] - 1
-	result := ""
-	for _, v := range e[pos-len : pos+len+1] {
-		if v != '#' {
-			result += string(v)
-		}
-	}
-
-	return result
+	return strings.Replace(e[pos-len:pos+len+1], "#", "", -1)
 }
