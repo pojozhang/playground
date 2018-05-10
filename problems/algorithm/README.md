@@ -33,3 +33,13 @@
 - [x] [全排列](permutations.md)
 - [x] [接雨水](trapping-rain-water.md) `数组`
 - [x] [缺失的第一个正数](first-missing-positive.md) `数组`
+
+## Week5
+- [ ] [二叉树的最大深度](maximum-depth-of-binary-tree.md) `二叉树`
+- [ ] [报数](count-and-say.md)
+- [ ] [最大子序和](maximum-subarray.md) `数组`
+- [ ] [最后一个单词的长度](length-of-last-word.md) `字符串`
+- [ ] [最接近的三数之和](3sum-closest.md) `数组`
+- [ ] [四数之和](4sum.md) `数组`
+- [ ] [全排列 II](permutations-ii.md) `数组`
+- [ ] [直线上最多的点数](max-points-on-a-line.md) `数组`
