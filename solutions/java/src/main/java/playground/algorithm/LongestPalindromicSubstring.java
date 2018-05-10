@@ -23,7 +23,7 @@ public class LongestPalindromicSubstring {
             p[i] = (i < mx ? Math.min(p[2 * id - i], mx - i) : 1);
 
             while (i - p[i] >= 0 && i + p[i] < encoded.length()
-                    && encoded.charAt(i + p[i]) == encoded.charAt(i - p[i])) {
+                && encoded.charAt(i + p[i]) == encoded.charAt(i - p[i])) {
                 p[i]++;
             }
 
@@ -38,13 +38,7 @@ public class LongestPalindromicSubstring {
             }
         }
 
-        String result = "";
         int len = p[pos] - 1;
-        for (char c : encoded.substring(pos - len, pos + len + 1).toCharArray()) {
-            if (c != '#') {
-                result += c;
-            }
-        }
-        return result;
+        return encoded.substring(pos - len, pos + len + 1).replace("#", "");
     }
 }
