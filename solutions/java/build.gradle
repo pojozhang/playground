@@ -22,4 +22,5 @@ def junitVersion = '5.2.0'
 dependencies {
     testImplementation "org.junit.jupiter:junit-jupiter-api:$junitVersion"
     testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:$junitVersion"
+    testCompile 'org.assertj:assertj-core:3.9.1'
 }
