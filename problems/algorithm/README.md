@@ -36,7 +36,7 @@
 
 ## Week5
 - [x] [二叉树的最大深度](maximum-depth-of-binary-tree.md) `二叉树`
-- [ ] [报数](count-and-say.md)
+- [x] [报数](count-and-say.md) `字符串` `递归`
 - [ ] [最大子序和](maximum-subarray.md) `数组`
 - [ ] [最后一个单词的长度](length-of-last-word.md) `字符串`
 - [ ] [最接近的三数之和](3sum-closest.md) `数组`
