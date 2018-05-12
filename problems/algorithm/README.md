@@ -43,3 +43,13 @@
 - [x] [四数之和](4sum.md) `数组`
 - [x] [全排列 II](permutations-ii.md) `数组`
 - [ ] [直线上最多的点数](max-points-on-a-line.md) `数组`
+
+## Week6
+- [ ] [加一](plus-one.md) `数组`
+- [ ] [二进制求和](add-binary.md) `二进制`
+- [ ] [爬楼梯](climbing-stairs.md) `斐波那契数列`
+- [ ] [环形链表](linked-list-cycle.md) `链表`
+- [ ] [删除链表的倒数第N个节点](remove-nth-node-from-end-of-list.md) `链表`
+- [ ] [组合总和](combination-sum.md) `数组`
+- [ ] [Pow(x, n)](powx-n.md)
+- [ ] [LRU缓存机制](lru-cache.md)
