@@ -39,7 +39,7 @@
 - [x] [报数](count-and-say.md) `字符串` `递归`
 - [x] [最大子序和](maximum-subarray.md) `数组`
 - [x] [最后一个单词的长度](length-of-last-word.md) `字符串`
-- [ ] [最接近的三数之和](3sum-closest.md) `数组`
+- [x] [最接近的三数之和](3sum-closest.md) `数组`
 - [x] [四数之和](4sum.md) `数组`
 - [ ] [全排列 II](permutations-ii.md) `数组`
 - [ ] [直线上最多的点数](max-points-on-a-line.md) `数组`
