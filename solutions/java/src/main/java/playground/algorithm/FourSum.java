@@ -11,14 +11,13 @@ public class FourSum {
 
         Arrays.sort(nums);
 
-        System.out.println(Arrays.toString(nums));
-
         List<List<Integer>> result = new ArrayList<>();
 
         for (int i = 0, length = nums.length; i < length - 1; i++) {
 
-            List<List<Integer>> threeSum = threeSum(nums, i + 1, target - nums[i]);
-            result.addAll(append(nums[i], threeSum));
+            if (i == 0 || nums[i] != nums[i - 1]) {
+                result.addAll(append(nums[i], threeSum(nums, i + 1, target - nums[i])));
+            }
 
         }
 
@@ -32,11 +31,9 @@ public class FourSum {
 
         for (int i = start, length = nums.length; i < length - 1; i++) {
 
-            List<List<Integer>> twoSum = twoSum(nums, i + 1, target - nums[i]);
-
-            System.out.println(twoSum);
-
-            result.addAll(append(nums[i], twoSum));
+            if (i == start || nums[i] != nums[i - 1]) {
+                result.addAll(append(nums[i], twoSum(nums, i + 1, target - nums[i])));
+            }
 
         }
 
@@ -50,17 +47,12 @@ public class FourSum {
         int l = start;
         int r = nums.length - 1;
 
-        Integer tmp_l = null;
-        Integer tmp_r = null;
-
         while (l < r) {
 
             if (nums[l] + nums[r] == target) {
 
-                if (tmp_l == null || tmp_r == null || nums[l] != tmp_l || nums[r] != tmp_r) {
+                if (l == start || nums[l] != nums[l - 1]) {
                     result.add(Arrays.asList(nums[l], nums[r]));
-                    tmp_l = nums[l];
-                    tmp_r = nums[r];
                 }
 
                 l++;

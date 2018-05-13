@@ -11,13 +11,16 @@ class FourSumTest {
     @Test
     void should_find_two_sum() {
 
-        int[] nums = {3, 2, 2, 3, 4, 4, 4, 4, 4};
+        int[] nums = {3, 2, 2, 2, 3, 4, 4, 4, 4, 4};
 
         Arrays.sort(nums);
 
         List<List<Integer>> result = new FourSum().twoSum(nums, 0, 6);
 
-        Assertions.assertThat(result).containsExactlyInAnyOrder(List.of(2, 4), List.of(3, 3));
+        Assertions.assertThat(result).containsExactlyInAnyOrder(
+                List.of(2, 4),
+                List.of(3, 3)
+        );
     }
 
     @Test
@@ -26,13 +29,15 @@ class FourSumTest {
         int[] nums = {2, 3, 3, 2, 3, 4, 4, 4, 4, 6, 1};
 
         Arrays.sort(nums);
-        System.out.println(Arrays.toString(nums));
 
         List<List<Integer>> result = new FourSum().threeSum(nums, 0, 9);
 
-        System.out.println(result);
-
-//        Assertions.assertThat(result).containsExactlyInAnyOrder(List.of(1, 4, 4), List.of(2, 3, 4));
+        Assertions.assertThat(result).containsExactlyInAnyOrder(
+                List.of(2, 3, 4),
+                List.of(3, 3, 3),
+                List.of(1, 2, 6),
+                List.of(1, 4, 4)
+        );
 
     }
 
@@ -43,8 +48,12 @@ class FourSumTest {
 
         List<List<Integer>> result = new FourSum().fourSum(nums, 12);
 
-        System.out.println(result);
-//        Assertions.assertThat(result).containsExactlyInAnyOrder(List.of(1, 4, 4), List.of(2, 3, 4));
+        Assertions.assertThat(result).containsExactlyInAnyOrder(
+                List.of(1, 3, 4, 4),
+                List.of(2, 2, 4, 4),
+                List.of(2, 3, 3, 4),
+                List.of(3, 3, 3, 3)
+        );
     }
 
 }
