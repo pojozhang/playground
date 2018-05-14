@@ -8,4 +8,4 @@
 - [设计模式](problems/design-pattern/README.md)
 - [Coding Dojo](problems/dojo/README.md)
 - 面试
-    - [Java](problems/interview/java.md)
+    - [Java](problems/interview/java)
