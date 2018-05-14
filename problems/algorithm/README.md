@@ -42,7 +42,7 @@
 - [x] [最接近的三数之和](3sum-closest.md) `数组`
 - [x] [四数之和](4sum.md) `数组`
 - [x] [全排列 II](permutations-ii.md) `数组`
-- [ ] [直线上最多的点数](max-points-on-a-line.md) `数组` `最大公约数`
+- [x] [直线上最多的点数](max-points-on-a-line.md) `数组` `最大公约数GCD`
 
 ## Week6
 - [ ] [加一](plus-one.md) `数组`
