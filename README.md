@@ -1,4 +1,5 @@
-<img height="260px" src="logo.png" />
+# Playground
+<img align="right" height="210px" src="logo.png" />
 
 ![Build Status](https://travis-ci.org/pojozhang/playground.svg?branch=master) ![GitHub language count](https://img.shields.io/github/languages/count/pojozhang/playground.svg) ![GitHub contributors](https://img.shields.io/github/contributors/pojozhang/playground.svg) ![GitHub commit activity the past week, 4 weeks, year](https://img.shields.io/github/commit-activity/w/pojozhang/playground.svg) ![GitHub repo size in bytes](https://img.shields.io/github/repo-size/pojozhang/playground.svg)
 
