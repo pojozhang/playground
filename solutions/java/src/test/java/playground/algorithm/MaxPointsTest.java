@@ -8,36 +8,6 @@ import java.util.List;
 public class MaxPointsTest {
 
     @Test
-    public void should_find_line_by_two_point() {
-        Point a = new Point(1, 2);
-        Point b = new Point(2, 1);
-
-        System.out.println(MaxPoints.buildLine(a, b));
-
-        a = new Point(3, 4);
-        b = new Point(2, 1);
-
-        System.out.println(MaxPoints.buildLine(a, b));
-
-        a = new Point(2, 3);
-        b = new Point(1, 2);
-
-        System.out.println(MaxPoints.buildLine(a, b));
-
-        a = new Point(1, 4);
-        b = new Point(1, 2);
-
-        System.out.println(MaxPoints.buildLine(a, b));
-    }
-
-    @Test
-    public void should_subtract_int() {
-        System.out.println(MaxPoints.subtract(-9, 3));
-        System.out.println(MaxPoints.subtract(-2, -3));
-        System.out.println(MaxPoints.subtract(1, 4));
-    }
-
-    @Test
     public void should_find_max_point() {
 
         Point a = new Point(1, 2);

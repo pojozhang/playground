@@ -9,9 +9,8 @@ public class MaxPoints {
         if (points == null) return 0;
         if (points.length <= 2) return points.length;
 
-        System.out.println(Arrays.toString(points));
-
         Map<String, List<Point>> cache = new HashMap<>();
+        List<Point> max = null;
 
         for (int i = 0, length = points.length; i < length; i++) {
 
@@ -54,8 +53,6 @@ public class MaxPoints {
 
             }
 
-            System.out.println(map);
-
             for (String key : map.keySet()) {
                 if (cache.containsKey(key)) {
                     if (map.get(key).size() > cache.get(key).size()) {
@@ -64,27 +61,27 @@ public class MaxPoints {
                 } else {
                     cache.put(key, map.get(key));
                 }
+                if (max == null || map.get(key).size() > max.size()) {
+                    max = map.get(key);
+                }
             }
 
         }
 
-        System.out.println(cache);
 
-        List<Point> max = null;
-        for (List<Point> temp : cache.values()) {
-            if (max == null || temp.size() > max.size()) max = temp;
-        }
+//        List<Point> max = null;
+//        for (List<Point> temp : cache.values()) {
+//            if (max == null || temp.size() > max.size()) max = temp;
+//        }
 
         return max == null ? 0 : max.size();
     }
 
     /**
      * 两个不相同的点，求所在直线位置
-     * <p>
-     * y = Ax + B
-     * x = By + A
+     * y = Kx + B 适用于不垂直于x轴的直线
      *
-     * @return "{A}-{B}"
+     * @return "y = {K} x + b"
      */
     public static String buildLine(Point a, Point b) {
 
@@ -96,31 +93,27 @@ public class MaxPoints {
             return "y = " + a.y;
         }
 
-        String A = subtract(a.y - b.y, a.x - b.x);
+        String k = buildK(a.y - b.y, a.x - b.x);
 
-        String B = subtract(a.x * b.y - a.y * b.x, a.x - b.x);
-
-        return "y = " + A + " x + " + B;
+        return "y = " + k + " x + b";
     }
 
-    public static String subtract(int a, int b) {
-
-        int i = 0;
-
-        int tmp = Math.abs(a);
-        int divisor = Math.abs(b);
-
-        while (tmp >= divisor) {
-            i++;
-            tmp -= divisor;
+    public static String buildK(int a, int b) {
+        int gcd = gcd(a,b);
+        if (gcd != 0) {
+            a /= gcd;
+            b /= gcd;
         }
-
-        return (a < 0 && b < 0) || (a > 0 && b > 0) ?
-                i + "." + tmp : "-" + i + "." + tmp;
+        return a + "/" + b;
     }
 
     private boolean isSamePoint(Point a, Point b) {
         return a.x == b.x && a.y == b.y;
+    }
+
+    // Greater Common Divisor
+    private static int gcd(int a, int b) {
+        return b == 0 ? a : gcd(b, a % b);
     }
 
     static class Point {
