@@ -43,9 +43,10 @@ public class MaxPointsOnALine {
                 }
                 // 不垂直于x轴的直线，存在斜率
                 // 由于斜率计算用到了除法，存在精度损失，因此我们不能直接使用斜率
-                //
                 int dx = points[j].x - points[i].x, dy = points[j].y - points[i].y;
+                // 计算最大公约数
                 int gcd = greatestCommonDivisor(dx, dy);
+                // 把分子分母作为key
                 Map.Entry<Integer, Integer> entry = new SimpleImmutableEntry<>(dy / gcd, dx / gcd);
                 int count = 1 + lines.getOrDefault(entry, 0);
                 lines.put(entry, count);
