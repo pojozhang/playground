@@ -2,6 +2,9 @@
 
 求两个数的最大公约数。
 
+#### 实现
+- [Java](https://github.com/pojozhang/playground/blob/master/solutions/java/src/main/java/playground/algorithm/GreatestCommonDivisor.java)
+
 #### 思路
 1. 欧几里得算法（辗转相除法）
 **计算公式**
