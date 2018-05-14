@@ -20,3 +20,7 @@ gcd(a,b) = gcd(b,a mod b)
 5. 另一方面 a mod b = a - y*b，所以(a mod b)/m = a/m - y*(b/m)，由1可知 m|a，m|b，所以 m|a mod b，所以n是b和a mod b的公约数。
 6. 因为n是b和a mod b的最大公约数，所以n>=m。
 7. 由4和6可知，m = n，即 gcd(a,b) = gcd(b,a mod b)。
+
+![动画演示](resources/greatest-common-divisor-1.gif)
+
+图片来源: https://xuanwo.org/2015/03/11/number-theory-gcd/
