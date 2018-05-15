@@ -46,7 +46,7 @@
 - [x] [直线上最多的点数](max-points-on-a-line.md) `数组` `最大公约数GCD`
 
 ## Week6
-- [ ] [加一](plus-one.md) `数组`
+- [x] [加一](plus-one.md) `数组`
 - [x] [二进制求和](add-binary.md) `二进制`
 - [x] [爬楼梯](climbing-stairs.md) `斐波那契数列`
 - [ ] [环形链表](linked-list-cycle.md) `链表`
