@@ -15,10 +15,9 @@ class SleepWaitYieldTest {
      * sleep()是一个静态方法，它不会释放当前线程持有的锁。
      * sleep()中指定的时间是线程不会运行的最短时间，不能保证该线程睡眠到期后就开始执行。
      *
-     * @throws InterruptedException
      */
     @Test
-    void sleep_not_release_lock() throws InterruptedException {
+    void sleep_not_release_lock() {
         Object lock = new Object();
         Thread threadA = new Thread(() -> {
             synchronized (lock) {
@@ -47,10 +46,9 @@ class SleepWaitYieldTest {
     /**
      * sleep()会把线程置为TIMED_WAITING状态。
      *
-     * @throws InterruptedException
      */
     @Test
-    void sleep_sets_the_state_of_current_thread_to_timed_waiting() throws InterruptedException {
+    void sleep_sets_the_state_of_current_thread_to_timed_waiting() {
         Object lock = new Object();
         Thread thread = new Thread(() -> {
             synchronized (lock) {
