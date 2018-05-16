@@ -2,7 +2,7 @@
 
 #### Java
 
-- [懒汉模式](https://github.com/pojozhang/playground/blob/master/solutions/java/src/main/java/playground/design/singleton/LazySingleton.java)
+- [懒汉模式](https://github.com/pojozhang/playground/blob/master/solutions/java/src/main/java/playground/design/singleton/LazySingleton.java)`并发不安全` `简单`
 - [懒汉同步锁模式](https://github.com/pojozhang/playground/blob/master/solutions/java/src/main/java/playground/design/singleton/LazySyncSingleton.java)
 - [懒汉双重校验模式](https://github.com/pojozhang/playground/blob/master/solutions/java/src/main/java/playground/design/singleton/LazyDCLSingleton.java)
 - [懒汉内存可见双重校验模式](https://github.com/pojozhang/playground/blob/master/solutions/java/src/main/java/playground/design/singleton/LazyDCLVSingleton.java)
