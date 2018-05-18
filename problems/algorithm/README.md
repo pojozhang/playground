@@ -55,3 +55,14 @@
 - [x] [Pow(x, n)](powx-n.md)
 - [ ] [滑动窗口最大值](sliding-window-maximum.md) `数组`
 - [ ] [LRU缓存机制](lru-cache.md)
+
+## Week7
+- [ ] [二叉树的中序遍历](binary-tree-inorder-traversal.md) `二叉树`
+- [ ] [组合总和 II](combination-sum-ii.md) `数组`
+- [ ] [括号生成](generate-parentheses.md)
+- [ ] [相交链表](intersection-of-two-linked-lists.md) `链表`
+- [ ] [最长连续序列](longest-consecutive-sequence.md) `数组`
+- [ ] [N皇后](n-queens.md) `数组`
+- [ ] [只出现一次的数字](single-number.md) `数组`
+- [ ] [位1的个数](number-of-1-bits.md) `二进制`
+- [ ] [2的幂](power-of-two.md)
