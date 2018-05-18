@@ -22,4 +22,19 @@ class PowTest {
     void case_3() {
         assertEquals(0.25000, solution.myPow(2.00000, -2));
     }
+
+    @Test
+    void case_4() {
+        assertEquals(0, solution.myPow(2.00000, -2147483648));
+    }
+
+    @Test
+    void case_5() {
+        assertEquals(1.0, solution.myPow(1.00000, -2147483648));
+    }
+
+    @Test
+    void case_6() {
+        assertEquals(1.0, solution.myPow(-1.00000, -2147483648));
+    }
 }
