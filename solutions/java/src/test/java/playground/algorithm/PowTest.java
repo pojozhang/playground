@@ -15,7 +15,7 @@ class PowTest {
 
     @Test
     void case_2() {
-        assertEquals(9.26100, solution.myPow(2.10000, 3));
+        assertEquals(9.26100, solution.myPow(2.10000, 3), 0.0000001);
     }
 
     @Test
