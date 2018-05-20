@@ -27,3 +27,4 @@ n 是 32 位有符号整数，其数值范围是 [−2^31, 2^31 − 1] 。
 
 #### 实现
 - [Java](https://github.com/pojozhang/playground/blob/master/solutions/java/src/main/java/playground/algorithm/Pow.java)
+- [Go](https://github.com/pojozhang/playground/blob/master/solutions/go/src/playground/algorithm/pow.go)
