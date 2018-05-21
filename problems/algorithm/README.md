@@ -65,5 +65,5 @@
 - [ ] [最长连续序列](longest-consecutive-sequence.md) `数组`
 - [ ] [N皇后](n-queens.md) `数组`
 - [x] [只出现一次的数字](single-number.md) `数组`
-- [ ] [位1的个数](number-of-1-bits.md) `二进制`
+- [x] [位1的个数](number-of-1-bits.md) `二进制` `位运算`
 - [ ] [2的幂](power-of-two.md)
