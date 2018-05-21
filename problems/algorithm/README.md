@@ -57,6 +57,7 @@
 - [ ] [LRU缓存机制](lru-cache.md)
 
 ## Week7
+- [ ] [合并两个有序数组](merge-sorted-array.md) `数组`
 - [ ] [二叉树的中序遍历](binary-tree-inorder-traversal.md) `二叉树`
 - [ ] [组合总和 II](combination-sum-ii.md) `数组`
 - [ ] [括号生成](generate-parentheses.md)
