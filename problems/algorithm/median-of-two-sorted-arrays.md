@@ -19,3 +19,6 @@ nums2 = [3, 4]
 
 中位数是 (2 + 3)/2 = 2.5
 ```
+
+#### 实现
+- [Go](https://github.com/pojozhang/playground/blob/master/solutions/go/src/playground/algorithm/median_of_two_sorted_arrays.go)
