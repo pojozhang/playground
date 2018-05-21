@@ -18,3 +18,4 @@
 ```
 
 #### 实现
+- [Go](https://github.com/pojozhang/playground/blob/master/solutions/go/src/playground/algorithm/single_number.go)
