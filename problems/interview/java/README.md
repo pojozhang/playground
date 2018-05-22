@@ -6,3 +6,4 @@
 3. [CountDownLatch、CyclicBarrier 和 Semaphore 的区别](https://github.com/pojozhang/playground/blob/master/solutions/java/src/test/java/playground/interview/ThreadSyncTest.java)
 4. AOP的原理
 5. CAS的原理
+6. 位运算
