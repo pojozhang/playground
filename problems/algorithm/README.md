@@ -62,7 +62,7 @@
 - [ ] [组合总和 II](combination-sum-ii.md) `数组`
 - [ ] [括号生成](generate-parentheses.md)
 - [ ] [相交链表](intersection-of-two-linked-lists.md) `链表`
-- [ ] [最长连续序列](longest-consecutive-sequence.md) `数组`
+- [x] [最长连续序列](longest-consecutive-sequence.md) `数组`
 - [ ] [N皇后](n-queens.md) `数组`
 - [x] [只出现一次的数字](single-number.md) `数组`
 - [x] [位1的个数](number-of-1-bits.md) `二进制` `位运算`

@@ -11,3 +11,4 @@
 ```
 
 #### 实现
+- [Go](https://github.com/pojozhang/playground/blob/master/solutions/go/src/playground/algorithm/longest_consecutive_sequence.go)
