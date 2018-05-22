@@ -15,3 +15,4 @@ nums2 = [2,5,6],       n = 3
 ```
 
 #### 实现
+- [Go](https://github.com/pojozhang/playground/blob/master/solutions/go/src/playground/algorithm/merge_sorted_array.go)
