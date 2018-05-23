@@ -26,25 +26,30 @@ public class BinaryTreePostorderTraversal {
     public List<Integer> postorderTraversal(TreeNode root) {
         List<Integer> result = new ArrayList<>();
         Deque<TreeNode> stack = new ArrayDeque<>();
-        TreeNode node = root, lastVisit = null;
+        TreeNode node = root, lastVisited = null;
         while (node != null || !stack.isEmpty()) {
             while (node != null) {
                 stack.push(node);
                 node = node.left;
             }
 
+            /* 这里只要考虑两种情况
+             *   1                  1
+             *  /                  / \
+             * 2 <- node  node -> 2   3
+             *  \
+             *   3
+             */
             node = stack.peek();
-
-            // 无右子树
-            if (node.right == null) {
+            if (node.right == lastVisited) {
                 result.add(stack.pop().val);
-                lastVisit = node;
+                lastVisited = node;
                 node = null;
             } else {
                 node = node.right;
+                lastVisited = node;
             }
         }
-
         return result;
     }
 

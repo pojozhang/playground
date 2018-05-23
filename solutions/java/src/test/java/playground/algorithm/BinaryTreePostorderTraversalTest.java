@@ -2,7 +2,9 @@ package playground.algorithm;
 
 import static org.junit.jupiter.api.Assertions.assertIterableEquals;
 
+import java.util.Collections;
 import java.util.List;
+
 import org.junit.jupiter.api.Test;
 import playground.algorithm.BinaryTreePostorderTraversal.TreeNode;
 
@@ -33,6 +35,12 @@ class BinaryTreePostorderTraversalTest {
         head.left.left.right.right = new TreeNode(8);
 
         assertIterableEquals(List.of(7, 8, 6, 4, 2, 5, 3, 1), solution.postorderTraversal(head));
-        //assertIterableEquals(List.of(7, 8, 6, 4, 2, 5, 3, 1), solution.postorderTraversalRecursively(head));
+        assertIterableEquals(List.of(7, 8, 6, 4, 2, 5, 3, 1), solution.postorderTraversalRecursively(head));
+    }
+
+    @Test
+    void case_2() {
+        assertIterableEquals(Collections.emptyList(), solution.postorderTraversal(null));
+        assertIterableEquals(Collections.emptyList(), solution.postorderTraversalRecursively(null));
     }
 }
