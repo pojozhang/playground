@@ -47,8 +47,7 @@ public class BinaryTreeInorderTraversal {
         if (root == null) {
             return Collections.emptyList();
         }
-        List<Integer> list = new ArrayList<>();
-        list.addAll(inorderTraversalRecursively(root.left));
+        List<Integer> list = new ArrayList<>(inorderTraversalRecursively(root.left));
         list.add(root.val);
         list.addAll(inorderTraversalRecursively(root.right));
         return list;
