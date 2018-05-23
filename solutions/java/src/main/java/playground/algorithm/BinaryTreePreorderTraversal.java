@@ -33,6 +33,14 @@ public class BinaryTreePreorderTraversal {
                 stack.push(node);
                 node = node.left;
             }
+
+            /* 这里只要考虑两种情况
+             *   1                  1
+             *  /                  / \
+             * 2 <- node  node -> 2   3
+             *  \
+             *   3
+             */
             node = stack.pop().right;
         }
         return result;
