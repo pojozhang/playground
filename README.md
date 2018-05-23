@@ -5,6 +5,8 @@
 - [数据结构](problems/structure/README.md)
 - [算法](problems/algorithm/README.md)
 - [设计模式](problems/design-pattern/README.md)
-- [Coding Dojo](problems/dojo/README.md)
+- [代码练习](problems/dojo/README.md)
+- [业务场景](problems/business/README.md)
+- [架构](problems/architecture/README.md)
 - 面试
     - [Java](problems/interview/java)
