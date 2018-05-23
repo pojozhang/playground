@@ -33,10 +33,16 @@ public class BinaryTreeInorderTraversal {
                 stack.push(node);
                 node = node.left;
             }
+
+            /* 这里只要考虑两种情况
+             *   1                  1
+             *  /                  / \
+             * 2 <- node  node -> 2   3
+             *  \
+             *   3
+             */
             node = stack.pop();
             result.add(node.val);
-            // 如果右节点为空，那么下一次迭代会从stack中取出当前节点的父节点
-            // 如果右节点非空，那么下一次迭代会把右子树的左节点入栈，形成递归
             node = node.right;
         }
         return result;
