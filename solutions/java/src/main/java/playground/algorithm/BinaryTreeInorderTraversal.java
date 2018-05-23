@@ -1,0 +1,56 @@
+package playground.algorithm;
+
+import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Deque;
+import java.util.List;
+
+/**
+ * 中序遍历：左子树->根节点->右子树
+ */
+public class BinaryTreeInorderTraversal {
+
+    static class TreeNode {
+
+        int val;
+        TreeNode left;
+        TreeNode right;
+
+        TreeNode(int x) {
+            val = x;
+        }
+    }
+
+    // 迭代实现
+    public List<Integer> inorderTraversal(TreeNode root) {
+        List<Integer> result = new ArrayList<>();
+        Deque<TreeNode> stack = new ArrayDeque<>();
+        TreeNode node = root;
+        while (node != null || !stack.isEmpty()) {
+            // 左子树入栈
+            while (node != null) {
+                stack.push(node);
+                node = node.left;
+            }
+            node = stack.pop();
+            result.add(node.val);
+            // 如果右节点为空，那么下一次迭代会从stack中取出当前节点的父节点
+            // 如果右节点非空，那么下一次迭代会把右子树的左节点入栈，形成递归
+            node = node.right;
+        }
+        return result;
+    }
+
+    // 递归实现
+    public List<Integer> inorderTraversalRecursively(TreeNode root) {
+        if (root == null) {
+            return Collections.emptyList();
+        }
+        List<Integer> list = new ArrayList<>();
+        list.addAll(inorderTraversalRecursively(root.left));
+        list.add(root.val);
+        list.addAll(inorderTraversalRecursively(root.right));
+        return list;
+    }
+}
