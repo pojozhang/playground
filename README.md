@@ -8,5 +8,5 @@
 - [代码练习](problems/dojo/README.md)
 - [业务场景](problems/business/README.md)
 - [架构](problems/architecture/README.md)
-- 面试
-    - [Java](problems/interview/java)
+- 语言
+    - [Java](problems/language/java)

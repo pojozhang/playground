@@ -1,4 +1,4 @@
-# Java面试题
+# Java
 
 ### 多线程
 1. [sleep()、wait() 和 yield() 的区别](https://github.com/pojozhang/playground/blob/master/solutions/java/src/test/java/playground/interview/SleepWaitYieldTest.java)
