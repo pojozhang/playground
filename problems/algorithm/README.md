@@ -58,7 +58,7 @@
 
 ## Week7
 - [x] [合并两个有序数组](merge-sorted-array.md) `数组`
-- [ ] [二叉树的前序遍历](binary-tree-preorder-traversal.md) `二叉树`
+- [x] [二叉树的前序遍历](binary-tree-preorder-traversal.md) `二叉树`
 - [x] [二叉树的中序遍历](binary-tree-inorder-traversal.md) `二叉树`
 - [ ] [二叉树的后序遍历](binary-tree-postorder-traversal.md) `二叉树`
 - [ ] [二叉树的层序遍历](binary-tree-levelorder-traversal.md) `二叉树`
