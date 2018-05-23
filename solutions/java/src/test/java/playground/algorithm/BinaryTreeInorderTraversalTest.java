@@ -11,6 +11,13 @@ class BinaryTreeInorderTraversalTest {
 
     private BinaryTreeInorderTraversal solution = new BinaryTreeInorderTraversal();
 
+    /*
+     * 1
+     *  \
+     *   2
+     *  /
+     * 3
+     */
     @Test
     void case_1() {
         TreeNode head = new TreeNode(1);
