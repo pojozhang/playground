@@ -61,7 +61,7 @@
 - [x] [二叉树的前序遍历](binary-tree-preorder-traversal.md) `二叉树`
 - [x] [二叉树的中序遍历](binary-tree-inorder-traversal.md) `二叉树`
 - [x] [二叉树的后序遍历](binary-tree-postorder-traversal.md) `二叉树`
-- [ ] [二叉树的层序遍历](binary-tree-levelorder-traversal.md) `二叉树`
+- [x] [二叉树的层序遍历](binary-tree-levelorder-traversal.md) `二叉树`
 - [ ] [组合总和 II](combination-sum-ii.md) `数组`
 - [ ] [括号生成](generate-parentheses.md)
 - [ ] [相交链表](intersection-of-two-linked-lists.md) `链表`
