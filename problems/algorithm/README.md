@@ -62,7 +62,7 @@
 - [x] [二叉树的中序遍历](binary-tree-inorder-traversal.md) `二叉树`
 - [x] [二叉树的后序遍历](binary-tree-postorder-traversal.md) `二叉树`
 - [x] [二叉树的层序遍历](binary-tree-levelorder-traversal.md) `二叉树`
-- [ ] [组合总和 II](combination-sum-ii.md) `数组`
+- [x] [组合总和 II](combination-sum-ii.md) `数组`
 - [x] [最长连续序列](longest-consecutive-sequence.md) `数组` `动态规划`
 - [x] [只出现一次的数字](single-number.md) `数组`
 - [x] [位1的个数](number-of-1-bits.md) `二进制` `位运算`
