@@ -19,17 +19,21 @@ public class AddTwoNumbers {
     }
 
     public void add(ListNode l1, ListNode l2, ListNode root, int mun) {
-        int t = mun + (l1 == null ? 0 : l1.val) + (l2 == null ? 0 : l2.val);
+        int t = mun + getValue(l1) + getValue(l2);
         if (l1 != null || l2 != null) {
             root.next = new ListNode(t % 10);
-            add(l1 == null ? null : l1.next, l2 == null ? null : l2.next, root.next, t / 10);
-        } else {
-            if (t > 0) {
-                root.next = new ListNode(t % 10);
-            } else if (t >= 10) {
-                root.next.next = new ListNode(t / 10);
-            }
+            add(getNext(l1), getNext(l2), root.next, t / 10);
+        } else if (t > 0) {
+            root.next = new ListNode(t % 10);
         }
+    }
+
+    private int getValue(ListNode listNode) {
+        return listNode == null ? 0 : listNode.val;
+    }
+
+    private ListNode getNext(ListNode listNode) {
+        return listNode == null ? null : listNode.next;
     }
 
     static class ListNode {
