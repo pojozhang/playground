@@ -53,7 +53,7 @@
 - [x] [删除链表的倒数第N个节点](remove-nth-node-from-end-of-list.md) `链表`
 - [x] [组合总和](combination-sum.md) `数组`
 - [x] [Pow(x, n)](powx-n.md)
-- [ ] [滑动窗口最大值](sliding-window-maximum.md) `数组`
+- [x] [滑动窗口最大值](sliding-window-maximum.md) `数组`
 - [ ] [LRU缓存机制](lru-cache.md)
 
 ## Week7
