@@ -48,13 +48,4 @@ public class StaticProxy {
         }
     }
 
-    /**
-     * 代理接口
-     */
-    private interface RailWay {
-
-        void buyTickets();
-
-    }
-
 }

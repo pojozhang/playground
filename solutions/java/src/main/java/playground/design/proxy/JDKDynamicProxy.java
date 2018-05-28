@@ -17,27 +17,26 @@ import java.lang.reflect.Proxy;
  *  - 相对于静态代理，更加的灵活，并且对于任意接口都能代理
  *
  * 缺点:
- *  - 被代理的已经要继承接口，就如上面的PS中描述一样，并不是所有的类或者对象都会继承几口
+ *  - 被代理的必须要继承接口，就如上面的PS中描述一样，但是并不是所有的类或者对象都会继承接口，造成了JDK动态代理的局限性
  *
  */
 public class JDKDynamicProxy {
 
 
     public void show() {
-        ProxyInvocationHandler handler = new ProxyInvocationHandler(new Customer());
-        RailWay customerProxy = (RailWay) handler.getProxy();
+        DynamicProxy dynamicProxy = new DynamicProxy(new Customer());
+        RailWay customerProxy = (RailWay) dynamicProxy.getProxy();
         customerProxy.buyTickets();
-        customerProxy.sayHi();
     }
 
     /**
      * 动态代理处理类
      */
-    class ProxyInvocationHandler implements InvocationHandler {
+    class DynamicProxy implements InvocationHandler {
 
-        private Object target;
+        Object target;
 
-        ProxyInvocationHandler(Object target) {
+        DynamicProxy(Object target) {
             this.target = target;
         }
 
@@ -55,9 +54,13 @@ public class JDKDynamicProxy {
 
         @Override
         public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+
             System.out.println(" before : " + method.toGenericString());
+
             Object result = method.invoke(target, args);
+
             System.out.println(" end    : " + method.toGenericString());
+
             return result;
         }
 
@@ -67,27 +70,13 @@ public class JDKDynamicProxy {
     /**
      * 被代理类
      */
-    class Customer implements RailWay {
+    private class Customer implements RailWay {
 
         @Override
         public void buyTickets() {
             System.out.println("I want go home, So i try to buy a ticket for myself");
         }
 
-        @Override
-        public void sayHi() {
-            System.out.println("Hi~");
-        }
     }
 
-
-    /**
-     * 代理接口
-     */
-    interface RailWay {
-
-        void buyTickets();
-
-        void sayHi();
-    }
 }
