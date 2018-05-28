@@ -4,6 +4,22 @@ import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 
+/**
+ * 动态代理: JDK实现方式
+ *
+ * 仔细观察会发现，这段代码其实可以代理任意接口，当然，这种代理方式会为每一个被代理者添加的操作都是一样的
+ *
+ * PS:通过反射类Proxy和InvocationHandler回调接口实现的jdk动态代理，
+ * 要求委托类必须实现一个接口，但事实上并不是所有类都有接口，
+ * 对于没有实现接口的类，便无法使用该方方式实现动态代理。
+ *
+ * 优点：
+ *  - 相对于静态代理，更加的灵活，并且对于任意接口都能代理
+ *
+ * 缺点:
+ *  - 被代理的已经要继承接口，就如上面的PS中描述一样，并不是所有的类或者对象都会继承几口
+ *
+ */
 public class JDKDynamicProxy {
 
 
@@ -21,11 +37,11 @@ public class JDKDynamicProxy {
 
         private Object target;
 
-        public ProxyInvocationHandler(Object target) {
+        ProxyInvocationHandler(Object target) {
             this.target = target;
         }
 
-        public Object getProxy() {
+        Object getProxy() {
             ClassLoader loader = Thread.currentThread().getContextClassLoader();
             Class<?>[] interfaces = target.getClass().getInterfaces();
 
