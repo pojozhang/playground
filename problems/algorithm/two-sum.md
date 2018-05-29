@@ -15,4 +15,5 @@
 #### 实现
 - [Java](https://github.com/pojozhang/playground/blob/master/solutions/java/src/main/java/playground/algorithm/TwoSum.java)
 - [Go](https://github.com/pojozhang/playground/blob/master/solutions/go/src/playground/algorithm/two_sum.go)
+- [Python](https://github.com/pojozhang/playground/blob/master/solutions/python/algorithm/add_two_numbers.py)
 - [Javascript](https://github.com/pojozhang/playground/blob/master/solutions/javascript/two_sum.js)
