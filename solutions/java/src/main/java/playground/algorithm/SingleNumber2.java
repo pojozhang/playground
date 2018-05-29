@@ -8,13 +8,13 @@ public class SingleNumber2 {
 
         for (int i = 0; i < nums.length; i++) {
             for (int j = 0; j < bits.length; j++) {
-                bits[j] += ((nums[i] >> j) & 1);
+                bits[j] += (nums[i] >> j) & 1;
             }
         }
 
         for (int i = 0; i < bits.length; i++) {
             if (bits[i] % 3 > 0) {
-                result += (1 << i);
+                result += 1 << i;
             }
         }
 
