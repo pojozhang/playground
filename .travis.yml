@@ -26,4 +26,6 @@ matrix:
         - go test ./... -v
     - language: python
       python: 3.6
+      before_script:
+        - cd solutions/python
       script: pytest
