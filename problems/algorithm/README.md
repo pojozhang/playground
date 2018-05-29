@@ -77,4 +77,4 @@
 - [ ] [最小路径和](minimum-path-sum.md) `动态规划`
 - [ ] [不同的子序列](distinct-subsequences.md) `动态规划`
 - [x] [丑数](ugly-number.md)
-- [ ] [只出现一次的数字 II](single-number-ii.md) `数组`
+- [x] [只出现一次的数字 II](single-number-ii.md) `数组`

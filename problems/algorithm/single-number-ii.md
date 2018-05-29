@@ -18,3 +18,4 @@
 ```
 
 #### 实现
+- [Java](https://github.com/pojozhang/playground/blob/master/solutions/java/src/main/java/playground/algorithm/SingleNumber2.java)
