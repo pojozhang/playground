@@ -76,4 +76,4 @@
 - [ ] [不同路径](unique-paths.md) `动态规划`
 - [ ] [最小路径和](minimum-path-sum.md) `动态规划`
 - [ ] [不同的子序列](distinct-subsequences.md) `动态规划`
-- [ ] [丑数](ugly-number.md)
+- [x] [丑数](ugly-number.md)

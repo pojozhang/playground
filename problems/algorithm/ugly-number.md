@@ -29,3 +29,4 @@
 输入不会超过 32 位有符号整数的范围: [−2<sup>31</sup>,  2<sup>31</sup> − 1]。
 
 #### 实现
+- [Go](https://github.com/pojozhang/playground/blob/master/solutions/go/src/playground/algorithm/ugly_number.go)
