@@ -66,7 +66,7 @@
 - [x] [最长连续序列](longest-consecutive-sequence.md) `数组` `动态规划`
 - [x] [只出现一次的数字](single-number.md) `数组`
 - [x] [位1的个数](number-of-1-bits.md) `二进制` `位运算`
-- [x] [2的幂](power-of-two.md) `二进制`
+- [x] [2的幂](power-of-two.md) `二进制` `位运算`
 
 ## Week8
 - [x] [移动零](move-zeroes.md) `数组`
@@ -77,7 +77,7 @@
 - [ ] [最小路径和](minimum-path-sum.md) `动态规划`
 - [ ] [不同的子序列](distinct-subsequences.md) `动态规划`
 - [x] [丑数](ugly-number.md)
-- [x] [只出现一次的数字 II](single-number-ii.md) `数组`
+- [x] [只出现一次的数字 II](single-number-ii.md) `二进制` `位运算`
 - [x] [桶排序](bucket-sort.md) `排序`
 
 ## Week9
