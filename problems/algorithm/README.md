@@ -78,3 +78,9 @@
 - [ ] [不同的子序列](distinct-subsequences.md) `动态规划`
 - [x] [丑数](ugly-number.md)
 - [x] [只出现一次的数字 II](single-number-ii.md) `数组`
+- [x] [桶排序](bucket-sort.md) `排序`
+
+## Week9
+- [ ] [归并排序](merge-sort.md) `排序`
+- [ ] [基数排序](merge-sort.md) `排序`
+- [ ] [Tim排序](tim-sort.md) `排序`
