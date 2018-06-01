@@ -76,7 +76,7 @@
 - [ ] [不同路径](unique-paths.md) `动态规划`
 - [ ] [最小路径和](minimum-path-sum.md) `动态规划`
 - [ ] [不同的子序列](distinct-subsequences.md) `动态规划`
-- [x] [丑数](ugly-number.md)
+- [x] [丑数](ugly-number.md) `数学`
 - [x] [只出现一次的数字 II](single-number-ii.md) `二进制` `位运算`
 - [x] [桶排序](bucket-sort.md) `排序`
 
@@ -84,3 +84,5 @@
 - [ ] [归并排序](merge-sort.md) `排序`
 - [ ] [基数排序](merge-sort.md) `排序`
 - [ ] [Tim排序](tim-sort.md) `排序`
+- [ ] [丑数 II](ugly-number-ii.md) `数学`
+- [ ] [两数相除](divide-two-integers.md) `数学`
