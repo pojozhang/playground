@@ -81,7 +81,7 @@
 - [x] [桶排序](bucket-sort.md) `排序`
 
 ## Week9
-- [ ] [归并排序](merge-sort.md) `排序`
+- [x] [归并排序](merge-sort.md) `排序`
 - [ ] [基数排序](merge-sort.md) `排序`
 - [ ] [Tim排序](tim-sort.md) `排序`
 - [ ] [丑数 II](ugly-number-ii.md) `数学`
