@@ -1,6 +1,8 @@
 package playground.structure;
 
-public class BinaryTree implements DemoTree<Integer> {
+import playground.util.GraphvizUtils;
+
+public class BinaryTree implements TreeInterface<Integer> {
 
     public BinaryNode root;
 
@@ -44,8 +46,18 @@ public class BinaryTree implements DemoTree<Integer> {
     }
 
     @Override
-    public String printTree() {
-        return print(root);
+    public String graphTree() {
+        StringBuffer stringBuffer = new StringBuffer("digraph " + this.getClass().getSimpleName() + " { \n");
+        stringBuffer.append("node [shape=\"record\", height=.1] \n");
+        buildNode(root, stringBuffer);
+        buildGraph(root, stringBuffer);
+        stringBuffer.append("}");
+        return stringBuffer.toString();
+    }
+
+    @Override
+    public void Show() {
+        GraphvizUtils.show(graphTree());
     }
 
     @Override
@@ -125,19 +137,40 @@ public class BinaryTree implements DemoTree<Integer> {
         return Math.max(r, l);
     }
 
-    private String print(BinaryNode node) {
-        if (node == null) return "";
-        return "[ " + node.e + " l:(" + print(node.l) + ") r: (" + print(node.r) + " ]";
+    private void buildNode(BinaryNode node, StringBuffer stringBuffer) {
+        if (node == null) return;
+        stringBuffer.append("node").append(node.e).append("[label=\"<f0> | <f1> ").append(node.e).append(" | <f2>\"];\n");
+
+        if (node.l != null) {
+            buildNode(node.l, stringBuffer);
+        }
+
+        if (node.r != null) {
+            buildNode(node.r, stringBuffer);
+        }
     }
 
+    private void buildGraph(BinaryNode node, StringBuffer stringBuffer) {
+        if (node == null) return;
+
+        if (node.l != null) {
+            stringBuffer.append("node").append(node.e).append(":f0").append(" -> ").append("node").append(node.l.e).append(":f1;\n");
+            buildGraph(node.l, stringBuffer);
+        }
+
+        if (node.r != null) {
+            stringBuffer.append("node").append(node.e).append(":f2").append(" -> ").append("node").append(node.r.e).append(":f1;\n");
+            buildGraph(node.r, stringBuffer);
+        }
+    }
 
     class BinaryNode {
 
-        public BinaryNode(Integer e) {
+        BinaryNode(Integer e) {
             this(e, null, null);
         }
 
-        public BinaryNode(Integer e, BinaryNode r, BinaryNode l) {
+        BinaryNode(Integer e, BinaryNode r, BinaryNode l) {
             this.e = e;
             this.r = r;
             this.l = l;

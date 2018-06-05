@@ -21,6 +21,7 @@ def junitVersion = '5.2.0'
 
 dependencies {
     compile "cglib:cglib-full:2.0.2"
+    compile "guru.nidi:graphviz-java:0.5.2"
 
     testImplementation "org.junit.jupiter:junit-jupiter-api:$junitVersion"
     testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:$junitVersion"
