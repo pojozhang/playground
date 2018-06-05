@@ -70,7 +70,7 @@
 
 ## Week8
 - [x] [移动零](move-zeroes.md) `数组`
-- [ ] [N皇后](n-queens.md) `数组`
+- [x] [N皇后](n-queens.md) `数组` `回溯`
 - [ ] [相交链表](intersection-of-two-linked-lists.md) `链表`
 - [x] [括号生成](generate-parentheses.md)
 - [ ] [不同路径](unique-paths.md) `动态规划`
@@ -81,8 +81,8 @@
 - [x] [桶排序](bucket-sort.md) `排序`
 
 ## Week9
-- [ ] [归并排序](merge-sort.md) `排序`
-- [ ] [基数排序](merge-sort.md) `排序`
+- [x] [归并排序](merge-sort.md) `排序`
+- [x] [基数排序](radix-sort.md) `排序`
 - [ ] [Tim排序](tim-sort.md) `排序`
 - [ ] [丑数 II](ugly-number-ii.md) `数学`
 - [ ] [两数相除](divide-two-integers.md) `数学`
