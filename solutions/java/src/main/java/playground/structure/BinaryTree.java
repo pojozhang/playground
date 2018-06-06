@@ -117,9 +117,10 @@ public class BinaryTree implements Tree<Integer> {
         } else if (compareResult > 0) {
             node.r = remove(i, node.r);
         } else {
-            if (node.r != null && node.l != null) {
-                // 要删除的两节都有值得情况
-                node.r = remove(findMin(node.r), node.r);
+            if (node.r != null && node.l != null) { // 要删除的两节都有值得情况
+                Integer min = findMin(node.r);
+                node.e = min; // 找到当前节点的右侧分支的最小值，并赋值给当前节点元素
+                node.r = remove(min, node.r); // 在右侧分支中删除最小值
             } else if (node.r != null || node.l != null) {
                 // 只有一个子节点有值
                 node = node.r == null ? node.l : node.r;
