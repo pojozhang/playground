@@ -22,3 +22,4 @@
 3. 给定数独永远是 `9x9` 形式的。
 
 #### 实现
+- [Go](https://github.com/pojozhang/playground/blob/master/solutions/go/src/playground/algorithm/sudoku_solver.go)

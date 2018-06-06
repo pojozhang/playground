@@ -86,4 +86,4 @@
 - [ ] [Tim排序](tim-sort.md) `排序`
 - [ ] [丑数 II](ugly-number-ii.md) `数学`
 - [ ] [两数相除](divide-two-integers.md) `数学`
-- [ ] [解数独](sudoku-solver.md)
+- [x] [解数独](sudoku-solver.md) `回溯`
