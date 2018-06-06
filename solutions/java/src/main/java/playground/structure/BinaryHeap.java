@@ -32,7 +32,6 @@ public class BinaryHeap<T extends Comparable<T>> {
 
     private T[] array;
 
-
     public BinaryHeap(int size, Class<T> type) {
         array = (T[]) Array.newInstance(type, size);
     }
@@ -111,6 +110,6 @@ public class BinaryHeap<T extends Comparable<T>> {
     }
 
     public T[] getArray() {
-        return array;
+        return Arrays.copyOfRange(array, 1, currentSize + 1);
     }
 }

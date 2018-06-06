@@ -15,7 +15,8 @@ class BinaryTreeTest {
                 213, 214, 215, 217, 218, 219, 220, 221, 222, 323, 324, 325
         };
 
-        binaryTree.build(array).show();
+        binaryTree.build(array);
+//        binaryTree.build(array).show();
     }
 
 }
