@@ -1,8 +1,8 @@
 package playground.structure;
 
-public interface TreeInterface<T extends Comparable<T>> {
+public interface Tree<T extends Comparable<T>> {
 
-    TreeInterface build(T[] ts);
+    Tree build(T[] ts);
 
     boolean isEmpty();
 
@@ -18,7 +18,7 @@ public interface TreeInterface<T extends Comparable<T>> {
 
     String graphTree();
 
-    void Show();
+    void show();
 
     int deep();
 

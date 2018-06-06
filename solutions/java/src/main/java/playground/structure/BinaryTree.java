@@ -2,7 +2,7 @@ package playground.structure;
 
 import playground.util.GraphvizUtils;
 
-public class BinaryTree implements TreeInterface<Integer> {
+public class BinaryTree implements Tree<Integer> {
 
     public BinaryNode root;
 
@@ -56,7 +56,7 @@ public class BinaryTree implements TreeInterface<Integer> {
     }
 
     @Override
-    public void Show() {
+    public void show() {
         GraphvizUtils.show(graphTree());
     }
 

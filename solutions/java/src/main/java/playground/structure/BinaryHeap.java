@@ -1,7 +1,6 @@
 package playground.structure;
 
 import java.lang.reflect.Array;
-import java.util.ArrayList;
 import java.util.Arrays;
 
 /**
@@ -34,19 +33,15 @@ public class BinaryHeap<T extends Comparable<T>> {
     private T[] array;
 
 
-    public BinaryHeap(int size , Class<T> type) {
+    public BinaryHeap(int size, Class<T> type) {
         array = (T[]) Array.newInstance(type, size);
     }
 
-    public BinaryHeap(T[] items ) {
-
-
-
-        System.out.println(items.getClass());
+    public BinaryHeap(T[] items) {
 
         int size = items.length;
         if (size < DEFAULT_CAPACITY) size = DEFAULT_CAPACITY;
-        array = (T[]) Array.newInstance(items.getClass(), size);
+        array = (T[]) Array.newInstance(items.getClass().getComponentType(), size);
 
         for (T item : items) {
             insert(item);
@@ -54,11 +49,11 @@ public class BinaryHeap<T extends Comparable<T>> {
     }
 
     public void insert(T item) {
-
         if (currentSize == array.length - 1) {
             array = Arrays.copyOf(array, array.length * 2 + 1);
         }
 
+        // 上浮过滤
         int hole = ++currentSize;
         for (; hole > 1 && item.compareTo(array[hole / 2]) < 0; hole /= 2) {
             array[hole] = array[hole / 2];
@@ -115,4 +110,7 @@ public class BinaryHeap<T extends Comparable<T>> {
 
     }
 
+    public T[] getArray() {
+        return array;
+    }
 }
