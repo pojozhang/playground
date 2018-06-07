@@ -87,5 +87,5 @@
 - [ ] [丑数 II](ugly-number-ii.md) `数学`
 - [ ] [两数相除](divide-two-integers.md) `数学`
 - [x] [解数独](sudoku-solver.md) `回溯`
-- [ ] [组合](combinations.md) `回溯`
+- [x] [组合](combinations.md) `回溯`
 - [ ] [N皇后 II](n-queens-ii.md) `回溯`
