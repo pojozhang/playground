@@ -84,7 +84,7 @@
 - [x] [归并排序](merge-sort.md) `排序`
 - [x] [基数排序](radix-sort.md) `排序`
 - [ ] [Tim排序](tim-sort.md) `排序`
-- [ ] [丑数 II](ugly-number-ii.md) `数学`
+- [x] [丑数 II](ugly-number-ii.md) `数学`
 - [x] [两数相除](divide-two-integers.md) `数学` `位运算` `二分法`
 - [x] [解数独](sudoku-solver.md) `回溯`
 - [x] [组合](combinations.md) `回溯`

@@ -15,3 +15,4 @@
 2. `n` **不超过**1690。
 
 #### 实现
+- [Go](https://github.com/pojozhang/playground/blob/master/solutions/go/src/playground/algorithm/ugly_number_2.go)
