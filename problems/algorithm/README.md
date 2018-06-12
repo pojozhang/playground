@@ -89,3 +89,5 @@
 - [x] [解数独](sudoku-solver.md) `回溯`
 - [x] [组合](combinations.md) `回溯`
 - [x] [N皇后 II](n-queens-ii.md) `回溯`
+- [ ] [合并区间](merge-intervals.md) `数组`
+- [ ] [路径总和](path-sum.md) `树` `深度优先搜索`
