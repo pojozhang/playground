@@ -2,45 +2,66 @@ package playground.structure;
 
 /**
  * 左倾 红黑树
- * <p>
- * - 两根红色节点不能连在一起
- * -
  */
-public class RedBlackTree<K extends Comparable, V> {
+public class RedBlackTree implements Tree<Integer> {
 
-    Node root = new Node();
+    RBNode root;
 
-    public V get(K k) {
-        Node x = root;
-        while (x != null) {
-            int cmp = k.compareTo(x.k);
-            if (cmp == 0) return x.v;
-            else if (cmp < 0) x = x.l;
-            else if (cmp > 0) x = x.r;
-        }
+    @Override
+    public Tree build(Integer[] integers) {
         return null;
     }
 
+    @Override
+    public boolean isEmpty() {
+        return false;
+    }
 
-    public void set(K k, V v) {
+    @Override
+    public boolean contains(Integer i) {
+        return false;
+    }
+
+    @Override
+    public Integer findMin() {
+        return null;
+    }
+
+    @Override
+    public Integer findMax() {
+        return null;
+    }
+
+    @Override
+    public void insert(Integer integer) {
 
     }
 
-    class Node {
+    @Override
+    public void remove(Integer integer) {
 
-        K k;
+    }
 
-        V v;
+    @Override
+    public String graphTree() {
+        return null;
+    }
 
-        Color color;
-
-        Node r;
-
-        Node l;
-
+    @Override
+    public int deep() {
+        return 0;
     }
 
     enum Color {
         RED, BLACK;
+    }
+
+    class RBNode {
+
+        Color color;
+
+        RBNode r;
+
+        RBNode l;
     }
 }

@@ -18,8 +18,6 @@ public interface Tree<T extends Comparable<T>> {
 
     String graphTree();
 
-    void show();
-
     int deep();
 
 }
