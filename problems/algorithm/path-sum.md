@@ -19,3 +19,4 @@
 返回 `true`, 因为存在目标和为 22 的根节点到叶子节点的路径 `5->4->11->2`。
 
 #### 实现
+- [Go](https://github.com/pojozhang/playground/blob/master/solutions/go/src/playground/algorithm/path_sum.go)
