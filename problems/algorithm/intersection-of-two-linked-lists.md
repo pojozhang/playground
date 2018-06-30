@@ -19,3 +19,4 @@ B:     b1 → b2 → b3
 程序尽量满足 O(n) 时间复杂度，且仅用 O(1) 内存。
 
 #### 实现
+- [Java](https://github.com/pojozhang/playground/blob/master/solutions/java/src/main/java/playground/algorithm/IntersectionOfTwoLinkedLists.java)

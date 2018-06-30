@@ -71,7 +71,7 @@
 ## Week8
 - [x] [移动零](move-zeroes.md) `数组`
 - [x] [N皇后](n-queens.md) `数组` `回溯`
-- [ ] [相交链表](intersection-of-two-linked-lists.md) `链表`
+- [x] [相交链表](intersection-of-two-linked-lists.md) `链表`
 - [x] [括号生成](generate-parentheses.md)
 - [ ] [不同路径](unique-paths.md) `动态规划`
 - [ ] [最小路径和](minimum-path-sum.md) `动态规划`
