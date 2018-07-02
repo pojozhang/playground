@@ -14,8 +14,8 @@
 ```
 输入: 8
 输出: 2
-
 说明: 8 的平方根是 2.82842..., 由于返回类型是整数，小数部分将被舍去。
 ```
 
 #### 实现
+- [Go](https://github.com/pojozhang/playground/blob/master/solutions/go/src/playground/algorithm/sqrtx.go)
