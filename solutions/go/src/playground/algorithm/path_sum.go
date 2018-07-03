@@ -1,11 +1,5 @@
 package algorithm
 
-type TreeNode struct {
-	Val   int
-	Left  *TreeNode
-	Right *TreeNode
-}
-
 func hasPathSum(root *TreeNode, sum int) bool {
 	return hasPathSumR(root, 0, sum)
 }
