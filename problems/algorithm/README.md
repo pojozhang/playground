@@ -97,7 +97,7 @@
 - [ ] [合并K个排序链表](merge-k-sorted-lists.md) `链表`
 - [ ] [插入区间](insert-interval.md) `数组`
 - [x] [二叉树的层次遍历 II](binary-tree-level-order-traversal-ii.md) `树` `广度优先搜索`
-- [ ] [翻转二叉树](invert-binary-tree.md) `树`
+- [x] [翻转二叉树](invert-binary-tree.md) `树`
 - [x] [x 的平方根](sqrtx.md) `二分查找`
 - [ ] [跳跃游戏](jump-game.md) `数组` `贪心`
 - [ ] [螺旋矩阵](spiral-matrix.md) `数组`
