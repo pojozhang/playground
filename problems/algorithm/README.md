@@ -93,7 +93,7 @@
 - [x] [路径总和](path-sum.md) `树` `深度优先搜索`
 
 # Week10
-- [ ] [二叉树剪枝](binary-tree-pruning.md) `树`
+- [x] [二叉树剪枝](binary-tree-pruning.md) `树`
 - [ ] [合并K个排序链表](merge-k-sorted-lists.md) `链表`
 - [ ] [插入区间](insert-interval.md) `数组`
 - [x] [二叉树的层次遍历 II](binary-tree-level-order-traversal-ii.md) `树` `广度优先搜索`

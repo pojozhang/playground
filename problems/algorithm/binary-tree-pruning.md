@@ -34,3 +34,4 @@
 2. 每个节点的值只会为 `0` 或 `1` 。
 
 #### 实现
+- [Go](https://github.com/pojozhang/playground/blob/master/solutions/go/src/playground/algorithm/binary_tree_pruning.go)
