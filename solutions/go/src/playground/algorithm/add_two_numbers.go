@@ -1,12 +1,7 @@
 package algorithm
 
-type listNode1 struct {
-	Val  int
-	Next *listNode1
-}
-
-func addTwoNumbers(l1 *listNode1, l2 *listNode1) *listNode1 {
-	head := new(listNode1)
+func addTwoNumbers(l1 *ListNode, l2 *ListNode) *ListNode {
+	head := new(ListNode)
 	p := head
 
 	for carry := 0; l1 != nil || l2 != nil || carry > 0; {
@@ -25,7 +20,7 @@ func addTwoNumbers(l1 *listNode1, l2 *listNode1) *listNode1 {
 		v := v1 + v2 + carry
 		carry = v / 10
 
-		p.Next = &listNode1{Val: v % 10}
+		p.Next = &ListNode{Val: v % 10}
 		p = p.Next
 	}
 

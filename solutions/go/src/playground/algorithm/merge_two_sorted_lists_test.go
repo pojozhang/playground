@@ -6,10 +6,10 @@ import (
 )
 
 func TestMergeTwoLists(t *testing.T) {
-	l1 := &listNode2{Val: -9}
-	l1.Next = &listNode2{Val: 3}
-	l2 := &listNode2{Val: 5}
-	l2.Next = &listNode2{Val: 7}
+	l1 := &ListNode{Val: -9}
+	l1.Next = &ListNode{Val: 3}
+	l2 := &ListNode{Val: 5}
+	l2.Next = &ListNode{Val: 7}
 
 	merged := mergeTwoLists(l1, l2)
 	assert.Equal(t, -9, merged.Val)
