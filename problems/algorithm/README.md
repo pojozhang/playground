@@ -94,7 +94,7 @@
 
 # Week10
 - [x] [二叉树剪枝](binary-tree-pruning.md) `树`
-- [ ] [合并K个排序链表](merge-k-sorted-lists.md) `链表`
+- [x] [合并K个排序链表](merge-k-sorted-lists.md) `链表` `小根堆`
 - [ ] [插入区间](insert-interval.md) `数组`
 - [x] [二叉树的层次遍历 II](binary-tree-level-order-traversal-ii.md) `树` `广度优先搜索`
 - [x] [翻转二叉树](invert-binary-tree.md) `树`
