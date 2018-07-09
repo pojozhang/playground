@@ -99,7 +99,7 @@
 - [x] [二叉树的层次遍历 II](binary-tree-level-order-traversal-ii.md) `树` `广度优先搜索`
 - [x] [翻转二叉树](invert-binary-tree.md) `树`
 - [x] [x 的平方根](sqrtx.md) `二分查找`
-- [ ] [跳跃游戏](jump-game.md) `数组` `贪心`
+- [x] [跳跃游戏](jump-game.md) `数组` `贪心`
 - [x] [螺旋矩阵](spiral-matrix.md) `数组`
 
 
