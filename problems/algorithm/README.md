@@ -100,7 +100,7 @@
 - [x] [翻转二叉树](invert-binary-tree.md) `树`
 - [x] [x 的平方根](sqrtx.md) `二分查找`
 - [ ] [跳跃游戏](jump-game.md) `数组` `贪心`
-- [ ] [螺旋矩阵](spiral-matrix.md) `数组`
+- [x] [螺旋矩阵](spiral-matrix.md) `数组`
 
 
 
