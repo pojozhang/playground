@@ -5,11 +5,6 @@ import (
 	"math"
 )
 
-type Interval struct {
-	Start int
-	End   int
-}
-
 type Intervals []Interval
 
 func (i Intervals) Len() int {
