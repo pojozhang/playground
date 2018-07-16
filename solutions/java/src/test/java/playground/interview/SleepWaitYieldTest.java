@@ -20,7 +20,7 @@ class SleepWaitYieldTest {
         Thread threadA = new Thread(() -> {
             synchronized (lock) {
                 try {
-                    Thread.sleep(3000);
+                    Thread.sleep(7000);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
@@ -30,14 +30,19 @@ class SleepWaitYieldTest {
 
         CountDownLatch latch = new CountDownLatch(1);
         Thread threadB = new Thread(() -> {
+            try {
+                Thread.sleep(2000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
             synchronized (lock) {
                 latch.countDown();
             }
         });
         threadB.start();
 
-        await().atLeast(Duration.FIVE_HUNDRED_MILLISECONDS)
-            .atMost(Duration.FIVE_SECONDS)
+        await().atLeast(Duration.ONE_SECOND)
+            .atMost(Duration.TEN_SECONDS)
             .until(() -> latch.getCount() == 0);
     }
 
