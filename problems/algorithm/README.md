@@ -104,7 +104,7 @@
 - [x] [跳跃游戏 II](jump-game-ii.md) `数组` `贪心`
 
 # Week11
-- [ ] [搜索二维矩阵](search-a-2d-matrix.md) `数组`
+- [x] [搜索二维矩阵](search-a-2d-matrix.md) `数组`
 - [ ] [分类颜色](sort-colors.md) `数组`
 - [ ] [杨辉三角](pascals-triangle.md) `数组`
 - [ ] [删除排序链表中的重复元素](remove-duplicates-from-sorted-list.md) `链表`
