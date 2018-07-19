@@ -15,3 +15,4 @@
 ```
 
 #### 实现
+- [Go](https://github.com/pojozhang/playground/blob/master/solutions/go/src/playground/algorithm/remove_duplicates_from_sorted_list.go)
