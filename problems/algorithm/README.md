@@ -106,7 +106,7 @@
 # Week11
 - [x] [搜索二维矩阵](search-a-2d-matrix.md) `数组`
 - [x] [分类颜色](sort-colors.md) `数组`
-- [ ] [杨辉三角](pascals-triangle.md) `数组`
+- [x] [杨辉三角](pascals-triangle.md) `数组`
 - [x] [删除排序链表中的重复元素](remove-duplicates-from-sorted-list.md) `链表`
 - [x] [柱状图中最大的矩形](largest-rectangle-in-histogram.md) `数组` `栈`
 - [x] [最小栈](min-stack.md) `栈`
