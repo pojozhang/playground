@@ -5,6 +5,7 @@ bin/
 .settings/
 .project
 .classpath
+*.class
 *.iml
 *.ipr
 *.iws
