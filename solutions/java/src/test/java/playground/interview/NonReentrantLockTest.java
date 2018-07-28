@@ -32,7 +32,7 @@ class NonReentrantLockTest {
         assertEquals(1, latch.getCount());
     }
 
-    void non_reentrant_lock_inner() throws InterruptedException {
+    private void non_reentrant_lock_inner() throws InterruptedException {
         lock.lock();
         latch.countDown();
         lock.unlock();
