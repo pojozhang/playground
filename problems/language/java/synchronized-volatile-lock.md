@@ -1,13 +1,13 @@
 # synchronized、volatile 和 lock
 
-## 互斥性
+## 原子性
 
-互斥性是指当有若干个线程都要使用某一共享资源时，任何时刻最多只允许一个线程去使用，其它要使用该资源的线程必须等待，直到占用资源者释放该资源。
-如果有多个线程同时对资源进行操作，那么可能会造成与预期行为不符合的结果，比如以下的代码：
+原子性是指在几个操作成为一个不可分割的整体，在调用过程中不可中断也不会被其它线程干扰，就像是执行一个命令一样。
+下面的代码由于它不是一个原子操作，而是读取->自增->写回的复合操作，当有多个线程同时执行这三个操作时顺序就可能发生交错，从而导致结果与预期不符。
+
 ```java
-    count++;
+    count++;  
 ```
-由于它不是一个原子操作，而是读取->自增->写回的复合操作，当有多个线程同时执行这三个操作时顺序就可能发生交错，从而导致结果与预期不符。
 
 ![](resources/synchronized-volatile-lock-2.png)
 
@@ -39,7 +39,10 @@ public void shutdown() {
 1. 线程B把修改后的值写入主内存。
 2. 线程A从主内存中读取最新的值。
 
-## 顺序性
+## 有序性
+
+有序性是指程序执行顺序按代码的顺序执行。
+
 
 ## 可重入锁
 
@@ -69,7 +72,7 @@ private synchronized void b() {
 
 `synchronized`修饰符有三个作用：
 
-1. 保证互斥性
+1. 保证原子性
 2. 保证可见性
 3. 保证有序性
 
@@ -111,3 +114,96 @@ public void test();
 我们可以看到`synchronized`代码块的首位加上了`monitorenter`和`monitorexit`指令。
 
 在JVM中每个对象都有一个与之对应的`monitor`，当`monitor`被占用时对象就被上锁，并且这个`monitor`也有一个计数器，可以被同一个线程多次获取，因此我们可以看到它就是一个可重入锁。当JVM执行`monitorenter`指令时就会去尝试获取这把锁，当执行`monitorexit`指令时就把锁的计数器减去1，如果减为0，那么就释放。
+
+现在我们看一下当JVM执行`monitorenter`指令时具体做了什么，你可以在[这里](https://github.com/unofficial-openjdk/openjdk/blob/jdk8u/jdk8u/hotspot/src/share/vm/interpreter/interpreterRuntime.cpp)找到源码。
+
+```cpp
+IRT_ENTRY_NO_ASYNC(void, InterpreterRuntime::monitorenter(JavaThread* thread, BasicObjectLock* elem))
+#ifdef ASSERT
+  thread->last_frame().interpreter_frame_verify_monitor(elem);
+#endif
+  if (PrintBiasedLockingStatistics) {
+    Atomic::inc(BiasedLocking::slow_path_entry_count_addr());
+  }
+  Handle h_obj(thread, elem->obj());
+  assert(Universe::heap()->is_in_reserved_or_null(h_obj()),
+         "must be NULL or an object");
+  if (UseBiasedLocking) {
+    // Retry fast entry if bias is revoked to avoid unnecessary inflation
+    ObjectSynchronizer::fast_enter(h_obj, elem->lock(), true, CHECK);
+  } else {
+    ObjectSynchronizer::slow_enter(h_obj, elem->lock(), CHECK);
+  }
+  assert(Universe::heap()->is_in_reserved_or_null(elem->obj()),
+         "must be NULL or an object");
+#ifdef ASSERT
+  thread->last_frame().interpreter_frame_verify_monitor(elem);
+#endif
+IRT_END
+```
+
+你可以在[这里](https://github.com/unofficial-openjdk/openjdk/blob/jdk8u/jdk8u/hotspot/src/share/vm/runtime/synchronizer.cpp)找到源码。
+
+```cpp
+void ObjectSynchronizer::fast_enter(Handle obj, BasicLock* lock, bool attempt_rebias, TRAPS) {
+ if (UseBiasedLocking) {
+    if (!SafepointSynchronize::is_at_safepoint()) {
+      BiasedLocking::Condition cond = BiasedLocking::revoke_and_rebias(obj, attempt_rebias, THREAD);
+      if (cond == BiasedLocking::BIAS_REVOKED_AND_REBIASED) {
+        return;
+      }
+    } else {
+      assert(!attempt_rebias, "can not rebias toward VM thread");
+      BiasedLocking::revoke_at_safepoint(obj);
+    }
+    assert(!obj->mark()->has_bias_pattern(), "biases should be revoked by now");
+ }
+
+ slow_enter (obj, lock, THREAD) ;
+}
+```
+
+
+在HotSpot虚拟机中，`monitor`的实现是`ObjectMonitor`，可以在[这里](https://github.com/unofficial-openjdk/openjdk/blob/jdk8u/jdk8u/hotspot/src/share/vm/runtime/objectMonitor.hpp)看到源码，其数据结构如下：
+
+```cpp
+ObjectMonitor() {
+    _header       = NULL;
+    _count        = 0;
+    _waiters      = 0,
+    _recursions   = 0;
+    _object       = NULL;
+    _owner        = NULL;
+    _WaitSet      = NULL;
+    _WaitSetLock  = 0 ;
+    _Responsible  = NULL ;
+    _succ         = NULL ;
+    _cxq          = NULL ;
+    FreeNext      = NULL ;
+    _EntryList    = NULL ;
+    _SpinFreq     = 0 ;
+    _SpinClock    = 0 ;
+    OwnerIsThread = 0 ;
+    _previous_owner_tid = 0;
+  }
+```
+
+几个重要的属性：
+
+- `_owner`指向持有`ObjectMonitor`对象的线程。
+- ``
+
+## volatile
+
+`volatile`修饰符有三个作用：
+
+1. 保证可见性 
+2. 保证有序性
+3. 保证64位变量的原子性
+
+## lock
+
+锁的状态总共有四种：无锁状态、偏向锁、轻量级锁和重量级锁。
+
+### 偏向锁
+偏向锁是JDK1.6之后引入的。
