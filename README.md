@@ -8,5 +8,8 @@
 - [代码练习](problems/coding-dojo/README.md)
 - [业务场景](problems/business/README.md)
 - [架构](problems/architecture/README.md)
-- 语言
-    - [Java](problems/language/java)
+- 面试
+    - [网络](problems/interview/net)
+    - [Redis](problems/interview/redis)
+    - [MySQL](problems/interview/mysql)
+    - [Java](problems/interview/java)
