@@ -7,9 +7,7 @@
 - [设计模式](problems/design-pattern/README.md)
 - [代码练习](problems/coding-dojo/README.md)
 - [业务场景](problems/business/README.md)
-- [架构](problems/architecture/README.md)
-- 面试
-    - [网络](problems/interview/net)
-    - [Redis](problems/interview/redis)
-    - [MySQL](problems/interview/mysql)
-    - [Java](problems/interview/java)
+- [架构](problems/architecture/README.md) - [网络](problems/net/README.md)
+- [Redis](problems/redis/README.md)
+- [MySQL](problems/mysql/README.md)
+- [Java](problems/java/README.md)
