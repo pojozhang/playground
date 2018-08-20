@@ -114,7 +114,7 @@
 - [ ] [二叉搜索树中第K小的元素](kth-smallest-element-in-a-bst.md) `树` `二分查找`
 
 # Week12
-- [ ] [比较版本号](compare-version-numbers.md) `字符串`
+- [x] [比较版本号](compare-version-numbers.md) `字符串`
 - [ ] [山羊拉丁文](goat-latin.md) `字符串`
 - [ ] [反转字符串](reverse-string.md) `字符串`
 - [ ] [天际线问题](the-skyline-problem.md) `堆` `分治`
