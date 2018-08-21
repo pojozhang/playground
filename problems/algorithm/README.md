@@ -116,7 +116,7 @@
 # Week12
 - [x] [比较版本号](compare-version-numbers.md) `字符串`
 - [ ] [山羊拉丁文](goat-latin.md) `字符串`
-- [ ] [反转字符串](reverse-string.md) `字符串`
+- [x] [反转字符串](reverse-string.md) `字符串`
 - [ ] [天际线问题](the-skyline-problem.md) `堆` `分治`
 - [ ] [求众数](majority-element.md) `分治`
 - [ ] [数组中的第K个最大元素](kth-largest-element-in-an-array.md) `分治`
