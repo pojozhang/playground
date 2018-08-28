@@ -122,3 +122,4 @@
 - [ ] [数组中的第K个最大元素](kth-largest-element-in-an-array.md) `分治`
 - [x] [电话号码的字母组合](letter-combinations-of-a-phone-number.md) `回溯`
 - [ ] [累加数](additive-number.md) `回溯`
+- [ ] [石子游戏](stone-game.md) `动态规划`
