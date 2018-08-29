@@ -20,4 +20,6 @@ public interface Tree<T extends Comparable<T>> {
 
     int deep();
 
+    void show();
+
 }
