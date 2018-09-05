@@ -109,4 +109,32 @@ public class RedBlackTree<K extends Comparable<K>, V>  {
         return parent;
     }
 
+    public void deleteMax() {
+
+        if (root == null) return;
+
+        this.root = deleteMax(this.root);
+        root.color = BLACK;
+
+    }
+
+    private Node<K, V> deleteMax(Node<K, V> h) {
+        return h;
+    }
+
+    private Node moveRedRight(Node h)
+    {
+        colorFlip(h);
+        if (isRed(h.left.left))
+        {
+            h = rotateRight(h);
+            colorFlip(h);
+        }
+        return h;
+    }
+
+    public Node<K, V> removeMin(K k) {
+        return null;
+    }
+
 }
