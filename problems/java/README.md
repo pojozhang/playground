@@ -2,6 +2,7 @@
 
 ## 基础
 
+- [重载](override.md)
 - [sleep()、wait() 和 yield() 的区别](https://github.com/pojozhang/playground/blob/master/solutions/java/src/test/java/playground/interview/SleepWaitYieldTest.java)
 - AOP的原理
 - [位运算](https://github.com/pojozhang/playground/blob/master/solutions/java/src/test/java/playground/interview/BitwiseTest.java)
