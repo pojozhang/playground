@@ -123,3 +123,6 @@
 - [x] [电话号码的字母组合](letter-combinations-of-a-phone-number.md) `回溯`
 - [ ] [累加数](additive-number.md) `回溯`
 - [ ] [石子游戏](stone-game.md) `动态规划`
+
+# Week13
+- [ ] [整数拆分](integer-break.md) `动态规划`
