@@ -3,6 +3,7 @@
 ## 基础
 
 - [重载](override.md)
+- Comparator和Comparable
 - [浅复制和深复制](shallow-copy-deep-copy.md)
 - [sleep()、wait() 和 yield() 的区别](https://github.com/pojozhang/playground/blob/master/solutions/java/src/test/java/playground/interview/SleepWaitYieldTest.java)
 - AOP的原理
@@ -15,6 +16,18 @@
 - CAS的原理
 - [synchronized、volatile 和 lock](synchronized-volatile-lock.md)
 - [wait()、notify() 和 notifyAll()](wait-notify-notifyAll.md)
+
+## 集合
+
+- ArrayList
+- LinkedList
+- Queue
+- Deque
+- HashSet
+- LinkedHashSet
+- HashMap
+- ConcurrentHashMap
+- TreeMap
 
 ## I/O
 
