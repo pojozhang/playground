@@ -9,6 +9,5 @@
 - [业务场景](problems/business/README.md)
 - [架构](problems/architecture/README.md) 
 - [网络](problems/net/README.md)
-- [Redis](problems/redis/README.md)
-- [MySQL](problems/mysql/README.md)
+- [数据库](problems/database/README.md)
 - [Java](problems/java/README.md)
