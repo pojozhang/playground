@@ -3,7 +3,7 @@
 ## 基础
 
 - [重载](override.md)
-- Comparator和Comparable
+- [Comparable和Comparator](comparable-comparator.md)
 - [浅复制和深复制](shallow-copy-deep-copy.md)
 - [sleep()、wait() 和 yield() 的区别](https://github.com/pojozhang/playground/blob/master/solutions/java/src/test/java/playground/interview/SleepWaitYieldTest.java)
 - AOP的原理
