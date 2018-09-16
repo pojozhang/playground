@@ -1,3 +1,3 @@
 # ArrayList
 
-![](arraylist_1.png)
+![](resources/arraylist_1.png)
