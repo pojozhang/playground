@@ -67,7 +67,7 @@ public static void main(String[] args) throws CloneNotSupportedException {
 那我们能否修改`clone()`方法以实现深复制呢？答案是肯定的。
 
 ```java
- @Override
+@Override
 public Object clone() throws CloneNotSupportedException {
     Person copy = (Person) super.clone();
     //针对对象类型的字段单独复制
