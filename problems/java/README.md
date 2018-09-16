@@ -20,7 +20,7 @@
 
 ## 集合
 
-- ArrayList
+- [ArrayList](arraylist.md)
 - LinkedList
 - Queue
 - Deque
