@@ -1,10 +1,10 @@
 # clone()
 
+`clone()`方法用于复制一个对象，该方法定义在`java.lang.Object`类中，因此所有的类都拥有该方法。
+
 ```java
 protected native Object clone() throws CloneNotSupportedException;
 ```
-
-`clone()`方法用于复制一个对象，该方法定义在`java.lang.Object`类中，因此所有的类都拥有该方法。
 
 下面看一个例子：
 
