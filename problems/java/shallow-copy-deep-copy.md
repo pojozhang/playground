@@ -8,17 +8,17 @@
 
 ```java
 public class Person {
-    public String name;
+    public int age;
     public Address address;
 
-    public Person(String name, Address address) {
-        this.name = name;
+     public Person(int age, Address address) {
+        this.age = age;
         this.address = address;
     }
 
-    public Person(Person person) {
-        this.name = person.name;
-        this.address = person.address;
+    public Person(Person source) {
+        this.age = source.age;
+        this.address = source.address;
     }
 }
 
@@ -31,8 +31,10 @@ public class Address {
 }
 
 public static void main(String[] args) {
-    Person source = new Person("p1", new Address("Shanghai"));
+    Person source = new Person(20, new Address("Shanghai"));
     Person copy = new Person(source); //通过构造函数进行复制
+    source.age = 21; //改变源对象中基本类型字段的值
+    System.out.println(copy.age); //此处打印“20”，可以看到复制后的对象中的值没有变化
     source.address.city = "Beijing"; //改变源对象中对象类型字段的值
     System.out.println(copy.address.city); //此处打印“Beijing”，可以看到复制后的对象中的值也发生了改变
 }
@@ -43,13 +45,13 @@ public static void main(String[] args) {
 保持其它部分代码不变，对Person中用于复制的构造函数进行修改：
 
 ```java
-public Person(Person person) {
-    this.name = person.name;
-    this.address = new Address(person.address.city);
+public Person(Person source) {
+    this.name = source.name;
+    this.address = new Address(source.address.city);
 }
 
 public static void main(String[] args) {
-    Person source = new Person("p1", new Address("Shanghai"));
+    Person source = new Person(20, new Address("Shanghai"));
     Person copy = new Person(source);
     source.address.city = "Beijing";
     System.out.println(copy.address.city); //此处打印“Shanghai”，可以看到复制后的对象中的值没有变化
