@@ -6,9 +6,10 @@
 - [clone()](clone.md)
 - [Comparable和Comparator](comparable-comparator.md)
 - [浅复制和深复制](shallow-copy-deep-copy.md)
-- [sleep()、wait() 和 yield() 的区别](https://github.com/pojozhang/playground/blob/master/solutions/java/src/test/java/playground/interview/SleepWaitYieldTest.java)
+- [sleep()、wait()和yield()](https://github.com/pojozhang/playground/blob/master/solutions/java/src/test/java/playground/interview/SleepWaitYieldTest.java)
 - AOP的原理
 - [位运算](https://github.com/pojozhang/playground/blob/master/solutions/java/src/test/java/playground/interview/BitwiseTest.java)
+- [引用类型](reference.md)
 
 ## 多线程
 
