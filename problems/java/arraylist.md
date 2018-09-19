@@ -5,7 +5,8 @@
 ![](resources/arraylist_1.png)
 
 我们知道普通数组缺点的是其大小是固定的，如果数组内的元素变少了或增多了数组的大小并不会随之缩小或扩大，使用的时候不够灵活，`ArrayList`通过在内部动态的调整数组的大小解决了这个问题。
-下面我们从构造方法看起，以下源码来自JDK10。
+
+下面我们从构造方法看起，源码出自JDK10。
 
 ## ArrayList()
 
@@ -59,6 +60,60 @@ public ArrayList(Collection<? extends E> c) {
 ```
 
 ## add(E)
+
+```java
+public boolean add(E e) {
+    modCount++;
+    add(e, elementData, size);
+    return true;
+}
+```
+
+该方法用于把元素放到列表的末位。其中，`size`是`int`类型的字段，表示当前列表实际的元素个数而 **不是** `elementData`的容量。其内部调用以下方法：
+
+```java
+private void add(E e, Object[] elementData, int s) {
+    // 当元素个数等于底层数组的长度时调用grow()方法进行扩容。
+    if (s == elementData.length)
+        elementData = grow();
+    elementData[s] = e;
+    size = s + 1;
+}
+
+private Object[] grow() {
+    return grow(size + 1);
+}
+
+private Object[] grow(int minCapacity) {
+    return elementData = Arrays.copyOf(elementData, newCapacity(minCapacity));
+}
+
+private int newCapacity(int minCapacity) {
+    // 记录当前容量
+    int oldCapacity = elementData.length;
+    // 新的容量 = 当前容量 * 150%
+    int newCapacity = oldCapacity + (oldCapacity >> 1);
+    // 如果新的容量不大于参数所要求的最小容量，
+    if (newCapacity - minCapacity <= 0) {
+        // 并且elementData是空数组，那么就返回DEFAULT_CAPACITY和minCapacity较大的数，
+        // DEFAULT_CAPACITY是值为10的常量，因此当数组为空时，首次扩容后的大小至少是10.
+        if (elementData == DEFAULTCAPACITY_EMPTY_ELEMENTDATA)
+            return Math.max(DEFAULT_CAPACITY, minCapacity);
+        // 如果minCapacity小于0，说明minCapacity值太大导致溢出。
+        if (minCapacity < 0)
+            throw new OutOfMemoryError();
+        return minCapacity;
+    }
+    // 如果新的容量大于参数所要求的最小容量，
+    return (newCapacity - MAX_ARRAY_SIZE <= 0)
+        ? newCapacity
+        : hugeCapacity(minCapacity);
+}
+```
+
+## modCount
+
+`modCount`是一个int类型的字段，
 
 ## add(int, E)
 
