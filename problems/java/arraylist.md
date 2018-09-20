@@ -94,8 +94,12 @@ private int newCapacity(int minCapacity) {
     // 新的容量 = 当前容量 * 150%
     int newCapacity = oldCapacity + (oldCapacity >> 1);
     // 如果新的容量不大于参数所要求的最小容量，
+    // 分3种情况：
+    // 1. newCapacity没有溢出，那么0<=newCapacity<=minCapacity。
+    // 2. newCapacity溢出，minCapacity没有溢出，那么newCapacity<0<=minCapacity。
+    // 3. newCapacity溢出，minCapacity溢出，那么newCapacity<=minCapacity<0
     if (newCapacity - minCapacity <= 0) {
-        // 并且elementData是空数组，那么就返回DEFAULT_CAPACITY和minCapacity较大的数，
+        // 如果elementData是空数组，那么就返回DEFAULT_CAPACITY和minCapacity较大的数，
         // DEFAULT_CAPACITY是值为10的常量，因此当数组为空时，首次扩容后的大小至少是10.
         if (elementData == DEFAULTCAPACITY_EMPTY_ELEMENTDATA)
             return Math.max(DEFAULT_CAPACITY, minCapacity);
@@ -105,6 +109,10 @@ private int newCapacity(int minCapacity) {
         return minCapacity;
     }
     // 如果新的容量大于参数所要求的最小容量，
+    // 分几种情况：
+    // 1. newCapacity没有溢出，minCapacity没有溢出，那么0<=minCapacity<newCapacity。
+    // 2. newCapacity没有溢出，minCapacity溢出，那么minCapacity<0<=newCapacity。
+    // 3. newCapacity溢出，minCapacity溢出，那么minCapacity<newCapacity<0
     return (newCapacity - MAX_ARRAY_SIZE <= 0)
         ? newCapacity
         : hugeCapacity(minCapacity);
