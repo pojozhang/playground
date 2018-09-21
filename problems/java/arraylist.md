@@ -77,6 +77,7 @@ private void add(E e, Object[] elementData, int s) {
     if (s == elementData.length)
         elementData = grow();
     elementData[s] = e;
+    // 更新实际元素个数。
     size = s + 1;
 }
 
