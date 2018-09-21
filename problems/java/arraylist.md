@@ -85,13 +85,15 @@ private Object[] grow() {
 }
 
 private Object[] grow(int minCapacity) {
+    // 把原数组复制到扩容后的数组。
+    // 底层使用System.arraycopy()进行复制。
     return elementData = Arrays.copyOf(elementData, newCapacity(minCapacity));
 }
 
 private int newCapacity(int minCapacity) {
-    // 记录当前容量
+    // 记录当前容量。
     int oldCapacity = elementData.length;
-    // 新的容量 = 当前容量 * 150%
+    // 新的容量 = 当前容量的1.5倍。
     int newCapacity = oldCapacity + (oldCapacity >> 1);
     // 如果新的容量不大于参数所要求的最小容量，
     // 分3种情况：
@@ -113,9 +115,19 @@ private int newCapacity(int minCapacity) {
     // 1. newCapacity没有溢出，minCapacity没有溢出，那么0<=minCapacity<newCapacity。
     // 2. newCapacity没有溢出，minCapacity溢出，那么minCapacity<0<=newCapacity。
     // 3. newCapacity溢出，minCapacity溢出，那么minCapacity<newCapacity<0
+    // 对于第3种情况，因为newCapacity溢出，那么很有可能满足newCapacity - MAX_ARRAY_SIZE <= 0，这个时候return出去的newCapacity就会是负数，但是实际上是不会发生的，因为MAX_ARRAY_SIZE=Integer.MAX_VALUE - 8，因此newCapacity<=-10的时候，newCapacity - MAX_ARRAY_SIZE一定大于0，而newCapacity在溢出时的最大值就是oldCapacity等于Integer.MAX_VALUE的时候，也就是Integer.MAX_VALUE + (Integer.MAX_VALUE >> 1) = -1073741826，远远小于-10，因此可以保证newCapacity溢出时，返回值一定是走hugeCapacity(minCapacity)这个分支。
     return (newCapacity - MAX_ARRAY_SIZE <= 0)
         ? newCapacity
         : hugeCapacity(minCapacity);
+}
+
+private static int hugeCapacity(int minCapacity) {
+    // 如果minCapacity<0，那么就表示溢出了。
+    if (minCapacity < 0)
+        throw new OutOfMemoryError();
+    return (minCapacity > MAX_ARRAY_SIZE)
+        ? Integer.MAX_VALUE
+        : MAX_ARRAY_SIZE;
 }
 ```
 
