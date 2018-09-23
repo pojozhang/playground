@@ -193,41 +193,152 @@ public void add(int index, E element) {
 }
 
 private void rangeCheckForAdd(int index) {
-    // 这里允许index等于size。
+    // 这里允许index等于size，但不能大于size。
     if (index > size || index < 0)
         throw new IndexOutOfBoundsException(outOfBoundsMsg(index));
 }
 ```
 
+以下代码可以正确执行：
+
+```java
+// 初始化一个有2个元素的列表。
+List<Integer> list = new ArrayList<>();
+list.add(1);
+list.add(2);
+
+// 在索引是2的地方插入元素3。
+list.add(2, 3);
+```
+
+以下代码不能正确执行：
+
+```java
+// 初始化一个有2个元素的列表。
+List<Integer> list = new ArrayList<>();
+list.add(1);
+list.add(2);
+
+// 在索引是3的地方插入元素3。
+// 抛出IndexOutOfBoundsException异常，因为索引3大于当前元素个数2。
+list.add(3, 3);
+```
+
 ## addAll(Collection<? extends E>) {
 
+把一个集合中的元素插入到列表中。
 
+```java
+public boolean addAll(Collection<? extends E> c) {
+    Object[] a = c.toArray();
+    modCount++;
+    int numNew = a.length;
+    if (numNew == 0)
+        return false;
+    Object[] elementData;
+    final int s;
+    // 如果集合中元素的个数超过了elementData数组剩余的容量，那么需要进行扩容。
+    if (numNew > (elementData = this.elementData).length - (s = size))
+        elementData = grow(s + numNew);
+    System.arraycopy(a, 0, elementData, s, numNew);
+    size = s + numNew;
+    return true;
+}
+```
+
+## remove(int)
+
+删除索引处的元素。
+
+```java
+public E remove(int index) {
+    // 越界检查
+    Objects.checkIndex(index, size);
+    final Object[] es = elementData;
+    E oldValue = (E) es[index];
+    fastRemove(es, index);
+    return oldValue;
+}
+
+private void fastRemove(Object[] es, int i) {
+    modCount++;
+    final int newSize;
+    // 如果要删除的元素不是最后一个元素，那么就把i之后的元素全部向前移动一位。
+    if ((newSize = size - 1) > i)
+        System.arraycopy(es, i + 1, es, i, newSize - i);
+    // 把最后一个元素置为null，并更新size。
+    es[size = newSize] = null;
+}
+```
 
 ## remove(Object)
 
+删除一个元素。
+
+```java
+public boolean remove(Object o) {
+    final Object[] es = elementData;
+    final int size = this.size;
+    int i = 0;
+    // 先便利数组进行查找。
+    found: {
+        if (o == null) {
+            for (; i < size; i++)
+                if (es[i] == null)
+                    break found;
+        } else {
+            for (; i < size; i++)
+                if (o.equals(es[i]))
+                    break found;
+        }
+        return false;
+    }
+    // 再使用索引进行删除。
+    fastRemove(es, i);
+    return true;
+}
+```
 
 ## get(int)
 
+获取索引处的元素。
+
 ```java
 public E get(int index) {
+    // 检查索引是否越界。
     Objects.checkIndex(index, size);
+    // 直接返回数组中对应索引处的元素。
     return elementData(index);
+}
+
+E elementData(int index) {
+    return (E) elementData[index];
 }
 ```
 
 ## indexOf(Object)
 
+查找目标对象。
+
 ```java
 public int indexOf(Object o) {
+    // 如果目标对象是null，那么遍历列表，返回第一个元素是null的索引号。
     if (o == null) {
         for (int i = 0; i < size; i++)
             if (elementData[i]==null)
                 return i;
     } else {
+        // 如果目标对象不是null，那么对于列表中的每个元素用equals方法进行比较，返回第一个等于目标对象的索引号。
         for (int i = 0; i < size; i++)
             if (o.equals(elementData[i]))
                 return i;
     }
+    // 找不到则返回-1。
     return -1;
 }
 ```
+
+`lastIndexOf(Object)`方法除了遍历时是从列表末位开始从后向前遍历外其余逻辑和`lastIndexOf(Object)`一致。
+
+## trimToSize()
+
