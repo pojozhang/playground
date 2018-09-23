@@ -299,6 +299,20 @@ public boolean remove(Object o) {
 }
 ```
 
+## clear()
+
+清空列表。
+
+```java
+public void clear() {
+    modCount++;
+    final Object[] es = elementData;
+    // 遍历数组，把每个元素置为null。
+    for (int to = size, i = size = 0; i < to; i++)
+        es[i] = null;
+}
+```
+
 ## get(int)
 
 获取索引处的元素。
@@ -342,3 +356,16 @@ public int indexOf(Object o) {
 
 ## trimToSize()
 
+缩容，也就是把列表的容量缩小为当前元素的个数。
+
+```java
+public void trimToSize() {
+    modCount++;
+    if (size < elementData.length) {
+        // 如果size是0，那么就把elementData赋值为EMPTY_ELEMENTDATA，否则就创建一个长度是size的新数组，并把元素复制到新数组中。
+        elementData = (size == 0)
+            ? EMPTY_ELEMENTDATA
+            : Arrays.copyOf(elementData, size);
+    }
+}
+```
