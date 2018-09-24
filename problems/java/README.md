@@ -22,7 +22,7 @@
 ## 集合
 
 - [ArrayList](arraylist.md)
-- LinkedList
+- [LinkedList](linkedlist.md)
 - Queue
 - Deque
 - HashSet
