@@ -8,7 +8,7 @@
 - [浅复制和深复制](shallow-copy-deep-copy.md) ✅
 - [sleep()、wait()和yield()](https://github.com/pojozhang/playground/blob/master/solutions/java/src/test/java/playground/interview/SleepWaitYieldTest.java)
 - AOP的原理
-- [位运算](https://github.com/pojozhang/playground/blob/master/solutions/java/src/test/java/playground/interview/BitwiseTest.java)
+- [位运算](https://github.com/pojozhang/playground/blob/master/solutions/java/src/test/java/playground/interview/BitwiseTest.java) ✅
 - [引用类型](reference.md)
 - [异常](exception.md)
 
