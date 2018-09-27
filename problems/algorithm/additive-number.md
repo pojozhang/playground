@@ -25,3 +25,4 @@
 你如何处理一个溢出的过大的整数输入?
 
 #### 实现
+- [Go](https://github.com/pojozhang/playground/blob/master/solutions/go/src/playground/algorithm/additive_number.go)
