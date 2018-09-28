@@ -7,13 +7,21 @@
 
 ## Checked Exception和Unchecked Exception
 
-Unchecked Exception是指`RuntimeException`及其子类，通常是开发者自身的问题，如`NullPointerException`、`IndexOutOfBoundsException`。
+Unchecked Exception是指`RuntimeException`及其子类，通常是开发者自身的问题，如空指针异常`NullPointerException`、数组越界异常`IndexOutOfBoundsException`。
 
 除此之外都是Checked Exception，比如`IOException`。
 
-## NoClassDefFoundError和ClassNotFoundException
+## NoClassDefFoundError
 
+该异常是指在运行时找不到某个类的定义但是可以被正确编译。
 
+## ClassNotFoundException
+
+当我们使用反射去显式加载一个类而找不到该类时就会抛出这个异常，这是一个Checked Exception。
+
+```java
+Class.forName("UnknownClass");
+```
 
 ## finally块在什么情况下不会执行
 
