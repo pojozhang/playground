@@ -1,6 +1,6 @@
 # 内部类
 
-内部类就是把一个类的定义在另一个类的内部。
+内部类就是把一个类定义在另一个类的内部。
 
 ```java
 class OuterClass {
@@ -42,8 +42,8 @@ class OuterClass {
 public static void main(String[] args) {
     OuterClass outer = new OuterClass();
     OuterClass.InnerClass inner = outer.new InnerClass();
-    inner.printInnerField(); //此处打印 “InnerClass”
-    inner.printOuterField(); //此处打印 “OuterClass”
+    inner.printInnerField(); //此处打印“InnerClass”。
+    inner.printOuterField(); //此处打印“OuterClass”。
 }
 ```
 
@@ -115,7 +115,7 @@ AnonymousClass.java:8: error: local variables referenced from an inner class mus
 
 ```java
 public static void main(String[] args) {
-    final Object object = new Object(); // 此处的final在JDK8之后也可以省略，因为下面的匿名类中没有修改object对象，因此和final等效。
+    final Object object = new Object(); //此处的final在JDK8之后也可以省略，因为下面的匿名类中没有修改object对象，因此和final等效。
     Runnable runnable = new Runnable() {
         @Override
         public void run() {
@@ -130,6 +130,7 @@ public static void main(String[] args) {
 
 ```java
 class AnonymousClass$1 implements Runnable {
+
     AnonymousClass$1(Object var1) {
         this.val$object = var1;
     }
@@ -169,6 +170,7 @@ public static void main(String[] args) {
 
 ```java
 class AnonymousClass$1 implements Runnable {
+
     AnonymousClass$1(AnonymousClass var1) {
         this.this$0 = var1;
     }
