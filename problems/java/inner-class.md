@@ -70,7 +70,7 @@ public static void main(String[] args) {
 
 ## 匿名类
 
-匿名类就是没有名字的类，下面是一个实现了`Runnable`接口的匿名类。
+匿名类就是没有名字的类，下面是一个实现了`Runnable`接口的匿名类。匿名类中 **不允许** 静态方法或静态字段。
 
 ```java
 new Runnable() {
@@ -184,3 +184,37 @@ class AnonymousClass$1 implements Runnable {
 我们可以看到这个时候内部类拥有对外部对象的引用，因此可以修改`object`字段，也就不存在局部变量中出现的混淆问题了。
 
 ## 嵌套类
+
+在内部类的定义前加上`static`修饰就变成了嵌套类，也叫静态内部类，它和内部类的最大区别在于它不需要依赖外部对象可以独立创建。
+
+```java
+class OuterClass {
+
+    static class StaticInnerClass {
+    }
+}
+
+public static void main(String[] args) {
+    new OuterClass.StaticInnerClass(); //StaticInnerClass对象的创建不依赖于OuterClass对象。
+}
+```
+
+和内部类不同，嵌套类可以包含静态字段、静态方法、内部类、嵌套类以及接口，但它不能访问外部类对象的非静态字段或非静态方法。
+
+```java
+class OuterClass {
+
+    static class StaticInnerClass {
+
+        static String field = "StaticInnerClass";
+
+        static void method() {}
+
+        static class StaticInner {}
+
+        class Inner {}
+
+        interface Interface {}
+    }
+}
+```
