@@ -49,7 +49,24 @@ public static void main(String[] args) {
 
 内部类和字段一样也可以被`private`,`protected`,`public`等修饰（或者默认）且含义相同。
 
-内部类 **不允许** 有静态变量或静态方法。内部类 **允许** 多层嵌套。
+内部类 **不允许** 有静态变量或静态方法。
+
+内部类 **允许** 多层嵌套。
+
+```java
+class OuterClass {
+    class MiddleClass {
+        class InnerClass {
+        }
+    }
+}
+
+public static void main(String[] args) {
+    OuterClass outerClass = new OuterClass();
+    MiddleClass middleClass = outerClass.new MiddleClass();
+    InnerClass innerClass = middleClass.new InnerClass();
+}
+```
 
 ## 匿名类
 
