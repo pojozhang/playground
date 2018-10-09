@@ -27,6 +27,8 @@
 
 ## 集合
 
+- [Arrays](arrays.md)
+- [Collections](collections.md)
 - [ArrayList](arraylist.md)
 - [Vector](vector.md)
 - [LinkedList](linkedlist.md)
