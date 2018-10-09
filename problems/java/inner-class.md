@@ -68,6 +68,29 @@ public static void main(String[] args) {
 }
 ```
 
+## 内部类的继承
+
+一个类如果继承一个内部类，它的构造函数必须有一个指向外部类对象的引用，因为内部类对象的创建必须依赖于一个外部类对象，此外在构造函数中需要使用一种特殊的语法。
+
+```java
+class OuterClass {
+    class InnerClass {
+    }
+}
+
+class InheritClass extends OuterClass.InnerClass {
+
+    InheritClass(OuterClass outerClass) {
+        outerClass.super(); //此处使用了特殊语法。
+    }
+}
+
+public static void main(String[] args) {
+    OuterClass outerClass = new OuterClass();
+    InheritClass inheritClass = new InheritClass(outerClass); //通过构造方法把外部类对象传递进去。
+}
+```
+
 ## 匿名类
 
 匿名类就是没有名字的类，下面是一个实现了`Runnable`接口的匿名类。匿名类中 **不允许** 静态方法或静态字段。
