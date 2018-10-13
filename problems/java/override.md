@@ -21,3 +21,68 @@ public class Child extends Parent {
     }
 }
 ```
+
+## 构造方法能否被重写
+
+构造方法不能被重写，只能被重载，因为构造方法不会被子类继承。
+
+```java
+class SuperClass {
+    SuperClass() throws IOException {
+        System.out.println("SuperClass");
+    }
+}
+
+class SubClass extends SuperClass {
+}
+```
+
+以上代码无法通过编译，因为子类`SubClass`的默认构造方法等价于：
+
+```java
+SubClass() {
+    super();
+}
+```
+
+而基类的构造方法抛出的是`IOException`，这是一个Checked Exception，因此子类只有以下两种选择：
+
+方法一：在构造方法签名上显式抛出异常。
+
+```java
+SubClass() throws IOException {
+    super(); //此句也可省略。
+}
+```
+
+方法二：通过捕获基类构造方法抛出的异常，从而在子类构造方法中不抛出异常，但是事实上这种方法无法通过编译。
+
+```java
+//无法通过编译
+SubClass() {
+    try {
+        super();
+    } catch (IOException e) {
+    }
+}
+```
+
+错误信息如下。
+
+```java
+Error:(24, 18) java: 对super的调用必须是构造器中的第一个语句
+```
+
+同样的道理，以下代码也无法编译，因为基类构造方法抛出的是`IOException`，它无法转换成`ConnectException`(它是`IOException`的一个子类)。
+
+```java
+SubClass() throws ConnectException {
+}
+```
+
+但是以下代码可以通过编译，因为`IOException`是`Exception`的子类。
+
+```java
+SubClass() throws Exception {
+}
+```
