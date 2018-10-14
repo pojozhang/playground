@@ -16,6 +16,7 @@
 - [对象的初始化](initialization.md)
 - [多态](polymorphism.md)
 - [内部类](inner-class.md)
+- [字符串](string.md)
 
 ## 多线程
 
