@@ -7,7 +7,7 @@
 
 ## Checked Exception和Unchecked Exception
 
-Unchecked Exception是指`RuntimeException`及其子类，通常是开发者自身的问题，如空指针异常`NullPointerException`、数组越界异常`IndexOutOfBoundsException`。
+Unchecked Exception是指`RuntimeException`及其子类，通常是开发者编码错误导致的问题，如空指针异常`NullPointerException`、数组越界异常`IndexOutOfBoundsException`。
 
 除此之外都是Checked Exception，比如`IOException`。
 
@@ -34,4 +34,114 @@ try {
 } finally {
     System.out.println("finally");
 }
+```
+
+## java.lang.Throwable#fillInStackTrace()
+
+该方法用于把当前异常的堆栈信息替代原来的堆栈信息。
+
+```java
+public static void main(String[] args) {
+    try {
+        f();
+    } catch (Exception e) {
+        throw e;
+    }
+}
+
+private static void f() {
+    throw new RuntimeException();
+}
+```
+
+以上代码在`main()`方法中捕获`f()`方法抛出的异常并重新抛出，此时堆栈信息如下：
+
+```java
+Exception in thread "main" java.lang.RuntimeException
+	at playground.ExceptionTest.f(ExceptionTest.java:18)
+	at playground.ExceptionTest.main(ExceptionTest.java:11)
+```
+
+我们对以上代码进行修改，对于`main()`中捕获到的异常对象我们调用它的`fillInStackTrace()`方法。
+
+```java
+public static void main(String[] args) {
+    try {
+        f();
+    } catch (Exception e) {
+        throw (RuntimeException) e.fillInStackTrace();
+    }
+}
+```
+
+此时堆栈信息如下所示：
+
+```java
+Exception in thread "main" java.lang.RuntimeException
+	at playground.ExceptionTest.main(ExceptionTest.java:13)
+```
+
+可以看到已经没有了`f()`方法的调用信息。
+
+## 丢失的异常信息
+
+以下代码中首次抛出的异常信息会丢失。
+
+```java
+public static void main(String[] args) {
+    try {
+        throw new RuntimeException("RuntimeException A");
+    } finally {
+        throw new RuntimeException("RuntimeException B");
+    }
+}
+```
+
+```java
+Exception in thread "main" java.lang.RuntimeException: RuntimeException B
+	at playground.ExceptionTest.main(ExceptionTest.java:9)
+```
+
+## finally生成的字节码
+
+
+
+## finally和return的执行顺序
+
+我们都知道`return`语句在`finally`块执行后才会执行，那么为什么以下代码中，我们对局部变量`x`自增后再`return`，输出结果却是自增前的0？
+
+```java
+public static void main(String[] args) {
+    System.out.println(f()); //此处输出“0”。
+}
+
+static int f() {
+    int x = 0;
+    try {
+        return x;
+    } finally {
+        x++;
+    }
+}
+```
+
+以下是`f()`方法在编译后生成的字节码。
+
+```java
+static int f();
+    Code:            //栈      局部变量表    描述
+       0: iconst_0   //[0]                 整数常量0入栈。
+       1: istore_0   //[]      [0]         弹出栈顶元素（上一步中入栈的0），并存入局部变量表中索引为0的位置。
+       2: iload_0    //[0]     [0]         第1个局部变量入栈。
+       3: istore_1   //[]      [0, 0]      弹出栈顶元素（上一步中的变量），并存入第2个局部变量中。
+       4: iinc 0, 1  //[]      [1, 0]      第1个局部变量自增1。
+       7: iload_1    //[0]     [1, 0]      第2个局部变量入栈。
+       8: ireturn    //[0]     [1, 0]      返回。
+       9: astore_2
+      10: iinc 0, 1
+      13: aload_2
+      14: athrow
+    Exception table:
+       from    to  target type
+           2     4     9   any
 ```
