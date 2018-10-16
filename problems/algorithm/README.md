@@ -118,7 +118,7 @@
 - [x] [山羊拉丁文](goat-latin.md) `字符串`
 - [x] [反转字符串](reverse-string.md) `字符串`
 - [ ] [天际线问题](the-skyline-problem.md) `堆` `分治`
-- [ ] [求众数](majority-element.md) `分治`
+- [x] [求众数](majority-element.md) `分治`
 - [ ] [数组中的第K个最大元素](kth-largest-element-in-an-array.md) `分治`
 - [x] [电话号码的字母组合](letter-combinations-of-a-phone-number.md) `回溯`
 - [x] [累加数](additive-number.md) `回溯`
