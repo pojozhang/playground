@@ -7,7 +7,7 @@
 - [Comparable和Comparator](comparable-comparator.md)
 - [浅复制和深复制](shallow-copy-deep-copy.md)
 - [sleep()、wait()和yield()](https://github.com/pojozhang/playground/blob/master/solutions/java/src/test/java/playground/interview/SleepWaitYieldTest.java)
-- AOP的原理
+- [动态代理](dynamic-proxy.md)
 - [位运算](https://github.com/pojozhang/playground/blob/master/solutions/java/src/test/java/playground/interview/BitwiseTest.java)
 - [四种引用类型](reference.md)
 - [异常](exception.md)
@@ -52,6 +52,10 @@
 
 - 解释执行还是编译执行？
 
-## 框架
+## Spring
+
+- AOP的原理
+
+## 其它框架
 
 - cglib

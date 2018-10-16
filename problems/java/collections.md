@@ -1,2 +1,3 @@
 # Collections
 
+## shuffle(List<?>, Random)
