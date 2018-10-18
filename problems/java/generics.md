@@ -1,4 +1,4 @@
-# 范型
+# 泛型
 
 ## 上边界限定通配符
 
@@ -22,7 +22,7 @@ public static void main(String[] args) {
 
 上面的代码尝试把`SuperClass`的子类`SubClassA`的一个对象放入`List<? extends SuperClass>`类型的集合中，结果却编译不通过，这是为什么呢？
 
-原因是上边界限定通配符是用来描述尖括号里的范型的，比如上面的`List<? extends SuperClass>`，我们可以把它看作`List<S>`，而`S`是`SuperClass`的一个子类，至于是哪个子类我们不得而知，因此`List<? extends SuperClass>`可能是`List<SubClassA>`，也可能是`List<SubClassB>`，所以我们无法把任何对象放入集合中（只能放入`null`）。
+原因是上边界限定通配符是用来描述尖括号里的泛型的，比如上面的`List<? extends SuperClass>`，我们可以把它看作`List<S>`，而`S`是`SuperClass`的一个子类，至于是哪个子类我们不得而知，因此`List<? extends SuperClass>`可能是`List<SubClassA>`，也可能是`List<SubClassB>`，所以我们无法把任何对象放入集合中（只能放入`null`）。
 
 虽然我们不能往集合中增加任何`null`以外的元素，但是读取是没有问题的。
 
@@ -30,7 +30,7 @@ public static void main(String[] args) {
 SuperClass superClass = list.get(0);
 ```
 
-可以看到读取出来的类型就是`SuperClass`，虽然我们不知道范型具体是`SuperClass`的哪一个子类，但是它们对应的元素都一定能转成`SuperClass`。
+可以看到读取出来的类型就是`SuperClass`，虽然我们不知道泛型具体是`SuperClass`的哪一个子类，但是它们对应的元素都一定能转成`SuperClass`。
 
 既然这样的写法会导致我们无法插入元素，那么有什么用呢？上面的例子比较奇怪，通常我们是用下面这种方式使用上边界限定通配符的。
 
@@ -52,7 +52,7 @@ void f(ArrayList<? extends SuperClass> list) {
 
 和上边界限定通配符类似，我们把`<? super T>`的形式称为下边界限定通配符，它指的是有一个类是`T`或其基类，我们可以记为`S`，`S`是`T`或者`T`的基类，但是我们不知道它具体是哪一个类。
 
-下面的代码试图把`SuperClass`子类的实例放入集合中，和上边界限定通配符中的例子相反，这种做法在下边界限定通配符中是允许的。因为虽然我们不知道范型中的类具体是`SuperClass`的哪一个基类（从继承层次上看），但是由于`SuperClass`的子类一定是`SuperClass`基类的子类，所以可以插入到集合中。但是`SuperClass`的基类是不能插入到集合中的，理由同上边界限定通配符类似。
+下面的代码试图把`SuperClass`子类的实例放入集合中，和上边界限定通配符中的例子相反，这种做法在下边界限定通配符中是允许的。因为虽然我们不知道泛型中的类具体是`SuperClass`的哪一个基类（从继承层次上看），但是由于`SuperClass`的子类一定是`SuperClass`基类的子类，所以可以插入到集合中。但是`SuperClass`的基类是不能插入到集合中的，理由同上边界限定通配符类似。
 
 ```java
 public static void main(String[] args) {
@@ -106,3 +106,24 @@ List listB = new ArrayList<>();
 ```
 
 第二行等价于`new ArrayList<Object>()`，因此我们可以插入任何类型的对象。
+
+## 自限定
+
+## 泛型中的异常
+
+泛型也可用在异常中。
+
+```java
+interface Generics<E extends Exception> {
+    void f() throws E;
+}
+```
+
+但是我们不能在`catch`中使用泛型，以下代码不能编译。
+
+```java
+void f(){
+    try {}
+    catch (E e){}
+}
+```

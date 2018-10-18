@@ -18,7 +18,7 @@
 - [内部类](inner-class.md)
 - [字符串](string.md)
 - [类型](class.md)
-- [范型](generics.md)
+- [泛型](generics.md)
 
 ## 多线程
 
