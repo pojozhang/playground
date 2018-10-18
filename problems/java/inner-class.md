@@ -47,6 +47,21 @@ public static void main(String[] args) {
 }
 ```
 
+外部类也可以访问内部类的`private`和`protected`字段。
+
+```java
+class OuterClass {
+
+    class InnerClass {
+        private int innerField;
+    }
+
+    int innerField() {
+        return new InnerClass().innerField;
+    }
+}
+```
+
 内部类和字段一样也可以被`private`,`protected`,`public`等修饰（或者默认）且含义相同。
 
 内部类 **不允许** 有静态变量或静态方法。
