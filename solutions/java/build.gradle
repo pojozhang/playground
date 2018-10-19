@@ -12,14 +12,14 @@ repositories {
     mavenCentral()
 }
 
-sourceCompatibility = JavaVersion.VERSION_1_9
-targetCompatibility = JavaVersion.VERSION_1_9
+sourceCompatibility = JavaVersion.VERSION_1_10
+targetCompatibility = JavaVersion.VERSION_1_10
 
 test {
     useJUnitPlatform()
 }
 
-def junitVersion = '5.2.0'
+def junitVersion = '5.3.1'
 
 dependencies {
     compile "cglib:cglib-full:2.0.2"
@@ -27,6 +27,6 @@ dependencies {
 
     testImplementation "org.junit.jupiter:junit-jupiter-api:$junitVersion"
     testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:$junitVersion"
-    testCompile 'org.assertj:assertj-core:3.11.0'
+    testCompile 'org.assertj:assertj-core:3.11.1'
     testCompile 'org.awaitility:awaitility:3.1.2'
 }
