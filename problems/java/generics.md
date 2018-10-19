@@ -5,13 +5,13 @@
 我们把`<? extends T>`的形式称为上边界限定通配符，它指的是有一个类是`T`或其子类，我们可以记为`S`，`S`是`T`或者`T`的子类，但是我们不知道它具体是哪一个类。
 
 ```java
-static class SuperClass {
+class SuperClass {
 }
 
-static class SubClassA extends SuperClass {
+class SubClassA extends SuperClass {
 }
 
-static class SubClassB extends SuperClass {
+class SubClassB extends SuperClass {
 }
 
 public static void main(String[] args) {
@@ -108,6 +108,63 @@ List listB = new ArrayList<>();
 第二行等价于`new ArrayList<Object>()`，因此我们可以插入任何类型的对象。
 
 ## 自限定
+
+形如以下代码的泛型称为自限定泛型。
+
+```java
+// java.lang.Enum
+Enum<E extends Enum<E>>
+```
+
+自限定所做的就是要求在继承关系中，强制要求将正在定义的类当做参数传递给基类，这是它的定义。下面我们看一个例子。
+
+首先我们定义一个抽象基类。
+
+```java
+abstract class Generics<T> implements Comparable<T>{
+}
+```
+
+然后定义一个子类。
+
+```java
+class A extends Generics<A>{
+
+    @Override
+    public int compareTo(A o) {
+        return 0;
+    }
+}
+```
+
+在`main()`方法中对两个`A`类型的对象进行比较。
+
+```java
+public static void main(String[] args) {
+    new A().compareTo(new A());
+}
+```
+
+上面的代码可以正常运行，我们对`A`进行一些修改，泛型参数从`A`修改为`Integer`。
+
+```java
+class A extends Generics<Integer>{
+
+    @Override
+    public int compareTo(Integer o) {
+        return 0;
+    }
+}
+```
+
+这时原本应该比较两个`A`类型对象的`compareTo()`方法只能把`A`对象和一个整数对象进行比较，这是不合理的，通常我们只应该对两个同类型的对象进行比较，而在这里我们却可以随意修改泛型参数，那么我们能不能增加一些限制呢？
+
+答案是可以的，这里我们就用到了自限定泛型。这时如果`A`里的泛型参数是`Integer`那么是无法通过编译的。通过这种方法我们对子类的泛型参数进行了限制。
+
+```java
+abstract class Generics<T extends Generics<T>> implements Comparable<T>{
+}
+```
 
 ## 泛型中的异常
 
