@@ -45,7 +45,9 @@ void linkLast(E e) {
 // Node是LinkedList中的内部类，一个Node就是双向循环链表中的一个节点。
 private static class Node<E> {
     E item;
+    // 指向下一个节点。
     Node<E> next;
+    // 指向上一个节点。
     Node<E> prev;
 
     Node(Node<E> prev, E element, Node<E> next) {
@@ -62,21 +64,48 @@ private static class Node<E> {
 
 ## add(int, E)
 
+把元素插入到指定位置。
+
 ```java
 public void add(int index, E element) {
+    // 越界检查。
     checkPositionIndex(index);
-
     if (index == size)
+        // 如果要插入的位置正好处在链表的末尾，那么就直接调用linkLast()方法，和add(E)一样。
         linkLast(element);
     else
+        // 否则找到第index个节点，并把新的节点插入到它前面。
         linkBefore(element, node(index));
 }
 
+// 检查索引是否越界。
 private void checkPositionIndex(int index) {
     if (!isPositionIndex(index))
         throw new IndexOutOfBoundsException(outOfBoundsMsg(index));
 }
 
+private boolean isPositionIndex(int index) {
+    return index >= 0 && index <= size;
+}
+
+// 查找指定位置的节点。
+Node<E> node(int index) {
+    // 如果要查找的位置更靠近first，那么就从first开始往后搜索。
+    if (index < (size >> 1)) {
+        Node<E> x = first;
+        for (int i = 0; i < index; i++)
+            x = x.next;
+        return x;
+    } else {
+        // 如果要查找的位置更靠近last，那么就从last开始往前搜索。
+        Node<E> x = last;
+        for (int i = size - 1; i > index; i--)
+            x = x.prev;
+        return x;
+    }
+}
+
+// 插入元素到指定节点前面。
 void linkBefore(E e, Node<E> succ) {
     final Node<E> pred = succ.prev;
     final Node<E> newNode = new Node<>(pred, e, succ);
