@@ -31,19 +31,19 @@
 
 ## 集合
 
+- Collection和Map
 - [Arrays](arrays.md)
 - [Collections](collections.md)
 - [ArrayList](arraylist.md)
 - [Vector](vector.md)
 - [LinkedList](linkedlist.md)
 - [CopyOnWriteArrayList](copy-on-write-array-list.md)
-- Queue
-- Deque
-- HashSet
-- LinkedHashSet
-- HashMap
+- [HashMap](hashmap.md)
 - ConcurrentHashMap
 - TreeMap
+- HashSet
+- LinkedHashSet
+- TreeSet
 
 ## I/O
 
