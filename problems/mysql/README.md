@@ -2,7 +2,7 @@
 
 ## 概念
 
-- TIMESTAMP和DATETIME的区别
+- [DATE、DATETIME和TIMESTAMP的区别](date-datetime-timestamp.md)
 
 ## 性能优化
 
