@@ -1,5 +1,7 @@
 # 动态代理
 
+![版本](https://img.shields.io/badge/java-10-red.svg)
+
 下面是一个简单的动态代理的例子。
 
 ```java
@@ -46,7 +48,7 @@ public static void main(String[] args) {
 System.out.println(proxy.getClass());
 ```
 
-我们打印代理类的类型信息，可以看到它的类名是`$Proxy0`，那么这个类是怎么来的呢？我们来看一下`Proxy.newProxyInstance()`方法的源码。以下源码出自JDK10。
+我们打印代理类的类型信息，可以看到它的类名是`$Proxy0`，那么这个类是怎么来的呢？我们来看一下`Proxy.newProxyInstance()`方法的源码。
 
 ```java
 public static Object newProxyInstance(ClassLoader loader,

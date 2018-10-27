@@ -1,12 +1,14 @@
 # ArrayList
 
+![版本](https://img.shields.io/badge/java-10-red.svg)
+
 `ArrayList`是最常用的集合类之一，它实现了`RandomAccess`、`Cloneable`、`Serializable`接口，说明它具备随机访问、可复制、可序列化的功能，通过IDE我们可以看到该类的层次结构如下图所示：
 
 ![](resources/arraylist_1.png)
 
 我们知道普通数组缺点的是其大小是固定的，如果数组内的元素变少了或增多了数组的大小并不会随之缩小或扩大，使用的时候不够灵活，`ArrayList`通过在内部动态的调整数组的大小解决了这个问题。`ArrayList`不是线程安全的。
 
-下面我们从构造方法看起，源码出自JDK10。
+下面我们从构造方法看起。
 
 ## ArrayList()
 

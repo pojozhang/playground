@@ -1,5 +1,7 @@
 # Collections
 
+![版本](https://img.shields.io/badge/java-10-red.svg)
+
 ## nCopies(int, T)
 
 生成一个包含指定数目对象副本的列表。以下代码生成了一个包含5个`Person`对象副本的列表，每个元素都是对同一个`Person`对象的引用。
