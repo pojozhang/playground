@@ -1,6 +1,6 @@
 # Cglib
 
-![版本](https://img.shields.io/badge/cglib:cglib-full-2.0.2-blue.svg)
+![版本](https://img.shields.io/badge/cglibfull-2.0.2-blue.svg)
 
 先看一个简单的Cglib动态代理的例子。
 
