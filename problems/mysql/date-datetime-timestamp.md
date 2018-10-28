@@ -61,3 +61,24 @@ select * from demo;
 ```
 
 这时会发现`col_time_stamp`列的数据比之前查询时早了8个小时，这是因为之前的时区是`+8:00`，而现在的时区是`+0:00`，因此少了8小时。
+
+此外，从**MySQL 5.6.5**起，`DATETIME`类型和`TIMESTAMP`一样，也支持在初始化时以及在更新时把列的值设置为`CURRENT_TIMESTAMP`。
+
+```sql
+create table demo
+(
+    number int,
+    col_date_time datetime(6) default CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6),
+    col_time_stamp timestamp(6) default CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6)
+);
+
+insert into demo(number) values (1);
+
+select * from demo;
+
++--------+----------------------------+----------------------------+
+| number | col_date_time              | col_time_stamp             |
++--------+----------------------------+----------------------------+
+|      1 | 2018-10-28 22:54:39.785312 | 2018-10-28 14:54:39.785312 |
++--------+----------------------------+----------------------------+
+```
