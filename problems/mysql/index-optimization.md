@@ -115,3 +115,47 @@ select * from people where country = 'China';
 |  1 | SIMPLE      | people | NULL       | index | NULL          | index_people | 171     | NULL |    5 |    20.00 | Using where; Using index |
 +----+-------------+--------+------------+-------+---------------+--------------+---------+------+------+----------+--------------------------+
 ```
+
+## 多列索引
+
+当查询语句中有多个OR条件，我们需要为每一列创建独立的索引。
+
+```sql
+create table ticket (
+  actor_id int,
+  film_id  int,
+  seat_no  int,
+  key index_actor (actor_id),
+  key index_film (film_id),
+  key index_seat (seat_no)
+);
+
+-- 往里插一些数据
+insert into ticket(actor_id, film_id, seat_no) VALUES (100, 200, 300);
+insert into ticket(actor_id, film_id, seat_no) VALUES (110, 210, 310);
+insert into ticket(actor_id, film_id, seat_no) VALUES (120, 220, 320);
+insert into ticket(actor_id, film_id, seat_no) VALUES (130, 230, 330);
+insert into ticket(actor_id, film_id, seat_no) VALUES (140, 240, 340);
+insert into ticket(actor_id, film_id, seat_no) VALUES (150, 250, 350);
+insert into ticket(actor_id, film_id, seat_no) VALUES (160, 260, 360);
+insert into ticket(actor_id, film_id, seat_no) VALUES (170, 270, 370);
+insert into ticket(actor_id, film_id, seat_no) VALUES (180, 280, 380);
+insert into ticket(actor_id, film_id, seat_no) VALUES (190, 290, 390);
+```
+
+对于以下的查询的执行计划我们可以看到，`type`的值是`index_merge`，表示使用了**索引合并**，这是一种对多个索引分别进行扫描并将各自的结果进行合并的技术，从MySQL 5.1版本中引入。索引合并共有三种方式：并集、交集、先交后并。执行计划中的`Extra`显示`Using union`，因此这里用的是多个索引扫描后各自结果的并集。
+
+```sql
+select * from ticket where actor_id = 100 or film_id = 210 or seat_no = 320;
+-- 执行计划
++----+-------------+--------+------------+-------------+-----------------------------------+-----------------------------------+---------+------+------+----------+-------------------------------------------------------------+
+| id | select_type | table  | partitions | type        | possible_keys                     | key                               | key_len | ref  | rows | filtered | Extra                                                       |
++----+-------------+--------+------------+-------------+-----------------------------------+-----------------------------------+---------+------+------+----------+-------------------------------------------------------------+
+|  1 | SIMPLE      | ticket | NULL       | index_merge | index_actor,index_film,index_seat | index_actor,index_film,index_seat | 5,5,5   | NULL |    3 |   100.00 | Using union(index_actor,index_film,index_seat); Using where |
++----+-------------+--------+------------+-------------+-----------------------------------+-----------------------------------+---------+------+------+----------+-------------------------------------------------------------+
+```
+
+## 索引列顺序的选择
+
+基数，选择度
+
