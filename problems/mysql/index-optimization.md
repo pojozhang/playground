@@ -43,8 +43,10 @@ select * from people;
 
 ```sql
 -- 用到了索引的第1列
-select * from people where name = 'Peter';
--- 执行计划
+explain select *
+        from people
+        where name = 'Peter';
+
 +----+-------------+--------+------------+------+---------------+--------------+---------+-------+------+----------+-------------+
 | id | select_type | table  | partitions | type | possible_keys | key          | key_len | ref   | rows | filtered | Extra       |
 +----+-------------+--------+------------+------+---------------+--------------+---------+-------+------+----------+-------------+
@@ -52,8 +54,11 @@ select * from people where name = 'Peter';
 +----+-------------+--------+------------+------+---------------+--------------+---------+-------+------+----------+-------------+
 
 -- 用到了索引的第1列和第2列
-select * from people where name = 'Peter' and country = 'China';
--- 执行计划
+explain select *
+        from people
+        where name = 'Peter'
+          and country = 'China';
+
 +----+-------------+--------+------------+------+---------------+--------------+---------+-------------+------+----------+-------------+
 | id | select_type | table  | partitions | type | possible_keys | key          | key_len | ref         | rows | filtered | Extra       |
 +----+-------------+--------+------------+------+---------------+--------------+---------+-------------+------+----------+-------------+
@@ -61,8 +66,12 @@ select * from people where name = 'Peter' and country = 'China';
 +----+-------------+--------+------------+------+---------------+--------------+---------+-------------+------+----------+-------------+
 
 -- 用到了索引的第1列、第2列和第3列
-select * from people where name = 'Peter' and country = 'China' and age = 18;
--- 执行计划
+explain select *
+        from people
+        where name = 'Peter'
+          and country = 'China'
+          and age = 18;
+
 +----+-------------+--------+------------+------+---------------+--------------+---------+-------------------+------+----------+-------------+
 | id | select_type | table  | partitions | type | possible_keys | key          | key_len | ref               | rows | filtered | Extra       |
 +----+-------------+--------+------------+------+---------------+--------------+---------+-------------------+------+----------+-------------+
@@ -73,18 +82,29 @@ select * from people where name = 'Peter' and country = 'China' and age = 18;
 以下语句中虽然条件的顺序不完全按照索引中列的顺序，但依然可以用到索引，因为MySQL的优化器会对索引的选择进行分析。
 
 ```sql
-select * from people where age = 18 and country = 'China' and name = 'Peter';
+select *
+from people
+where age = 18
+  and country = 'China'
+  and name = 'Peter';
 
 -- 和以下查询等价
-select * from people where name = 'Peter' and country = 'China' and age = 18;
+select *
+from people
+where name = 'Peter'
+  and country = 'China'
+  and age = 18;
 ```
 
 以下查询只能用到部分索引，可以看到它用到的索引的长度和`select * from people where name = 'Peter'`查询中用到的索引长度是一样的，说明索引只有第1列用到了。在`Extra`列中显示了`Using where; Using index`，说明是用了一部分索引后再逐行扫描。
 
 ```sql
 -- 只能用到索引的第1列，因为没有匹配中间的country列
-select * from people where name = 'Peter' and age = 18;
--- 执行计划
+explain select *
+        from people
+        where name = 'Peter'
+          and age = 18;
+
 +----+-------------+--------+------------+------+---------------+--------------+---------+-------+------+----------+--------------------------+
 | id | select_type | table  | partitions | type | possible_keys | key          | key_len | ref   | rows | filtered | Extra                    |
 +----+-------------+--------+------------+------+---------------+--------------+---------+-------+------+----------+--------------------------+
@@ -95,8 +115,12 @@ select * from people where name = 'Peter' and age = 18;
 以下查询只能用到部分索引，这是因为`country > 'China'`是一个范围条件，而位于范围条件右边的所有列都不能利用索引查找。
 
 ```sql
-select * from people where name = 'Peter' and country > 'China' and age = 18;
--- 执行计划
+explain select *
+        from people
+        where name = 'Peter'
+          and country > 'China'
+          and age = 18;
+
 +----+-------------+--------+------------+-------+---------------+--------------+---------+------+------+----------+--------------------------+
 | id | select_type | table  | partitions | type  | possible_keys | key          | key_len | ref  | rows | filtered | Extra                    |
 +----+-------------+--------+------------+-------+---------------+--------------+---------+------+------+----------+--------------------------+
@@ -109,8 +133,10 @@ select * from people where name = 'Peter' and country > 'China' and age = 18;
 其实这里用到了**覆盖索引**。如果一个索引包含查询所需要的所有数据，那么这个索引就称为覆盖索引。它的好处是只需要扫描索引就能找到需要的全部数据而不用进行回表。扫描索引相比全表扫描的好处是索引的数据量通常较小，降低了IO操作的负担。
 
 ```sql
-select * from people where country = 'China';
--- 执行计划
+explain select *
+        from people
+        where country = 'China';
+
 +----+-------------+--------+------------+-------+---------------+--------------+---------+------+------+----------+--------------------------+
 | id | select_type | table  | partitions | type  | possible_keys | key          | key_len | ref  | rows | filtered | Extra                    |
 +----+-------------+--------+------------+-------+---------------+--------------+---------+------+------+----------+--------------------------+
@@ -148,8 +174,12 @@ insert into ticket(actor_id, film_id, seat_no) VALUES (190, 290, 390);
 对于以下的查询的执行计划我们可以看到，`type`的值是`index_merge`，表示使用了**索引合并**，这是一种对多个索引分别进行扫描并将各自的结果进行合并的技术，从MySQL 5.1版本中引入。索引合并共有三种方式：并集、交集、先交后并。执行计划中的`Extra`显示`Using union`，因此这里用的是多个索引扫描后各自结果的并集。
 
 ```sql
-select * from ticket where actor_id = 100 or film_id = 210 or seat_no = 320;
--- 执行计划
+explain select *
+        from ticket
+        where actor_id = 100
+           or film_id = 210
+           or seat_no = 320;
+
 +----+-------------+--------+------------+-------------+-----------------------------------+-----------------------------------+---------+------+------+----------+-------------------------------------------------------------+
 | id | select_type | table  | partitions | type        | possible_keys                     | key                               | key_len | ref  | rows | filtered | Extra                                                       |
 +----+-------------+--------+------------+-------------+-----------------------------------+-----------------------------------+---------+------+------+----------+-------------------------------------------------------------+
