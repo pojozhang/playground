@@ -1,6 +1,6 @@
 # 索引优化
 
-![版本](https://img.shields.io/badge/mysql-8.0.11-blue.svg)
+![版本](https://img.shields.io/badge/mysql-8.0.13-blue.svg)
 
 本文中使用到的部分数据表和测试数据来自MySQL的示例数据库sakila，你可以通过以下两个sql文件进行导入。
 
@@ -164,24 +164,142 @@ select * from ticket where actor_id = 100 or film_id = 210 or seat_no = 320;
 
 ## 利用索引排序
 
-当我们使用`ORDER BY`语句对查询结果进行排序时需要注意`ORDER BY`同样遵守最左匹配原则。我们应使用索引排序，尽量避免文件排序(File Sort)，因为前者效率更高。
+当我们使用`ORDER BY`语句对查询结果进行排序时需要注意`ORDER BY`同样遵循最左匹配原则。我们应尽量利用索引排序，避免使用文件排序(File Sort)，因为前者效率更高。下面分几种情况讨论。
 
+以下几种情况可以利用索引排序，`Extra`列显示`Using index`，而没有`Using filesort`。
 
+1. 排序字段和索引字段完全匹配。
 
 ```sql
-select rental_id
+explain select rental_id
         from rental
         where rental_date > '2005-05-25'
         order by rental_date, inventory_id, customer_id;
-```
 
-
-```sql
 +----+-------------+--------+------------+-------+---------------+-------------+---------+------+------+----------+--------------------------+
 | id | select_type | table  | partitions | type  | possible_keys | key         | key_len | ref  | rows | filtered | Extra                    |
 +----+-------------+--------+------------+-------+---------------+-------------+---------+------+------+----------+--------------------------+
 |  1 | SIMPLE      | rental | NULL       | range | rental_date   | rental_date | 5       | NULL | 8004 |   100.00 | Using where; Using index |
 +----+-------------+--------+------------+-------+---------------+-------------+---------+------+------+----------+--------------------------+
+```
+
+2. 排序字段和索引字段左边部分匹配。
+
+```sql
+explain select rental_id
+        from rental
+        where rental_date > '2005-05-25'
+        order by rental_date, inventory_id;
+
++----+-------------+--------+------------+-------+---------------+-------------+---------+------+------+----------+--------------------------+
+| id | select_type | table  | partitions | type  | possible_keys | key         | key_len | ref  | rows | filtered | Extra                    |
++----+-------------+--------+------------+-------+---------------+-------------+---------+------+------+----------+--------------------------+
+|  1 | SIMPLE      | rental | NULL       | range | rental_date   | rental_date | 5       | NULL | 8004 |   100.00 | Using where; Using index |
++----+-------------+--------+------------+-------+---------------+-------------+---------+------+------+----------+--------------------------+
+```
+
+3. 排序字段的第一列在`WHERE`语句中被指定为常量时可以用到索引，如果条件改成`rental_date > '2005-05-25'`则会使用文件排序。
+
+```sql
+explain select rental_id
+        from rental
+        where rental_date = '2005-05-25'
+        order by inventory_id, customer_id;
+
++----+-------------+--------+------------+------+---------------+-------------+---------+-------+------+----------+--------------------------+
+| id | select_type | table  | partitions | type | possible_keys | key         | key_len | ref   | rows | filtered | Extra                    |
++----+-------------+--------+------------+------+---------------+-------------+---------+-------+------+----------+--------------------------+
+|  1 | SIMPLE      | rental | NULL       | ref  | rental_date   | rental_date | 5       | const |    1 |   100.00 | Using where; Using index |
++----+-------------+--------+------------+------+---------------+-------------+---------+-------+------+----------+--------------------------+
+```
+
+4. 多张表联合查询时排序的字段全部是第一张表时可以利用索引。
+
+```sql
+explain select staff.staff_id
+        from staff left join rental on staff.staff_id = rental.staff_id
+        order by address_id;
+
++----+-------------+--------+------------+-------+-----------------+-------------------+---------+-----------------------+------+----------+-------------+
+| id | select_type | table  | partitions | type  | possible_keys   | key               | key_len | ref                   | rows | filtered | Extra       |
++----+-------------+--------+------------+-------+-----------------+-------------------+---------+-----------------------+------+----------+-------------+
+|  1 | SIMPLE      | staff  | NULL       | index | NULL            | idx_fk_address_id | 2       | NULL                  |    2 |   100.00 | Using index |
+|  1 | SIMPLE      | rental | NULL       | ref   | idx_fk_staff_id | idx_fk_staff_id   | 1       | sakila.staff.staff_id | 8004 |   100.00 | Using index |
++----+-------------+--------+------------+-------+-----------------+-------------------+---------+-----------------------+------+----------+-------------+
+```
+
+以下情况会用到文件排序，`Extra`列显示`Using filesort`，性能较差。
+
+1. 排序字段不符合最左匹配原则，比如中间缺少了一列。
+
+```sql
+explain select rental_id
+        from rental
+        where rental_date > '2005-05-25'
+        order by rental_date, customer_id;
+
++----+-------------+--------+------------+-------+---------------+-------------+---------+------+------+----------+------------------------------------------+
+| id | select_type | table  | partitions | type  | possible_keys | key         | key_len | ref  | rows | filtered | Extra                                    |
++----+-------------+--------+------------+-------+---------------+-------------+---------+------+------+----------+------------------------------------------+
+|  1 | SIMPLE      | rental | NULL       | range | rental_date   | rental_date | 5       | NULL | 8004 |   100.00 | Using where; Using index; Using filesort |
++----+-------------+--------+------------+-------+---------------+-------------+---------+------+------+----------+------------------------------------------+
+```
+
+2. 排序字段同时出现`ASC`和`DESC`。
+
+```sql
+explain select rental_id
+        from rental
+        where rental_date > '2005-05-25'
+        order by rental_date ASC, inventory_id DESC;
+
++----+-------------+--------+------------+-------+---------------+-------------+---------+------+------+----------+------------------------------------------+
+| id | select_type | table  | partitions | type  | possible_keys | key         | key_len | ref  | rows | filtered | Extra                                    |
++----+-------------+--------+------------+-------+---------------+-------------+---------+------+------+----------+------------------------------------------+
+|  1 | SIMPLE      | rental | NULL       | range | rental_date   | rental_date | 5       | NULL | 8004 |   100.00 | Using where; Using index; Using filesort |
++----+-------------+--------+------------+-------+---------------+-------------+---------+------+------+----------+------------------------------------------+
+```
+
+3. 查询的列不在索引中。以下查询的`staff_id`列不在索引中。
+
+```sql
+explain select staff_id from rental where rental_date > '2005-05-25' order by rental_date;
+
++----+-------------+--------+------------+------+---------------+------+---------+------+-------+----------+-----------------------------+
+| id | select_type | table  | partitions | type | possible_keys | key  | key_len | ref  | rows  | filtered | Extra                       |
++----+-------------+--------+------------+------+---------------+------+---------+------+-------+----------+-----------------------------+
+|  1 | SIMPLE      | rental | NULL       | ALL  | rental_date   | NULL | NULL    | NULL | 16008 |    50.00 | Using where; Using filesort |
++----+-------------+--------+------------+------+---------------+------+---------+------+-------+----------+-----------------------------+
+```
+
+4. 排序的列不在索引中。
+
+```sql
+explain select rental_id
+        from rental
+        where rental_date > '2005-05-25'
+        order by rental_date, inventory_id, staff_id;
+
++----+-------------+--------+------------+------+---------------+------+---------+------+-------+----------+-----------------------------+
+| id | select_type | table  | partitions | type | possible_keys | key  | key_len | ref  | rows  | filtered | Extra                       |
++----+-------------+--------+------------+------+---------------+------+---------+------+-------+----------+-----------------------------+
+|  1 | SIMPLE      | rental | NULL       | ALL  | rental_date   | NULL | NULL    | NULL | 16008 |    50.00 | Using where; Using filesort |
++----+-------------+--------+------------+------+---------------+------+---------+------+-------+----------+-----------------------------+
+```
+
+5. 多张表联合查询时排序的字段不是来自于第一张表。
+
+```sql
+explain select staff.staff_id
+        from staff left join rental on staff.staff_id = rental.staff_id
+        order by rental_date;
+
++----+-------------+--------+------------+-------+-----------------+-----------------+---------+-----------------------+------+----------+----------------------------------------------+
+| id | select_type | table  | partitions | type  | possible_keys   | key             | key_len | ref                   | rows | filtered | Extra                                        |
++----+-------------+--------+------------+-------+-----------------+-----------------+---------+-----------------------+------+----------+----------------------------------------------+
+|  1 | SIMPLE      | staff  | NULL       | index | NULL            | idx_fk_store_id | 1       | NULL                  |    2 |   100.00 | Using index; Using temporary; Using filesort |
+|  1 | SIMPLE      | rental | NULL       | ref   | idx_fk_staff_id | idx_fk_staff_id | 1       | sakila.staff.staff_id | 8004 |   100.00 | NULL                                         |
++----+-------------+--------+------------+-------+-----------------+-----------------+---------+-----------------------+------+----------+----------------------------------------------+
 ```
 
 ## 索引列顺序的选择
