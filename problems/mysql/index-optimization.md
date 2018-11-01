@@ -2,11 +2,6 @@
 
 ![版本](https://img.shields.io/badge/mysql-8.0.13-blue.svg)
 
-本文中使用到的部分数据表和测试数据来自MySQL的示例数据库sakila，你可以通过以下两个sql文件进行导入。
-
-- [sakila-schema.sql](resources/sakila-schema.sql)
-- [sakila-data.sql](resources/sakila-data.sql)
-
 ## 最左匹配原则
 
 假设我们有一张表，其建表语句如下，它有3列和一个索引。
@@ -164,9 +159,47 @@ select * from ticket where actor_id = 100 or film_id = 210 or seat_no = 320;
 
 ## 利用索引排序
 
-当我们使用`ORDER BY`语句对查询结果进行排序时需要注意`ORDER BY`同样遵循最左匹配原则。我们应尽量利用索引排序，避免使用文件排序(File Sort)，因为前者效率更高。下面分几种情况讨论。
+当我们使用`ORDER BY`语句对查询结果进行排序时需要注意`ORDER BY`同样遵循最左匹配原则。我们应尽量利用索引排序，避免使用文件排序(File Sort)，因为前者效率更高。
 
-以下几种情况可以利用索引排序，`Extra`列显示`Using index`，而没有`Using filesort`。
+下面的测试数据来自MySQL官方的sakila库，你可以通过以下两个sql文件进行导入。
+
+- [sakila-schema.sql](resources/sakila-schema.sql)
+- [sakila-data.sql](resources/sakila-data.sql)。
+
+下面的例子中主要用到两张表，`rental`表和`staff`表，它们的表结构如下，这里省略了原来表中的一些索引和外键，因为在这个例子中不会被用到。
+
+```sql
+create table rental
+(
+  rental_id    int auto_increment primary key,
+  rental_date  datetime                            not null,
+  inventory_id mediumint unsigned                  not null,
+  customer_id  smallint(5) unsigned                not null,
+  return_date  datetime                            null,
+  staff_id     tinyint unsigned                    not null,
+  last_update  timestamp default CURRENT_TIMESTAMP not null on update CURRENT_TIMESTAMP,
+  constraint rental_date unique (rental_date, inventory_id, customer_id)
+)
+
+create table staff
+(
+  staff_id    tinyint unsigned auto_increment primary key,
+  first_name  varchar(45)                         not null,
+  last_name   varchar(45)                         not null,
+  address_id  smallint(5) unsigned                not null,
+  picture     blob                                null,
+  email       varchar(50)                         null,
+  store_id    tinyint unsigned                    not null,
+  active      tinyint(1) default '1'              not null,
+  username    varchar(16)                         not null,
+  password    varchar(40) collate utf8_bin        null,
+  last_update timestamp default CURRENT_TIMESTAMP not null on update CURRENT_TIMESTAMP
+)
+
+create index idx_fk_address_id on staff (address_id);
+```
+
+以下几种情况可以利用索引排序，`Extra`列显示`Using index`，并且没有`Using filesort`。
 
 1. 排序字段和索引字段完全匹配。
 
@@ -260,7 +293,7 @@ explain select rental_id
 +----+-------------+--------+------------+-------+---------------+-------------+---------+------+------+----------+------------------------------------------+
 ```
 
-3. 查询的列不在索引中。以下查询的`staff_id`列不在索引中。
+3. 查询的列不在索引中。比如以下查询的`staff_id`列不在索引中。
 
 ```sql
 explain select staff_id from rental where rental_date > '2005-05-25' order by rental_date;
@@ -272,7 +305,7 @@ explain select staff_id from rental where rental_date > '2005-05-25' order by re
 +----+-------------+--------+------------+------+---------------+------+---------+------+-------+----------+-----------------------------+
 ```
 
-4. 排序的列不在索引中。
+4. 排序的列不在索引中。列`staff_id`不在索引中。
 
 ```sql
 explain select rental_id
@@ -287,7 +320,7 @@ explain select rental_id
 +----+-------------+--------+------------+------+---------------+------+---------+------+-------+----------+-----------------------------+
 ```
 
-5. 多张表联合查询时排序的字段不是来自于第一张表。
+5. 多张表联合查询时排序的字段不是来自于第一张表。以下查询中的`rental_date`列来自`rental`表而不是`staff`表。
 
 ```sql
 explain select staff.staff_id
@@ -312,6 +345,3 @@ explain select staff.staff_id
 基数是指不重复的索引值的数量，比如某个索引的值有(1,2,3,4,1)5个元素，它的基数就是4，因为包含两个重复的元素1；总数就是表中数据总的行数。选择性的范围是(0, 1]，唯一索引的选择性是1，因此它的性能是最好的。
 
 当我们建立索引(a, b)时，通常应该满足a的选择性大于b的选择性，这样会有较好的查询性能。
-
-## 多个范围条件
-
