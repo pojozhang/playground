@@ -1,6 +1,7 @@
 # 算法
 
 ## Week 1
+
 - [x] [快速排序](quick-sort.md) `数组` `排序`
 - [x] [堆排序](heap-sort.md) `数组` `排序`
 - [x] [二分查找](binary-search.md)
@@ -9,6 +10,7 @@
 - [x] [从排序数组中删除重复项](remove-duplicates.md) `数组`
 
 ## Week 2
+
 - [x] [反转整数](reverse-integer.md)
 - [x] [回文数](palindrome-number.md)
 - [x] [罗马数字转整数](roman-to-integer.md)
@@ -17,6 +19,7 @@
 - [x] [两个排序数组的中位数](median-of-two-sorted-arrays.md) `数组` `二分查找`
 
 ## Week 3
+
 - [x] [最长公共前缀](longest-common-prefix.md)
 - [x] [有效的括号](valid-parentheses.md) `栈`
 - [x] [合并两个有序链表](merge-two-sorted-lists.md)
@@ -25,6 +28,7 @@
 - [ ] [正则表达式匹配](regular-expression-matching.md)
 
 ## Week4
+
 - [x] [移除元素](remove-element.md)
 - [x] [实现strStr()](implement-strstr.md)
 - [x] [搜索插入位置](search-insert-position.md)
@@ -35,6 +39,7 @@
 - [x] [缺失的第一个正数](first-missing-positive.md) `数组`
 
 ## Week5
+
 - [x] [二叉树的最大深度](maximum-depth-of-binary-tree.md) `二叉树`
 - [x] [报数](count-and-say.md) `字符串` `递归`
 - [x] [最大子序和](maximum-subarray.md) `数组`
@@ -46,6 +51,7 @@
 - [x] [直线上最多的点数](max-points-on-a-line.md) `数组` `最大公约数GCD`
 
 ## Week6
+
 - [x] [加一](plus-one.md) `数组`
 - [x] [二进制求和](add-binary.md) `二进制`
 - [x] [爬楼梯](climbing-stairs.md) `斐波那契数列`
@@ -57,6 +63,7 @@
 - [ ] [LRU缓存机制](lru-cache.md)
 
 ## Week7
+
 - [x] [合并两个有序数组](merge-sorted-array.md) `数组`
 - [x] [二叉树的前序遍历](binary-tree-preorder-traversal.md) `二叉树`
 - [x] [二叉树的中序遍历](binary-tree-inorder-traversal.md) `二叉树`
@@ -69,6 +76,7 @@
 - [x] [2的幂](power-of-two.md) `二进制` `位运算`
 
 ## Week8
+
 - [x] [移动零](move-zeroes.md) `数组`
 - [x] [N皇后](n-queens.md) `数组` `回溯`
 - [x] [相交链表](intersection-of-two-linked-lists.md) `链表`
@@ -81,6 +89,7 @@
 - [x] [桶排序](bucket-sort.md) `排序`
 
 ## Week9
+
 - [x] [归并排序](merge-sort.md) `排序`
 - [x] [基数排序](radix-sort.md) `排序`
 - [ ] [Tim排序](tim-sort.md) `排序`
@@ -92,7 +101,8 @@
 - [x] [合并区间](merge-intervals.md) `数组`
 - [x] [路径总和](path-sum.md) `树` `深度优先搜索`
 
-# Week10
+## Week10
+
 - [x] [二叉树剪枝](binary-tree-pruning.md) `树`
 - [x] [合并K个排序链表](merge-k-sorted-lists.md) `链表` `小根堆`
 - [x] [插入区间](insert-interval.md) `数组`
@@ -103,7 +113,8 @@
 - [x] [跳跃游戏](jump-game.md) `数组` `贪心`
 - [x] [跳跃游戏 II](jump-game-ii.md) `数组` `贪心`
 
-# Week11
+## Week11
+
 - [x] [搜索二维矩阵](search-a-2d-matrix.md) `数组`
 - [x] [分类颜色](sort-colors.md) `数组`
 - [x] [杨辉三角](pascals-triangle.md) `数组`
@@ -113,7 +124,8 @@
 - [x] [逆波兰表达式求值](evaluate-reverse-polish-notation.md) `栈`
 - [ ] [二叉搜索树中第K小的元素](kth-smallest-element-in-a-bst.md) `树` `二分查找`
 
-# Week12
+## Week12
+
 - [x] [比较版本号](compare-version-numbers.md) `字符串`
 - [x] [山羊拉丁文](goat-latin.md) `字符串`
 - [x] [反转字符串](reverse-string.md) `字符串`
@@ -124,6 +136,8 @@
 - [x] [累加数](additive-number.md) `回溯`
 - [ ] [石子游戏](stone-game.md) `动态规划`
 
-# Week13
+## Week13
+
+- [ ] [反转链表](everse-linked-list.md) `链表`
 - [ ] [环形链表 II](linked-list-cycle-ii.md) `链表`
 - [ ] [整数拆分](integer-break.md) `动态规划`
