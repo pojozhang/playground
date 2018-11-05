@@ -142,3 +142,4 @@
 - [ ] [环形链表 II](linked-list-cycle-ii.md) `链表`
 - [ ] [整数拆分](integer-break.md) `动态规划`
 - [x] [冒泡排序](bubble-sort.md) `排序`
+- [x] [插入排序](insertion-sort.md) `排序`
