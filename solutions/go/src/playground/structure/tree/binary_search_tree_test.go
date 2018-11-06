@@ -16,13 +16,13 @@ func TestBinarySearchTree_Add(t *testing.T) {
 	tree.Add(Integer(15))
 	tree.Add(Integer(19))
 
-	assert.Equal(t, Integer(12), tree.root.key)
-	assert.Equal(t, Integer(5), tree.root.left.key)
-	assert.Equal(t, Integer(18), tree.root.right.key)
-	assert.Equal(t, Integer(2), tree.root.left.left.key)
-	assert.Equal(t, Integer(9), tree.root.left.right.key)
-	assert.Equal(t, Integer(15), tree.root.right.left.key)
-	assert.Equal(t, Integer(19), tree.root.right.right.key)
+	assert.Equal(t, Integer(12), tree.root.value)
+	assert.Equal(t, Integer(5), tree.root.left.value)
+	assert.Equal(t, Integer(18), tree.root.right.value)
+	assert.Equal(t, Integer(2), tree.root.left.left.value)
+	assert.Equal(t, Integer(9), tree.root.left.right.value)
+	assert.Equal(t, Integer(15), tree.root.right.left.value)
+	assert.Equal(t, Integer(19), tree.root.right.right.value)
 }
 
 func TestBinarySearchTree_Remove_1(t *testing.T) {
@@ -33,8 +33,8 @@ func TestBinarySearchTree_Remove_1(t *testing.T) {
 
 	tree.Remove(Integer(1))
 
-	assert.Equal(t, Integer(3), tree.root.key)
-	assert.Equal(t, Integer(2), tree.root.left.key)
+	assert.Equal(t, Integer(3), tree.root.value)
+	assert.Equal(t, Integer(2), tree.root.left.value)
 }
 
 func TestBinarySearchTree_Remove_2(t *testing.T) {
@@ -47,9 +47,9 @@ func TestBinarySearchTree_Remove_2(t *testing.T) {
 	tree.Remove(Integer(6))
 
 	assert.Nil(t, tree.root.parent)
-	assert.Equal(t, Integer(10), tree.root.key)
-	assert.Equal(t, Integer(2), tree.root.left.key)
-	assert.Equal(t, Integer(12), tree.root.right.key)
+	assert.Equal(t, Integer(10), tree.root.value)
+	assert.Equal(t, Integer(2), tree.root.left.value)
+	assert.Equal(t, Integer(12), tree.root.right.value)
 }
 
 func TestBinarySearchTree_Remove_3(t *testing.T) {
@@ -64,10 +64,10 @@ func TestBinarySearchTree_Remove_3(t *testing.T) {
 
 	tree.Remove(Integer(20))
 
-	assert.Equal(t, Integer(25), tree.root.key)
-	assert.Equal(t, Integer(10), tree.root.left.key)
-	assert.Equal(t, Integer(40), tree.root.right.key)
-	assert.Equal(t, Integer(30), tree.root.right.left.key)
-	assert.Equal(t, Integer(50), tree.root.right.right.key)
-	assert.Equal(t, Integer(27), tree.root.right.left.left.key)
+	assert.Equal(t, Integer(25), tree.root.value)
+	assert.Equal(t, Integer(10), tree.root.left.value)
+	assert.Equal(t, Integer(40), tree.root.right.value)
+	assert.Equal(t, Integer(30), tree.root.right.left.value)
+	assert.Equal(t, Integer(50), tree.root.right.right.value)
+	assert.Equal(t, Integer(27), tree.root.right.left.left.value)
 }

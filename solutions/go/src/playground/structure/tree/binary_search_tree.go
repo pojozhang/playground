@@ -13,75 +13,75 @@ func NewBinarySearchTree() *BinarySearchTree {
 
 func (t *BinarySearchTree) Add(value Comparable) {
 	if t.root == nil {
-		t.root = &BinaryTreeNode{parent: nil, key: value}
+		t.root = &BinaryTreeNode{parent: nil, value: value}
 		return
 	}
 
 	var parent *BinaryTreeNode
 	for node := t.root; node != nil; {
 		parent = node
-		if node.key.GreaterThan(value) {
+		if node.value.GreaterThan(value) {
 			node = node.left
-		} else if node.key.LessThan(value) {
+		} else if node.value.LessThan(value) {
 			node = node.right
 		} else {
 			return
 		}
 	}
 
-	if parent.key.GreaterThan(value) {
-		parent.left = &BinaryTreeNode{parent: parent, key: value}
+	if parent.value.GreaterThan(value) {
+		parent.left = &BinaryTreeNode{parent: parent, value: value}
 		return
 	}
-	parent.right = &BinaryTreeNode{parent: parent, key: value}
+	parent.right = &BinaryTreeNode{parent: parent, value: value}
 }
 
 func (t *BinarySearchTree) Remove(value Comparable) {
 	if node, ok := t.find(t.root, value); ok {
 		/*
-				1(node)					3(node)
-			   / \					   /
-			 nil  3			==>		  2
-		         /
-				2
-		 */
+					1(node)					3(node)
+				   / \					   /
+				 nil  3			==>		  2
+			         /
+					2
+		*/
 		if node.left == nil {
 			t.transplant(node, node.right)
 			return
 		}
 		/*
-				3(node)					 2(node)
-			   / \						/
-		      2  nil		==>		   1
-		     /
-		    1
-		 */
+					3(node)					 2(node)
+				   / \						/
+			      2  nil		==>		   1
+			     /
+			    1
+		*/
 		if node.right == nil {
 			t.transplant(node, node.left)
 			return
 		}
 		/*
-				6(node)					 10(node)
-			   / \						/  \
-		      2   10		==>		   2    12
-		         /  \
-		        nil  12
-		 */
+					6(node)					 10(node)
+				   / \						/  \
+			      2   10		==>		   2    12
+			         /  \
+			        nil  12
+		*/
 		if node.right.left == nil {
 			node.right.left = node.left
 			t.transplant(node, node.right)
 			return
 		}
 		/*
-				20(node)				      25(node)
-		       /  \						     /  \
-		     10    40		 ==>		   10    40
-		          /  \                          /  \
-		         30   50                       30  50
-		        /                             /
-		       25(successor)                 27
-		         \
-		          27
+					20(node)				      25(node)
+			       /  \						     /  \
+			     10    40		 ==>		   10    40
+			          /  \                          /  \
+			         30   50                       30  50
+			        /                             /
+			       25(successor)                 27
+			         \
+			          27
 		*/
 		successor, _ := t.successor(node)
 		t.transplant(successor, successor.right)
@@ -95,11 +95,11 @@ func (t *BinarySearchTree) find(node *BinaryTreeNode, value Comparable) (*Binary
 		return nil, false
 	}
 
-	if node.key.Equals(value) {
+	if node.value.Equals(value) {
 		return node, true
 	}
 
-	if node.key.GreaterThan(value) {
+	if node.value.GreaterThan(value) {
 		return t.find(node.left, value)
 	}
 

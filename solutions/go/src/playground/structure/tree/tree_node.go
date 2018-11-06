@@ -3,7 +3,7 @@ package tree
 import . "playground/structure"
 
 type BinaryTreeNode struct {
-	key    Comparable
+	value  Comparable
 	parent *BinaryTreeNode
 	left   *BinaryTreeNode
 	right  *BinaryTreeNode
