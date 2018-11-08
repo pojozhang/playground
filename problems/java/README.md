@@ -54,6 +54,7 @@
 ## JVM
 
 - [解释执行还是编译执行](jit.md)
+- [类文件结构](classfile.md)
 - [类加载机制](classloader.md)
 
 ## 诊断

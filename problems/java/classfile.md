@@ -1,0 +1,165 @@
+# 类文件结构
+
+在学习类文件结构之前我们先编写一个简单的类。
+
+```java
+package playground;
+
+public class Test {
+
+    private int m;
+
+    public int inc() {
+        return m + 1;
+    }
+}
+```
+
+对以上的类使用`javac`进行编译后我们得到一个`.class`文件，它的十六进制表示如下。
+
+```
+CA FE BA BE 00 00 00 36 00 13 0A 00 04 00 0F 09 00 03 00 10 07 00 11 07 00 12 01 00 01 6D 01 00 01 49 01 00 06 3C 69 6E 69 74 3E 01 00 03 28 29 56 01 00 04 43 6F 64 65 01 00 0F 4C 69 6E 65 4E 75 6D 62 65 72 54 61 62 6C 65 01 00 03 69 6E 63 01 00 03 28 29 49 01 00 0A 53 6F 75 72 63 65 46 69 6C 65 01 00 09 54 65 73 74 2E 6A 61 76 61 0C 00 07 00 08 0C 00 05 00 06 01 00 0F 70 6C 61 79 67 72 6F 75 6E 64 2F 54 65 73 74 01 00 10 6A 61 76 61 2F 6C 61 6E 67 2F 4F 62 6A 65 63 74 00 21 00 03 00 04 00 00 00 01 00 02 00 05 00 06 00 00 00 02 00 01 00 07 00 08 00 01 00 09 00 00 00 1D 00 01 00 01 00 00 00 05 2A B7 00 01 B1 00 00 00 01 00 0A 00 00 00 06 00 01 00 00 00 03 00 01 00 0B 00 0C 00 01 00 09 00 00 00 1F 00 02 00 01 00 00 00 07 2A B4 00 02 04 60 AC 00 00 00 01 00 0A 00 00 00 06 00 01 00 00 00 08 00 01 00 0D 00 00 00 02 00 0E
+```
+
+## 结构
+
+从整体上看，一个Class文件结构如下。
+
+| 长度（字节） | 4 | 2 | 2 | 2 | 不定 | 2 | 2 | 2 | 2 | 2 | 2 | 不定 | 2 | 不定 | 2 | 不定 |
+| ---------- | - | - | - | - | --- | - | - | - | - | - | - | ---- | - | --- | - | --- |
+| 名称 | magic | minor_version | major_version | constant_pool_count | constant_pool | access_flags | this_class | super_class | interfaces_count | interfaces | fields_count | fields | methods_count | methods | attributes_count | attributes |
+
+类文件非常紧凑，每个数据项之间没有分隔符。数据项有2种类型，一种是无符号数，另一种称为表。无符号数可以表示数字或者UTF-8编码的字符串；表是由多个无符号数和其它表组成的复合结构数据。表中的数据项数量通常是不定的，通常在表前面有一个前置的计数器记录表中数据项的个数，比如上图中的`constant_pool`表，它的数据项数量记录在前面的`constant_pool_count`中。
+
+## 魔数（magic）
+
+魔数是指开头的4个字节`CA FE BA BE`，它的唯一作用是用来表示这是一个Class文件。
+
+## 版本（minor_version、major_version）
+
+之后的4个字节`minor_version`和`major_version`分别是次版本号和主版本号，表示Class文件的版本，版本号从45.0开始。例子中的版本是`0x00000036`，也就是十进制的`54`，也就是JDK10。
+
+## 常量池（constant_pool_count、constant_pool）
+
+版本号之后的2个字节代表常量池的容量，这里是`0x0013`，即十进制的`19`。比较特殊的是，这里的计数是从1开始的，实际数据项数目需要在计数上减去1，因此这里的19表示常量池中有18个常量。当计数为0时，则有特殊含义，表示不引用任何一个常量池项目。
+
+常量池中的每一项都是一个表，目前一共有十几种种不同的数据结构类型，它们的通用结构如下。
+
+| 长度（字节）| 1 | len1 | ... | lenN |
+| --------- | - | ---- | --- | ---- |
+| 名称      | tag | property1 | ... | propertyN |
+
+比如`CONSTANT_Class_info`类型的结构如下。
+
+| 长度（字节）| 1 | 1 |
+| --------- | - | - |
+| 名称      | tag | name_index |
+
+每一个类型开头的第一个字节都是`tag`，代表当前常量的类型，比如上面的`CONSTANT_Class_info`类型，它的`tag`就是7，除了`tag`外，后面的结构每种类型都有不同。下面列出部分类型和`tag`的关系。
+
+|                  类型                 |   标志   |
+| ------------------------------------ | -------- | 
+| CONSTANT_Utf8_info                   |    1     |
+| CONSTANT_Integer_info                |    3     |
+| CONSTANT_Float_info                  |    4     |
+| CONSTANT_Long_info                   |    5     |
+| CONSTANT_Double_info                 |    6     |
+| CONSTANT_Class_info                  |    7     |
+| CONSTANT_String_info                 |    8     |
+| CONSTANT_Fieldref_info               |    9     |
+| CONSTANT_Methodref_info              |    10    |
+| CONSTANT_InterfaceMethodref_info     |    11    |
+| CONSTANT_NameAndType_info            |    12    |
+
+
+在`0x0013`之后紧跟着的字节是`0x0A`，即十进制的`10`，按照上面表格中的对应关系，我们可以看到第一个常量的类型是`CONSTANT_Methodref_info`，它的结构如下。
+
+| 长度 |  1  |                 2                  |                  2                  |
+| --- | --- | ---------------------------------- | ----------------------------------- |
+| 名称 | tag |               index                |               index                 |
+| 描述 | 10  | 指向CONSTANT_Class_info类型常量的索引 | 指向CONSTANT_NameAndType类型常量的索引 |
+
+因此后面的两个值分别是`0x0004`和`0x000F`，即十进制的`4`和`15`。
+
+第4个常量的十六进制是`07 00 12`（这里的索引是从1开始的，1就是指第1个常量而不是第0个常量），因此它是`CONSTANT_Class_info`类型的常量。
+
+`CONSTANT_Class_info`类型的结构如下。
+
+| 长度 |  1  |         2           |
+| --- | --- | ------------------- |
+| 名称 | tag |        index        |
+| 描述 | 7  | 指向全限定名常量项的索引 |
+
+因此`0x0012`，即十进制的`18`。第18个常量的十六进制是`01 00 10 6A 61 76 61 2F 6C 61 6E 67 2F 4F 62 6A 65 63 74`，它的标志是`0x01`，即十进制的`1`，因此是一个`CONSTANT_Utf8_info`类型的常量，该类型的结构如下。
+
+| 长度 |  1  |            2              |            length            |
+| --- | --- | ------------------------- | ---------------------------- |
+| 名称 | tag |          length           |            bytes             |
+| 描述 |  1  | UTF-8编码的字符串占用的字节数 | 长度为length的UTF-8编码的字符串 |
+
+所以该字符串的字节数是`0x0010`，即十进制的`16`，内容是`6A 61 76 61 2F 6C 61 6E 67 2F 4F 62 6A 65 63 74`，用UTF-8解码后就是`java/lang/Object`。
+
+我们再来看第15个常量，它的十六进制是`0C 00 07 00 08`，`0x0C`的十进制是`12`，因此它是一个`CONSTANT_NameAndType_info`类型的常量，其结构如下。
+
+| 长度 |  1  |            2              |              2             |
+| --- | --- | ------------------------- | -------------------------- |
+| 名称 | tag |          index            |            index           |
+| 描述 |  12 | 指向该字段或方法名称常量的索引 | 指向该字段或方法描述符常量的索引 |
+
+后面的两个数据项的值`0x0007`和`0x0008`分别是十进制的`7`和`8`。第7和第8个常数项的十六进制表示分别是`01 00 06 3C 69 6E 69 74 3E`和`01 00 03 28 29 56`，两者都是`CONSTANT_Utf8_info`类型的常量，它们的字符串值分别是`<init>`和`()V`。
+
+综上，我们把这个`CONSTANT_Methodref_info`类型的变量连起来看，就是`java/lang/Object<init>()V`。
+
+常量池中其余的常量也可以按照上面分析的步骤计算出来，JDK自带了一个工具`javap`可以帮我们自动解析，最后的结果如下。
+
+```java
+// 编译后执行 javap -v Test。
+Constant pool:
+   #1 = Methodref          #4.#15         // java/lang/Object."<init>":()V
+   #2 = Fieldref           #3.#16         // playground/Test.m:I
+   #3 = Class              #17            // playground/Test
+   #4 = Class              #18            // java/lang/Object
+   #5 = Utf8               m
+   #6 = Utf8               I
+   #7 = Utf8               <init>
+   #8 = Utf8               ()V
+   #9 = Utf8               Code
+  #10 = Utf8               LineNumberTable
+  #11 = Utf8               inc
+  #12 = Utf8               ()I
+  #13 = Utf8               SourceFile
+  #14 = Utf8               Test.java
+  #15 = NameAndType        #7:#8          // "<init>":()V
+  #16 = NameAndType        #5:#6          // m:I
+  #17 = Utf8               playground/Test
+  #18 = Utf8               java/lang/Object
+```
+
+## 访问标志（access_flags）
+
+之后的2个字节是`00 21`，表示访问标志。访问标志共有8个，如下所示。
+
+|      名称       |       值     |                         描述                                |  
+| -------------- | ------------ | ---------------------------------------------------------- |
+| ACC_PUBLIC	 | 0x0001	    | 是否为Public类型                                             |
+| ACC_FINAL    	 | 0x0010	    | 是否被声明为final，只有类可以设置                               |
+| ACC_SUPER  	 | 0x0020	    | 是否允许使用invokespecial字节码指令的新语义                      |
+| ACC_INTERFACE	 | 0x0200	    | 标志这是一个接口                                               |
+| ACC_ABSTRACT	 | 0x0400	    | 是否为abstract类型，对于接口或者抽象类来说，次标志值为真，其他类型为假 |
+| ACC_SYNTHETIC	 | 0x1000	    | 标志这个类并非由用户代码产生                                     |
+| ACC_ANNOTATION | 0x2000	    | 标志这是一个注解                                               |
+| ACC_ENUM   	 | 0x4000	    | 标志这是一个枚举                                               |
+
+本例中`Test`类的标志是`ACC_PUBLIC`|`ACC_SUPER`，也就是`0x0001`|`0x0020`，等于`0x0021`。
+
+## 类索引（this_class）
+
+类索引用于确定当前类的全限定名，它指向一个`CONSTANT_Class_info`类的常量，本例中它的值是`0x0003`，也就是十进制的`3`，第3个常量的值是`07 00 11`，它继续指向一个`CONSTANT_Utf8_info`的常量，它的值是`01 00 0F 70 6C 61 79 67 72 6F 75 6E 64 2F 54 65 73 74`，其字符串表示是`playground/Test`。
+
+## 父类索引（super_class）
+
+父类索引用于确定当前类的父类的全限定名，除了`java.lang.Object`之外所有的类都有父类。在本例中父类索引的值是`0x0004`，也就是十进制的`4`，第4哥常量的值是`07 00 12`，它继续指向一个`CONSTANT_Utf8_info`的常量，它的值是`01 00 10 6A 61 76 61 2F 6C 61 6E 67 2F 4F 62 6A 65 63 74`，其字符串表示是`java/lang/Object`。
+
+## 接口索引集合（interfaces_count、interfaces）
+
+
