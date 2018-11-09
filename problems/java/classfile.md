@@ -181,8 +181,9 @@ Constant pool:
 - descriptor_index
 指向一个`CONSTANT_Utf8_info`类型的常量，代表字段的描述符。本例中该数据项的值是`0x0006`，指向第6哥常量`01 00 01 49`，它的字符串表示是`I`。
 - attributes_count
-
+字段可以包含一些额外的属性，`attributes_count`是属性计数器，表示属性的个数，本例中没有额外的属性，因此`attributes_count`的值是`0x0000`，即`0`。
 - attributes
+字段包含的额外的属性，本例中没有额外的属性。
 
 ## 描述符
 
@@ -202,4 +203,26 @@ Constant pool:
 |  Z  | boolean |
 |  V  | void    |
 
-对于对象类型则用字符`L`加上对象的全限定名来表示，比如`Ljava/lang/Object`。
+对于对象类型则用字符`L`加上对象的全限定名来表示，比如`Ljava/lang/Object`，并且加上一个分号表示表示全限定名结束。对于数组类型，每多一个维度就用一个`[`字符描述，比如`String[][]`类型的描述符是`[[Ljava/lang/String;`，`int[]`类型的描述符是`[I`。
+
+上面是描述字段的方式，当我们用描述符来描述方法时，按照先参数列表后返回值的顺序进行描述，参数列表放在一对括号中，比如本例中方法`inc()`的描述符是`()I`，由于没有入参，因此括号中为空，括号后的`I`表示返回值是`int`类型。又比如`Integer valueOf(String s, int radix)`方法，它的描述符是`(Ljava/lang/String;I)Ljava/lang/Integer;`。
+
+## 方法表集合（methods_count，methods）
+
+方法表和上面的字段表类似，只不过是用来表述方法的。方法表计数器（methods_count）表示方法表中方法的数量，这里的值是`0x0002`，表示有`2`个方法。
+
+下面，我们来看下方法表的结构。
+
+|长度（字节）|      2       |      2     |        2         |        2         |     不定    | 
+| -------- | ------------ | ---------- | ---------------- | ---------------- | ---------- |
+|   名称    | access_flags | name_index | descriptor_index | attributes_count | attributes |
+
+从结构上看它和字段表完全一致，每个字段的含义也是相同的。
+
+- access_flags
+访问标志，和字段表的区别是值不同，比如方法不能被`volatile`修饰，因此没有`ACC_VOLATILE`标志，但是针对方法有`ACC_SYNCHRONIZED`标志表示`synchronized`而字段没有。本例中`access_flags`的值是`0x0001`，表示`public`。
+- name_index
+本例中`name_index`的值是`0x0007`，指向第7个常量，它的值是`01 00 06 3C 69 6E 69 74 3E`，是一个`CONSTANT_Utf8_info`类型的常量，其字符串表示是`<init>`。
+- descriptor_index
+- attributes_count
+- attributes
