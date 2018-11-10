@@ -175,14 +175,22 @@ Constant pool:
 |   名称    | access_flags | name_index | descriptor_index | attributes_count | attributes |
 
 - access_flags
+
 访问标志，比如`ACC_PUBLIC(0x0001)`表示字段是否是公开的，`ACC_PRIVATE(0x0002)`表示字段是否是私有的等。本例中该数据项的值是`0x0002`，表示私有字段。
+
 - name_index
+
 指向一个`CONSTANT_Utf8_info`类型的常量，代表字段的简单名称。简单名称是指仅有字段的名字，而不包括返回值、修饰符等内容。本例中该数据项的值是`0x0005`，指向第5个常量`01 00 01 6D`，它的字符串表示是`m`。
 - descriptor_index
+
 指向一个`CONSTANT_Utf8_info`类型的常量，代表字段的描述符。本例中该数据项的值是`0x0006`，指向第6哥常量`01 00 01 49`，它的字符串表示是`I`。
+
 - attributes_count
+
 字段可以包含一些额外的属性，`attributes_count`是属性计数器，表示属性的个数，本例中没有额外的属性，因此`attributes_count`的值是`0x0000`，即`0`。
+
 - attributes
+
 字段包含的额外的属性，本例中没有额外的属性。
 
 ## 描述符
@@ -219,10 +227,37 @@ Constant pool:
 
 从结构上看它和字段表完全一致，每个字段的含义也是相同的。
 
+我们先来看方法表中的第一个方法，它各个数据项如下所示。
+
 - access_flags
+
 访问标志，和字段表的区别是值不同，比如方法不能被`volatile`修饰，因此没有`ACC_VOLATILE`标志，但是针对方法有`ACC_SYNCHRONIZED`标志表示`synchronized`而字段没有。本例中`access_flags`的值是`0x0001`，表示`public`。
+
 - name_index
-本例中`name_index`的值是`0x0007`，指向第7个常量，它的值是`01 00 06 3C 69 6E 69 74 3E`，是一个`CONSTANT_Utf8_info`类型的常量，其字符串表示是`<init>`。
+
+名称索引。本例中`name_index`的值是`0x0007`，指向第7个常量，它的值是`01 00 06 3C 69 6E 69 74 3E`，是一个`CONSTANT_Utf8_info`类型的常量，其字符串表示是`<init>`。
+
 - descriptor_index
+
+描述符索引，本例中的值是`0x0008`，指向第8个常量，它的值是`01 00 03 28 29 56`，是一个`CONSTANT_Utf8_info`类型的常量，其字符串表示是`()V`。
+
 - attributes_count
+
+属性计数器。这里的值是`0x0001`，表示有一个属性。
+
 - attributes
+
+属性表，在下面具体展开。
+
+## 属性表集合
+
+在字段表和方法表都出现了属性表的概念，下面我们看一下属性表到底是什么。
+
+属性表用于描述一些额外的信息，各个属性之间不严格有序，只要不与已有的属性重名，任何属性都可以写入刀属性表中，当然，虚拟机会忽略它不认识的属性，因此我们可以把属性表可以看成是一个`Map`对象。
+
+属性表的结构如下。
+
+|长度（字节）|           2          |         4        |  1   |
+| -------- | -------------------- | ---------------- | ---- |
+|   名称    | attribute_name_index | attribute_length | info |
+
