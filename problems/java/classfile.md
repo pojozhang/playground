@@ -18,7 +18,13 @@ public class Test {
 对以上的类使用`javac`进行编译后我们得到一个`.class`文件，它的十六进制表示如下。
 
 ```
-CA FE BA BE 00 00 00 36 00 13 0A 00 04 00 0F 09 00 03 00 10 07 00 11 07 00 12 01 00 01 6D 01 00 01 49 01 00 06 3C 69 6E 69 74 3E 01 00 03 28 29 56 01 00 04 43 6F 64 65 01 00 0F 4C 69 6E 65 4E 75 6D 62 65 72 54 61 62 6C 65 01 00 03 69 6E 63 01 00 03 28 29 49 01 00 0A 53 6F 75 72 63 65 46 69 6C 65 01 00 09 54 65 73 74 2E 6A 61 76 61 0C 00 07 00 08 0C 00 05 00 06 01 00 0F 70 6C 61 79 67 72 6F 75 6E 64 2F 54 65 73 74 01 00 10 6A 61 76 61 2F 6C 61 6E 67 2F 4F 62 6A 65 63 74 00 21 00 03 00 04 00 00 00 01 00 02 00 05 00 06 00 00 00 02 00 01 00 07 00 08 00 01 00 09 00 00 00 1D 00 01 00 01 00 00 00 05 2A B7 00 01 B1 00 00 00 01 00 0A 00 00 00 06 00 01 00 00 00 03 00 01 00 0B 00 0C 00 01 00 09 00 00 00 1F 00 02 00 01 00 00 00 07 2A B4 00 02 04 60 AC 00 00 00 01 00 0A 00 00 00 06 00 01 00 00 00 08 00 01 00 0D 00 00 00 02 00 0E
+CA FE BA BE 00 00 00 36 00 13 0A 00 04 00 0F 09 00 03 00 10 07 00 11 07 00 12 01 00 01 6D 01 00 01 49 01 00 06 3C 69 6E 69
+74 3E 01 00 03 28 29 56 01 00 04 43 6F 64 65 01 00 0F 4C 69 6E 65 4E 75 6D 62 65 72 54 61 62 6C 65 01 00 03 69 6E 63 01 00
+03 28 29 49 01 00 0A 53 6F 75 72 63 65 46 69 6C 65 01 00 09 54 65 73 74 2E 6A 61 76 61 0C 00 07 00 08 0C 00 05 00 06 01 00
+0F 70 6C 61 79 67 72 6F 75 6E 64 2F 54 65 73 74 01 00 10 6A 61 76 61 2F 6C 61 6E 67 2F 4F 62 6A 65 63 74 00 21 00 03 00 04
+00 00 00 01 00 02 00 05 00 06 00 00 00 02 00 01 00 07 00 08 00 01 00 09 00 00 00 1D 00 01 00 01 00 00 00 05 2A B7 00 01 B1
+00 00 00 01 00 0A 00 00 00 06 00 01 00 00 00 03 00 01 00 0B 00 0C 00 01 00 09 00 00 00 1F 00 02 00 01 00 00 00 07 2A B4 00
+02 04 60 AC 00 00 00 01 00 0A 00 00 00 06 00 01 00 00 00 08 00 01 00 0D 00 00 00 02 00 0E
 ```
 
 ## 结构
@@ -247,7 +253,7 @@ Constant pool:
 
 - attributes
 
-属性表，在下面具体展开。
+属性表。这里存放的是各个属性名称的索引，这里的值是`0x0009`，指向第9个常量，它的值是`01 00 04 43 6F 64 65`，是一个`CONSTANT_Utf8_info`类型的常量，其字符串表示是`Code`，也就是说该方法有一个名为`Code`的属性。关于属性的介绍会在下面具体展开。
 
 ## 属性表集合
 
@@ -261,3 +267,207 @@ Constant pool:
 | -------- | -------------------- | ---------------- | ---- |
 |   名称    | attribute_name_index | attribute_length | info |
 
+其中`attribute_name_index`和`attribute_length`部分是所有属性都有的，而`info`部分是每个属性自定义的。
+
+在上文中提到方法`<init>`有一个`Code`属性，它存储了方法运行时执行的字节码，以下是它的结构。
+
+|长度（字节）|           2          |         4        |     2     |     2     |      4      |   1  |            2            |       不定       |        2         |    不定    | 
+| -------- | -------------------- | ---------------- | --------- | --------- | ----------- | ---- | ----------------------- | --------------- | ---------------- | ---------- |
+|   名称    | attribute_name_index | attribute_length | max_stack | max_locals | code_length | code | exception_table_length | exception_table | attributes_count | attributes |
+
+- attribute_name_index
+
+属性名称。指向一个`CONSTANT_Utf8_info`类型的常量，最后解析出的字符串值是`Code`。
+
+- attribute_length
+
+属性长度。这里的值是`0x0000001D`，即`29`。
+
+- max_stack
+
+操作数栈的最大深度。这里是`0x0001`，即`1`。
+
+- max_locals
+
+局部变量表所需的存储空间，它的单位是`Slot`，是虚拟机为局部变量分配内存时用到的最小单位，对于不超过32位的数据类型占用1个`Slot`，比如`boolean`,`byte`,`char`,`float`,`int`等；对于超过32位的数据类型则占2个`Slot`，比如`long`和`double`。
+局部变量表所需的存储空间并不等于局部变量的个数，因为当代码执行的位置超过一个局部变量的作用域时，该局部变量的`Slot`就可以被重用。这里的值是`0x0001`，即`1`。
+
+- code_length
+
+生成的字节码的长度。这里的值是`0x00000005`，即`5`。需要注意的是，虽然它占4个字节，但是虚拟机规范中规定一个方法不允许超过65535条字节码指令，因此实际上只用到了2个字节。
+
+- code
+
+方法的字节码指令。字节码指令并不是对常量池中常量的引用，当虚拟机读取字节码时，它可以找出对应的字节码指令，并且可以知道该指令后面是否需要跟随参数。
+由于每个字节码指令只占1个字节，因此该方法的字节码指令的值是`2A B7 00 01 B1`。虚拟机依次读取后就可以得到以下的字节码。
+
+| 步骤 | 字节码   |    字节码指令  |                     描述                        |
+| --- | ------- | ------------- | ---------------------------------------------- |
+| 1   | 0x2A    | aload_0       | 将第0个Slot中引用类型的局部变量放入操作数栈顶。       |
+| 2   | 0xB7    | invokespecial | 调用操作数栈顶引用类型变量的构造方法，后面的2个字节`00 01`是它接收的参数，指向常量池中`CONSTANT_Methodref_info`类型的常量，这里就是本文刚开始解析的`java/lang/Object."<init>":()V`方法。|
+| 3   | 0xB1    | return        | 结束当前方法。                                    |
+
+我们用`javap`工具查看测试类中的两个方法。
+
+```java
+ public playground.Test();
+    descriptor: ()V
+    flags: (0x0001) ACC_PUBLIC
+    Code:
+      stack=1, locals=1, args_size=1
+         0: aload_0
+         1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+         4: return
+      LineNumberTable:
+        line 3: 0
+
+  public int inc();
+    descriptor: ()I
+    flags: (0x0001) ACC_PUBLIC
+    Code:
+      stack=2, locals=1, args_size=1
+         0: aload_0
+         1: getfield      #2                  // Field m:I
+         4: iconst_1
+         5: iadd
+         6: ireturn
+      LineNumberTable:
+        line 8: 0
+```
+
+结果中显示两个放的局部变量数量`locals`和方法参数数量`args_size`都是1，但是这两个方法并没有传入任何参数。实际上这里有一个隐藏的`this`参数，编译器在编译时会把对`this`的访问转化成对一个普通方法参数的访问。
+
+- exception_table_length
+
+异常表的长度。本例中没有捕获异常因此异常表长度为0，
+
+- exception_table
+
+异常表，详情见[异常](exception.md)。
+
+- attributes_count
+
+属性计数器。从这里我们可以看到，属性里面还可以嵌套属性，这里属性计数器的值是`0x0001`，表示`Code`属性中有`1`个子属性。
+
+- attributes
+
+属性。这里开头的两个字节是`00 0A`，因此指向第10个常量，第10个常量的值是`01 00 0F 4C 69 6E 65 4E 75 6D 62 65 72 54 61 62 6C 65`，它是一个`CONSTANT_Utf8_info`类型的常量，最后解析出的字符串值是`LineNumberTable`，该属性用于描述源码行号和字节码行号之间的对应关系，其结构如下。
+
+|长度（字节）|          2           |         4        |            2             |        不定                      | 
+| -------- | -------------------- | ---------------- | ------------------------ | ----------------- |
+|   名称    | attribute_name_index | attribute_length | line_number_table_length | line_number_table |
+
+其中`attribute_name_index`和`attribute_length`和`Code`属性类似，这里不再赘述，后面两个数据项是`LineNumberTable`特有的。
+
+- line_number_table_length
+
+行号表计数器，这里的值是`0x0001`，也就是`1`。
+
+- line_number_table
+
+行号表，记录了源码的行号和字节码行号的关系。每一对关系占4个字节，包括2个字节的`start_pc`和2个字节的`line_number`数据项，前者是字节码行号，后者是源码行号。这里的值是`00 00 00 03`，表示第0行字节码对应源码中的第3行。
+
+接下来还剩下一部分的字节我们还没讲解，实际上它就是方法表集合中第二个方法`inc()`的相关数据，和我们分析的第一个方法类似，不再这里展开。
+
+## 扩展属性
+
+除了上面提到的`Code`和`LineNumberTable`属性，还有几下几种常见的属性需要了解。
+
+- Exceptions
+
+`Exceptions`是和`Code`同级的属性，用来描述方法中可能抛出的受检查异常。
+
+- LocalVariableTable
+
+该属性用于记录局部变量的名字（方法参数名也算局部变量）。虚拟机在执行字节码指令时是不关注变量名的，因此如果没有`LocalVariableTable`属性，当别人在引用这个方法时，参数名称就会丢失，有时会显示成IDE生成的`args0`等形式的参数名。这项属性需要在编译时加上`-g`参数才会生成。
+
+比如有以下的代码。
+
+```java
+public class Test {
+
+    public int inc(int number) {
+        return number + 1;
+    }
+}
+```
+
+我们使用`javac -g Test.java`命令进行编译，然后用`javap -l Test`查看生成的字节码信息。
+
+```java
+public int inc(int);
+    LineNumberTable:
+      line 6: 0
+    LocalVariableTable:
+      Start  Length  Slot  Name   Signature
+          0       4     0  this   Lplayground/Test;
+          0       4     1 number   I
+```
+
+可以看到这里有两个局部变量，一个是隐藏的`this`，一个就是方法参数名`number`。`Start`和`Length`分别代表局部变量生命周期开始的字节码行号和范围长度，也就是它的作用域范围。
+
+- SourceFile
+
+用于记录生成当前类文件的源码文件名称。
+
+- ConstantValue
+
+该属性的作用是通知虚拟机自动为静态变量初始化。
+
+目前虚拟机有2种策略，一种是在类构造器`<clinit>`方法中对静态变量进行初始化赋值，第二种就是使用`ConstantValue`属性。
+
+对于第2种策略也有几种不同的情况。
+
+以下代码会生成`ConstantValue`属性。
+
+```java
+public final static int VALUE = 10;
+```
+
+以下代码则不会生成`ConstantValue`属性。
+
+```java
+public static int VALUE = 10;
+```
+
+实际上只有当静态变量是基本类型或`String`类型并且被`final`修饰时才会使用到`ConstantValue`属性。
+
+因此以下代码也无法使用`ConstantValue`属性，因为它是引用类型且不是`String`。
+
+```java
+public final static Object VALUE = new Object();
+```
+
+之所以引用类型不能使用`ConstantValue`属性是因为`ConstantValue`属性的值是对常量池中常量的引用，而常量池中没有通用的引用类型，只有`CONSTANT_Integer_info`等特定的几种类型。
+
+- InnerClasses
+
+该属性用于记录内部类和宿主类之间的关系。
+
+- Deprecated
+
+被`@Deprecated`注解标注的类、字段或方法拥有`Deprecated`属性，表示不推荐使用。
+
+- Synthetic
+
+该属性表示一个类、字段或方法是由编译器自动产生的，而不是由源码直接产生的。需要注意的是`<init>`和`<clinit>`方法除外。
+
+- StackMapTable
+
+该属性用于提升字节码验证的性能。
+
+- Signature
+
+用于存储类或字段的泛型信息。以下代码中的泛型信息就是从`Signature`属性中获取的。
+
+```java
+public class Test {
+
+    List<Integer> list = new ArrayList<>();
+
+    public static void main(String[] args) throws NoSuchFieldException {
+        ParameterizedType type = (ParameterizedType) Test.class.getDeclaredField("list").getGenericType();
+        System.out.println(type.getActualTypeArguments()[0]);// 此处打印“class java.lang.Integer”。
+    }
+}
+```
