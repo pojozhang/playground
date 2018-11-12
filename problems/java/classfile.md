@@ -343,7 +343,7 @@ Constant pool:
 
 - exception_table
 
-异常表，详情见[异常](exception.md)。
+异常表，详情见[异常](exception.md/#exception-table)。
 
 - attributes_count
 
