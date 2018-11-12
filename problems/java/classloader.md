@@ -57,13 +57,214 @@ public static final int value = 123;
 
 #### 解析
 
-在解析阶段，虚拟机会把常量池内的符号引用替换为直接引用。
+在解析阶段，虚拟机会把常量池内的符号引用替换为直接引用。下面我们看一个字段解析的例子。
 
+```java
+public class Test {
+
+    private int m;
+
+    public int getM() {
+        return m;
+    }
+}
+```
+
+编译后其生成的字节码如下（截取了一部分字节码）。
+
+```java
+Constant pool:
+   #1 = Methodref          #4.#15         // java/lang/Object."<init>":()V
+   #2 = Fieldref           #3.#16         // playground/Test.m:I
+   #3 = Class              #17            // playground/Test
+   #4 = Class              #18            // java/lang/Object
+   #5 = Utf8               m
+   #6 = Utf8               I
+  #16 = NameAndType        #5:#6          // m:I
+  #17 = Utf8               playground/Test
+  #18 = Utf8               java/lang/Object
+
+public int getM();
+  descriptor: ()I
+  Code:
+    stack=1, locals=1, args_size=1
+        0: aload_0
+        1: getfield      #2                  // Field m:I
+        4: ireturn
+```
+
+当我们执行`getM()`方法时，第2行字节码`getfield`的参数引用了常量池中第2个常量，这是一个`CONSTANT_Fieldref_info`类型的常量，假设这是首次运行程序（虚拟机会有缓存，并不是每次都会进行解析），我们需要对该常量进行解析。
+
+一个`CONSTANT_Fieldref_info`类型的常量结构如下。
+
+|  长度（字节） |    1    |                2                   |                   2                       |
+| ----------- | ------- | ---------------------------------- | ----------------------------------------- |
+|  名称        | tag     |              index                 |                 index                    |
+|  描述        | 固定值9  | 指向一个CONSTANT_Class_info类型的常量 | 指向一个CONSTANT_NameAndType_info类型的常量 |
+
+解析步骤如下。
+
+1. 解析第1个`index`指向的`CONSTANT_Class_info`类型的常量。虚拟机会把`CONSTANT_Class_info`类型常量表示的全限定名交给类加载器加载目标类，这一过程中可能需要加载基类和接口，因此这是一个递归的过程。如果目标类是数组类型，虚拟机还会进行额外的处理。
+2. 虚拟机会在上一步解析完成的类中搜索简单名称和描述符斗鱼目标字段匹配的字段，如果存在就返回这个字段的直接引用。
+3. 否则，虚拟机会从目标类的接口中进行查找，按照继承关系，从下往上递归搜索，如果存在就返回这个字段的直接引用。
+4. 否则，虚拟机会从目标累的基类中进行查找，按照继承关系，从下往上递归搜索，直到`java.lang.Object`，如果存在就返回这个字段的直接引用。
+5. 如果找不到匹配的字段，就抛出`java.lang.NoSuchFieldError`异常。
+6. 如果找到了匹配的字段，就会检查是否具备对该字段的访问权限，如果不符合则抛出`java.lang.IllegalAccessError`异常。
+
+虚拟机规范并没有规定何时进行解析，它只规定了在执行某些字节码指令时需要对符号引用进行解析，上文的`getfield`指令是其中之一。
+
+虽然从虚拟机的解析过程来看，如果在一个类的基类和接口中存在同名字段，虚拟机会优先使用接口中的字段，但实际上，编译器会阻止这一行为。以下代码无法通过编译，因为编译无法确定引用哪一个字段。
+
+```java
+interface I {
+    int number = 1;
+}
+
+class A {
+    public int number = 3;
+}
+
+class B extends A implements I {
+}
+
+public static void main(String[] args) {
+    System.out.println(new B().number);
+}
+```
 
 ### 初始化
 
+初始化阶段，虚拟机会执行`<clinit>()`方法。该方法是编译器自动收集类中所有静态变量的赋值语句和静态语句块中的语句后合并产生的。
 
+```java
+public class Test {
+
+    public static int A = 0;
+
+    static {
+        A = 1;
+    }
+}
+```
+
+需要注意的是，当我们使用`javap`工具查看字节码时，`<clinit>()`方法被美化成了`static{}`，上面代码段的`<clinit>()`方法对应的字节码如下所示。
+
+```java
+static {};
+    descriptor: ()V
+    flags: (0x0008) ACC_STATIC
+    Code:
+      stack=1, locals=0, args_size=0
+         0: iconst_0
+         1: putstatic     #2                  // Field A:I
+         4: iconst_1
+         5: putstatic     #2                  // Field A:I
+         8: return
+```
+
+虚拟机会保证在执行当前类的`<clinit>()`方法之前父类的`<clinit>()`方法已经执行完毕。
+
+#### 初始化的时机
+
+虚拟机规范中规定只有以下5种情况会立刻对类进行初始化。
+
+1. 遇到以下几个字节码指令。
+- `new`，使用`new`关键字实例化对象。
+- `getstatic`，读取一个类的静态字段（被`final`修饰的、已在编译器把结果存入常量池的除外）。
+- `putstatic`，设置一个类的静态字段。
+- `invokestatic`，调用一个类的静态方法。
+2. 使用反射对类进行操作。
+3. 当初始化一个类时，如果基类还没有初始化那么需要先初始化其基类。
+4. 优先初始化`main()`方法所在的类。
+5. 在使用JDK1.7动态语言特性时，如果一个`java.lang.invoke.MethodHandle`实例最后的解析结果`REF_getStatic`、`REF_putStatic`、`REF_invokeStatic`的方法句柄并且这个方法句柄所对应的类没有进行过初始化，那么要先对其初始化。
+
+以上5种情况称为**主动引用**，除此之外所有的情况都不会触发初始化，称为**被动引用**，比如以下几种情况。
+
+- 通过子类引用基类的静态字段，子类不会初始化，基类会初始化。
+
+```java 
+
+```
 
 ## 类加载器
 
+类加载器分为以下3类，对于HotSpot而言，启动类加载器是用C++实现的，作为虚拟机的一部分；其它类加载器是由Java实现的。
+
+- 启动类加载器（Bootstrap ClassLoader）
+
+负责加载`$JAVA_HOME/lib`目录下或者由`-Xbootclasspath`参数指定路径下的类库，并且这些类库的名字必须是虚拟机可以识别的，比如`rt.java`，否则即使放在正确的目录下也不会被加载。
+
+- 扩展类加载器（Extension ClassLoader）
+
+负责加载`$JAVA_HOME/lib/ext`目录下或由`java.ext.dirs`环境变量指定的路径下的类库。
+
+- 应用程序类加载器（Application ClassLoader）
+
+有时候也称为系统类加载器，负责加载用户类路径（ClassPath）下的类库，是程序中的默认类加载器，我们可以通过以下代码获取应用程序类加载器。
+
+```java
+ClassLoader.getSystemClassLoader();
+```
+
 ### 双亲委派模型
+
+如果一个类加载器收到了类加载的请求，它并不会直接去加载目标类，而是委托给父类加载器去加载，最后由启动类加载器进行处理。只有当父类加载器都无法加载时（在搜索范围内没有找到所需类），子类加载器才会自己去加载。
+
+![双亲委派模型](resources/classloader_1.png)
+
+需要注意的是，这里的委托不是用继承实现的，而是用组合实现的。下面是JDK中的源码。
+
+```java
+// java.lang.ClassLoader#loadClass(java.lang.String, boolean)
+protected Class<?> loadClass(String name, boolean resolve)
+        throws ClassNotFoundException
+{
+    synchronized (getClassLoadingLock(name)) {
+        // 检查目标类是否已经被加载。
+        Class<?> c = findLoadedClass(name);
+        // 如果c是null，则表示没有被加载。
+        if (c == null) {
+            long t0 = System.nanoTime();
+            try {
+                if (parent != null) {
+                    // 委托父加载器进行加载。
+                    c = parent.loadClass(name, false);
+                } else {
+                    // 如果父加载器为空，则委托给启动类加载器加载。
+                    c = findBootstrapClassOrNull(name);
+                }
+            } catch (ClassNotFoundException e) {
+                // 如果父加载器无法加载会抛出异常，这里直接忽略异常。
+            }
+
+            if (c == null) {
+                long t1 = System.nanoTime();
+                
+                // 如果父类没有完成加载，那么就自己尝试加载。 
+                c = findClass(name);
+
+                // 一些统计操作。
+                PerfCounter.getParentDelegationTime().addTime(t1 - t0);
+                PerfCounter.getFindClassTime().addElapsedTimeFrom(t1);
+                PerfCounter.getFindClasses().increment();
+            }
+        }
+        if (resolve) {
+            resolveClass(c);
+        }
+        return c;
+    }
+}
+
+双亲委派模型的好处是可以避免一个类被重复加载，比如`java.lang.Object`类，任何类加载器想要加载它最终都会委托给启动类加载器，因此只会加载一次。
+```
+
+## 加载类的方式
+
+有以下几种方法可以加载一个类。
+
+- 程序启动时由虚拟机进行加载。
+- 通过`Class.forName()`方法动态加载。
+- 通过`java.lang.ClassLoader#loadClass(...)`方法动态加载。
+
+## 
