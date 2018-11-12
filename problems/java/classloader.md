@@ -164,15 +164,19 @@ static {};
 
 虚拟机会保证在执行当前类的`<clinit>()`方法之前父类的`<clinit>()`方法已经执行完毕。
 
+#### 接口的初始化
+
+接口中不能有静态语句块，但是可以用静态常量，因此编译器仍旧会为其生成`<clinit>()`方法。与类不同的是，一个接口在初始化时，如果它没有引用父接口中的常量，那么该父接口就不会被初始化。
+
 #### 初始化的时机
 
 虚拟机规范中规定只有以下5种情况会立刻对类进行初始化。
 
 1. 遇到以下几个字节码指令。
-- `new`，使用`new`关键字实例化对象。
-- `getstatic`，读取一个类的静态字段（被`final`修饰的、已在编译器把结果存入常量池的除外）。
-- `putstatic`，设置一个类的静态字段。
-- `invokestatic`，调用一个类的静态方法。
+    - `new`，使用`new`关键字实例化对象。
+    - `getstatic`，读取一个类的静态字段（被`final`修饰的、已在编译器把结果存入常量池的除外）。
+    - `putstatic`，设置一个类的静态字段。
+    - `invokestatic`，调用一个类的静态方法。
 2. 使用反射对类进行操作。
 3. 当初始化一个类时，如果基类还没有初始化那么需要先初始化其基类。
 4. 优先初始化`main()`方法所在的类。
@@ -182,9 +186,84 @@ static {};
 
 - 通过子类引用基类的静态字段，子类不会初始化，基类会初始化。
 
-```java 
+```java
+// 以下代码会打印“Parent static{}”，说明子类没有被初始化，基类进行了初始化。
+class Parent {
 
+    public static Object F = new Object();
+
+    static {
+        System.out.println("Parent static{}");
+    }
+}
+
+class Child extends Parent {
+    static {
+        System.out.println("Child static{}");
+    }
+}
+
+public static void main(String[] args) {
+    Object o = Child.F;
+}
 ```
+
+- 在声明数组时不会对数组元素所在的类进行初始化。
+
+```java
+// 以下代码不会打印任何内容。
+class A {
+
+    static {
+        System.out.println("A static{}");
+    }
+}
+
+public static void main(String[] args) {
+    A[] array = new A[10];
+}
+```
+
+- 当我们引用编译期间就放入类文件常量池的常量时，由于并不需要用到类相关的信息，因此也不会触发初始化过程。
+
+```java
+// 以下代码不会打印任何内容。
+class A {
+
+    public static final String CONSTANT = "A";
+
+    static {
+        System.out.println("A static{}");
+    }
+}
+
+public static void main(String[] args) {
+    String constant = A.CONSTANT;
+}
+```
+
+但是如果我们修改常量的类型为`java.lang.Object`，由于无法把一个`Object`类型放入常量池中，因此会触发类的初始化过程。
+
+```java
+public static final Object CONSTANT = new Object();
+```
+
+如果我们把常量类型改为`int`，那么也不会触发类的初始化，这是因为`100`直接被编译成了字节码指令中的参数，因此没有必须对类进行初始化。
+
+```java
+public static final int CONSTANT = 100;
+```
+
+上述方法对应的字节码中，第一行`bipush`后面的`100`就是上面的`CONSTANT`常量。
+
+```java
+0: bipush        100
+2: invokestatic  #3                  // Method java/lang/Integer.valueOf:(I)Ljava/lang/Integer;
+5: astore_1
+6: return
+```
+
+> 当一个类的初始化没有被触发时，不代表其加载和验证的过程也没有被触发，虚拟机规范中并没有规定这一点，因此这取决于各个虚拟机的实现。
 
 ## 类加载器
 
@@ -239,8 +318,8 @@ protected Class<?> loadClass(String name, boolean resolve)
 
             if (c == null) {
                 long t1 = System.nanoTime();
-                
-                // 如果父类没有完成加载，那么就自己尝试加载。 
+
+                // 如果父类没有完成加载，那么就自己尝试加载。
                 c = findClass(name);
 
                 // 一些统计操作。
@@ -267,4 +346,49 @@ protected Class<?> loadClass(String name, boolean resolve)
 - 通过`Class.forName()`方法动态加载。
 - 通过`java.lang.ClassLoader#loadClass(...)`方法动态加载。
 
-## 
+## 类的唯一性
+
+对于任意一个类来说，它的类加载器和它本身共同确定它在虚拟机中的唯一性。也就是说如果两个类都在同一个类加载器下，来自同一个类文件，那么它们就是相同的，否则，在不同类加载器下，即使来自同一个类文件，它们也是两个不同的类。我们可以把类加载器看成类文件的命名空间，不同命名空间中类相互是没有关系的。
+
+下面来看一个例子。首先我们创建一个空的类`ClassLoaderTest`，用`javac`进行编译后得到`ClassLoaderTest.class`文件。
+
+```java
+public class ClassLoaderTest {
+}
+```
+
+在另一个测试类中实现一个自定义的类加载器，并且载入上一步中得到的`ClassLoaderTest.class`文件，最后利用`instanceof`关键字进行类的唯一性测试。
+
+```java
+public class Test {
+
+    public static void main(String[] args) throws ClassNotFoundException, IllegalAccessException, InstantiationException {
+        // 自定义类加载器。
+        ClassLoader classLoader = new ClassLoader() {
+            @Override
+            public Class<?> loadClass(String name) {
+                InputStream inputStream = getClass().getResourceAsStream(name.substring(name.lastIndexOf(".") + 1) + ".class");
+                try {
+                    // ClassLoaderTest的基类是java.lang.Object，因此这里会递归的加载Object类。
+                    // Object类文件和ClassLoaderTest在不同目录下，因此当加载Object类时inputStream是null。
+                    // 委托给启动类加载器加载Object类。
+                    if (inputStream == null)
+                        return super.loadClass(name);
+                    byte[] bytes = new byte[inputStream.available()];
+                    inputStream.read(bytes);
+                    return defineClass(name, bytes, 0, bytes.length);
+                } catch (IOException | ClassNotFoundException e) {
+                }
+                return null;
+            }
+        };
+
+        Object t = classLoader.loadClass("playground.ClassLoaderTest").newInstance();
+
+        System.out.println(t.getClass());// 此处打印“class playground.ClassLoaderTest”。
+        System.out.println(t instanceof ClassLoaderTest);// 此处打印“false”。这是因为实例t的类来自我们自定义的类加载器，而instanceof关键字后面的类来自默认的应用类加载器。
+    }
+}
+```
+
+最后结果显示，此`ClassLoaderTest`非彼`ClassLoaderTest`，说明不同类加载器下载入同一个类文件，它们也是不同的。
