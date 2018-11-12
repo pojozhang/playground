@@ -418,7 +418,7 @@ public int inc(int);
 
 可以看到这里有两个局部变量，一个是隐藏的`this`，一个就是方法参数名`number`。`Start`和`Length`分别代表局部变量生命周期开始的字节码行号和范围长度，也就是它的作用域范围。
 
-- ConstantValue
+- ConstantValue <a id="constant-value"></a>
 
 该属性的作用是通知虚拟机自动为静态变量初始化。
 
