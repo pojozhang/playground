@@ -83,7 +83,7 @@ Exception in thread "main" java.lang.RuntimeException
 
 可以看到已经没有了`f()`方法的调用信息。
 
-## 异常表 <div id="ExceptionTable"></div>
+## 异常表 <div id="exception-table"></div>
 
 下面的`try-catch-finally`最常用的一种形式。
 
