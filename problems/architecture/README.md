@@ -1,6 +1,7 @@
 # 架构
 
 - [CAP理论](cap.md)
+- [BASE理论](base.md)
 - [两阶段提交](2-phase-commit.md)
 - 三阶段提交
 - Raft协议
