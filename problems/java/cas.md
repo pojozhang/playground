@@ -185,8 +185,18 @@ asm ( assembler template
 
 ## 存在的问题
 
-1. ABA问题
+1. A-B-A问题
 
+CAS操作需要先进行对比，然后进行交换，但是如果一个值从A变成B又立刻变回A那么就有可能存在问题。
+
+![](resources/cas_7.png)
+
+通常的解决方法是增加一个版本号，每次值变化都要更新版本号，并且在对比时也要对比版本号。
+
+![](resources/cas_8.png)
+
+Java中可以使用`java.util.concurrent.atomic.AtomicStampedReference`类解决。
+**对于一般的场景，CAS是CPU执行的原子操作，因此通常不必担心会遇到A-B-A的问题。**
 
 2. 在高并发环境下，由于CAS操作不断的自旋，可能会引起CPU负载过高。
 
@@ -197,3 +207,4 @@ asm ( assembler template
 3. [《Java CAS 原理分析》](https://segmentfault.com/a/1190000014858404)
 4. [《浅论Lock 与X86 Cache 一致性》](https://zhuanlan.zhihu.com/p/24146167)
 5. [《理解 CPU Cache》](http://wsfdl.com/linux/2016/06/11/%E7%90%86%E8%A7%A3CPU%E7%9A%84cache.html)
+6. [《JAVA中CAS-ABA的问题解决方案》](https://juejin.im/entry/5a7288645188255a8817fe26)
