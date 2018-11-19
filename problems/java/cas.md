@@ -127,7 +127,7 @@ UNSAFE_ENTRY(jboolean, Unsafe_CompareAndSetInt(JNIEnv *env, jobject unsafe, jobj
 inline jint Atomic::cmpxchg (jint exchange_value, volatile jint* dest, jint compare_value, cmpxchg_memory_order order) {
   // 判断是不是多处理器环境。
   int mp = os::is_MP();
-  // __asm__表示在c++中嵌入汇编语言。
+  // __asm__表示在C++中嵌入汇编语言。
   __asm__ volatile (LOCK_IF_MP(%4) "cmpxchgl %1,(%3)"
                     : "=a" (exchange_value)
                     : "r" (exchange_value), "a" (compare_value), "r" (dest), "r" (mp)
@@ -138,6 +138,8 @@ inline jint Atomic::cmpxchg (jint exchange_value, volatile jint* dest, jint comp
 #define LOCK_IF_MP(mp) "cmp $0, " #mp "; je 1f; lock; 1: "
 ```
 
+C++中嵌入汇编语言的格式如下。
+
 ```x86asm
 asm ( assembler template
       : output operands                  /* optional */
@@ -145,5 +147,16 @@ asm ( assembler template
       : list of clobbered registers      /* optional */
     );
 ```
+
+- template
+  模板。本例中的模板是`cmpxchgl %1,(%3)`。`%1`是指第2个操作数，`%3`是指第4个输入操作数。操作数包括输出操作数和输入操作数，编号从`0`开始，按照先输出操作数，后输入操作数的顺序进行编号。
+- output operands
+  输出操作数。这里是`=a`，对应`eax`寄存器。
+- input operands
+  输入操作数。按照顺序，第1个是`exchange_value`，第2个是`compare_value`，第3个是`dest`，第4个是`mp`。`r`代表任意寄存器，`a`代表`eax`寄存器。
+- list of clobbered registers
+  额外的参数。`cc`参数表示编译器`cmpxchgl`的执行将影响到标志寄存器；`memory`参数是让编译器重新从内存中读取变量的值，实现了`volatile`。
+
+`cmpxchgl %1,(%3)`其实就是`cmpxchgl exchange_value,dest`，它的原型是`CMPXCHG <dest>,<src>`。`cmpxchgl`会比较`eax`寄存器中的值和`dest`的值，如果相等那么就把`exchange_value`赋值给`dest`，否则把`dest`的值赋值给`eax`寄存器。通过`"a" (compare_value)`可以知道，`eax`寄存器里的值就是`compare_value`，因此这里就会判断`compare_value`和`dest`的值是否相等，这其实就是汇编层面的CAS操作。
 
 还有一些其它平台的实现，比如Windows、Solaris在x86上的实现、Linux在ARM上的实现等，这里不再具体展开。
