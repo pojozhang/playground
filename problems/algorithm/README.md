@@ -122,7 +122,7 @@
 - [x] [柱状图中最大的矩形](largest-rectangle-in-histogram.md) `数组` `栈`
 - [x] [最小栈](min-stack.md) `栈`
 - [x] [逆波兰表达式求值](evaluate-reverse-polish-notation.md) `栈`
-- [ ] [二叉搜索树中第K小的元素](kth-smallest-element-in-a-bst.md) `树` `二分查找`
+- [x] [二叉搜索树中第K小的元素](kth-smallest-element-in-a-bst.md) `树` `二分查找`
 
 ## Week12
 
