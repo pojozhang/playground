@@ -1,5 +1,7 @@
 # CAS
 
+![版本](https://img.shields.io/badge/java-9-red.svg)
+
 CAS，全称CompareAndSwap（或CompareAndSet），即比较并交换，是并发编程中经常用到的一种技术。
 
 ## 原理
