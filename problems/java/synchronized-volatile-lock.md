@@ -68,7 +68,7 @@ private synchronized void b() {
 
 > [示例：不可重入锁](https://github.com/pojozhang/playground/blob/master/solutions/java/src/main/java/playground/interview/NonReentrantLock.java)
 
-## synchronized
+## synchronized <a id="synchronized"></a>
 
 `synchronized`修饰符有三个作用：
 
@@ -193,7 +193,7 @@ ObjectMonitor() {
 - `_owner`指向持有`ObjectMonitor`对象的线程。
 - ``
 
-## volatile
+## volatile <a id="volatile"></a>
 
 `volatile`修饰符有三个作用：
 

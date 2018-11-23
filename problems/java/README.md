@@ -22,7 +22,6 @@
 
 ## 多线程
 
-- [volatile](volatile.md)
 - [线程](thread.md)
 - [AQS](aqs.md)
 - [写一个死锁的例子](https://github.com/pojozhang/playground/blob/master/solutions/java/src/test/java/playground/interview/DeadLockTest.java)
