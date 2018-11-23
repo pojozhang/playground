@@ -58,10 +58,56 @@ CPU最后执行指令的顺序未必和我们写的代码顺序一一对应，�
 
 - 编译器重排序
 
+比如编译器为了减少CPU寄存器的读写次数，改变语句的执行顺序。
+
+在优化前，随着代码交替的读取变量`x`和变量`y`的值，CPU寄存器需要频繁地交替存储变量`x`和`y`。
+
+```java
+int x = 1;
+int y = 2;
+int a1 = x * 1;
+int b1 = y * 1;
+int a2 = x * 2;
+int b2 = y * 2;
+int a3 = x * 3;
+int b3 = y * 3;
+```
+
+优化后，执行语句会先把变量`x`相关的读取操作执行完，再去执行变量`y`的读取操作，CPU寄存器就不需要频繁地进行切换。
+
+```java
+int x = 1;
+int y = 2;
+int a1 = x * 1;
+int a2 = x * 2;
+int a3 = x * 3;
+int b1 = y * 1;
+int b2 = y * 2;
+int b3 = y * 3;
+```
 
 - 指令重排序
 
+CPU可以通过对指令的重排序，提高指令执行的并发度。
+
+比如下面代码中第1行的`LDR`指令需要从缓存中加载数据，如果缓存没有命中则需要等待从内存中读取。在等待数据读取时CPU可以先去执行第2或第3行指令，由于第2行指令依赖于第1行，因此可以选择执行第3行指令。
+
+```assembly
+LDR   R1, [R0];
+ADD   R2, R1, R1;
+ADD   R4, R3, R3;
+```
+
+未进行重排序前的执行过程。
+
+![](resources/jmm_4.png)
+
+进行重排序后的执行过程。
+
+![](resources/jmm_5.png)
+
 - 内存系统重排序
+
 
 
 ## Happens-Before
@@ -81,3 +127,4 @@ CPU最后执行指令的顺序未必和我们写的代码顺序一一对应，�
 
 1. [《全面理解Java内存模型(JMM)及volatile关键字》](https://blog.csdn.net/javazejian/article/details/72772461)
 2. [《从源代码到Runtime发生的重排序编译器重排序指令重排序内存系统重排序阻止重排序》](https://cloud.tencent.com/developer/article/1036747)
+3. [《谈乱序执行和内存屏障》](https://blog.csdn.net/dd864140130/article/details/56494925)
