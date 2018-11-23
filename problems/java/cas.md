@@ -145,7 +145,7 @@ inline jint Atomic::cmpxchg (jint exchange_value, volatile jint* dest, jint comp
 
 C++中嵌入汇编语言的格式如下。
 
-```x86asm
+```cpp
 asm ( assembler template
       : output operands                  /* optional */
       : input operands                   /* optional */
