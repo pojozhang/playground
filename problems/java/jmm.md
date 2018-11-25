@@ -20,7 +20,7 @@ Java提供了自己的内存模型（Java Memory Model，简称JMM）来屏蔽�
 
 Java内存模型看似和硬件内存模型非常类似，但是这两者其实并没有直接的关系，线程的工作内存可以在CPU寄存器中，也可以在缓存或内存中，主内存也是同理。
 
-## 内存间的交互
+## 内存间的交互 <a id = "operations"></a>
 
 Java内存模型定义了8种操作来实现如何把变量从主内存读到工作内存中以及如何把工作内存中的数据写回主内存中，这些操作都是原子的。
 
@@ -156,14 +156,58 @@ public void write() {
 
 - 保证可见性
 
+在[内存间的交互](#operations)一节我们提到过Java内存模型定义了8种操作，而对于`volatile`变量还有额外的2条规则。
+
+    1. `read`、`load`、`use`操作必须连续出现。意味着读取前必须从主内存中把最新的值载入到工作内存中。
+    2. `assign`、`store`、`write`操作必须连续出现。意味着写入后必须把工作内存中的值同步回主内存。
+
 - 保证有序性
 
-我们在上文中提到代码的执行顺序可能因为编译器和CPU进行指令重排序导致其和编写时的顺序不一致，从而在多线程环境下产生一些问题。
-`volatile`可以起到禁止指令重排序的作用
+我们在上文中提到代码的执行顺序可能因为编译器和CPU进行指令重排序导致其和编写时的顺序不一致，从而在多线程环境下产生一些问题。`volatile`可以起到禁止指令重排序的作用，我们看下面的例子，这是一个典型的用双重检查锁机制实现的单例模式。
+
+```java
+class Singleton{
+
+    private static Singleton instance;
+
+    public int number = 1;
+
+    private Singleton(){}
+
+    public static Singleton getInstance() {
+        if (instance == null) {
+            synchronized (Singleton.class) {
+                if ( instance == null ) {
+                    instance = new Singleton();
+                }
+            }
+        }
+        return instance;
+    }
+}
+```
+
+代码中潜在的问题很难被发现，上面的例子中问题其实出在赋值语句。
+
+```java
+instance = new Singleton();
+```
+
+该赋值语句并不是一个原子操作，它可以拆分成以下几个步骤。
+
+1. 为对象开辟分配空间。
+2. 初始化对象，这里是设置`number`字段的值。
+3. 把引用指向1中分配的内存地址，这里的引用就是`instance`变量。
+
+如果指令重排序后2和3进行了互换，那么当`instance`被指向1中分配的内存地址时，对象还没有初始化完成，也就是说，虽然`instance`不为`null`，但它有可能还没有完成初始化，在多线程环境下就有可能会有线程拿到未完全初始化的对象。因此我们需要在`instance`前加上`volatile`禁止重排序。
 
 - 保证64位变量的原子性
 
-可以保证对`long`和`double`类型变量的读写操作是原子的。Java内存模型规定虚拟机对32位数据类型的操作必须是原子的，而对于64位数据类型规定如果是`volatile`变量那么虚拟机需要保证读写操作是原子的，如果不是`volatile`变量那么虚拟机可以分成2次32位的操作而不必保证原子性。目前商用虚拟机都实现了对64位数据类型的原子操作（即使没有`volatile`），因此为了保证原子性，`volatile`并不是必要的。
+可以保证对`long`和`double`类型变量的读写操作是原子的。Java内存模型规定虚拟机对32位数据类型的操作必须是原子的，而对于64位数据类型规定如果是`volatile`变量那么虚拟机需要保证读写操作是原子的，如果不是`volatile`变量那么虚拟机可以分成2次32位的操作而不必保证原子性。目前商用虚拟机都实现了对64位数据类型的原子操作（即使没有`volatile`），因此为了保证原子性，`volatile`其实并不是必要的（当然还是推荐这么做）。
+
+### volatile的原理
+
+虚拟机在底层使用内存屏障解决可见性和重排序的问题。
 
 ## 参考
 
@@ -171,3 +215,4 @@ public void write() {
 2. [《从源代码到Runtime发生的重排序编译器重排序指令重排序内存系统重排序阻止重排序》](https://cloud.tencent.com/developer/article/1036747)
 3. [《谈乱序执行和内存屏障》](https://blog.csdn.net/dd864140130/article/details/56494925)
 4. [《volatile关键字的作用、原理》](https://monkeysayhi.github.io/2016/11/29/volatile%E5%85%B3%E9%94%AE%E5%AD%97%E7%9A%84%E4%BD%9C%E7%94%A8%E3%80%81%E5%8E%9F%E7%90%86/)
+5 [《一文解决内存屏障》](https://monkeysayhi.github.io/2017/12/28/%E4%B8%80%E6%96%87%E8%A7%A3%E5%86%B3%E5%86%85%E5%AD%98%E5%B1%8F%E9%9A%9C/)
