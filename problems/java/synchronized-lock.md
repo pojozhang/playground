@@ -1,4 +1,4 @@
-# synchronized、volatile 和 lock
+# synchronized和lock
 
 ## 原子性
 
@@ -163,7 +163,6 @@ void ObjectSynchronizer::fast_enter(Handle obj, BasicLock* lock, bool attempt_re
 }
 ```
 
-
 在HotSpot虚拟机中，`monitor`的实现是`ObjectMonitor`，可以在[这里](https://github.com/unofficial-openjdk/openjdk/blob/jdk8u/jdk8u/hotspot/src/share/vm/runtime/objectMonitor.hpp)看到源码，其数据结构如下：
 
 ```cpp
@@ -193,24 +192,10 @@ ObjectMonitor() {
 - `_owner`指向持有`ObjectMonitor`对象的线程。
 - ``
 
-## volatile <a id="volatile"></a>
-
-`volatile`修饰符有以下3个作用：
-
-- 保证可见性
-
-- 保证有序性
-
-在[Java内存模型](jmm.md#ordering)中我们提到代码的执行顺序可能因为编译器和CPU进行指令重排序导致其和编写时的顺序不一致，从而在多线程环境下产生一些问题。
-`volatile`可以起到禁止指令重排序的作用
-
-- 保证64位变量的原子性
-
-可以保证对`long`和`double`类型变量的读写操作是原子的
-
 ## lock
 
 锁的状态总共有四种：无锁状态、偏向锁、轻量级锁和重量级锁。
 
 ### 偏向锁
+
 偏向锁是JDK1.6之后引入的。
