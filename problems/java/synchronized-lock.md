@@ -9,7 +9,7 @@
 count++;  
 ```
 
-![](resources/synchronized_volatile_lock_2.png)
+![](resources/synchronized_lock_2.png)
 
 ## 可见性
 
@@ -33,7 +33,7 @@ public void shutdown() {
 
 隐患要从Java的内存模型说起。如下图所示，Java内存分为主内存和工作内存，所有变量都存储在主内存中，每个线程有各自独立的工作内存，工作内存里保存着它用到的主内存中变量的副本。也就是说线程不直接操作主内存中的变量，而是操作该变量在工作内存里的一份拷贝，并且有多少个线程用到这个变量就有多少个拷贝，因此上述代码中的线程A和线程B都持有`running`变量的一个副本，当线程B修改它持有的`running`变量副本的时候并不能保证线程A能看到。
 
-![](resources/synchronized_volatile_lock_1.png)
+![](resources/synchronized_lock_1.png)
 
 为了能让线程A及时看到线程B对`running`变量的修改，必须要做两件事：
 
