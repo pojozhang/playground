@@ -50,7 +50,7 @@ Java内存模型定义了8种操作来实现如何把变量从主内存读到工
 
 ### 可见性
 
-可见性是指一个线程修改了共享变量的值，其它的线程能立刻得知被修改后的最新值。除了[volatile](synchronized-volatile-lock.md#volatile)外，[synchronized](synchronized-volatile-lock.md#synchronized)和`final`也可以实现可见性（只针对初始化后不可被修改的基本类型对象）。
+可见性是指一个线程修改了共享变量的值，其它的线程能立刻得知被修改后的最新值。除了[volatile](#volatile)外，[synchronized](synchronized-lock.md#synchronized)和`final`也可以实现可见性（只针对初始化后不可被修改的基本类型对象）。
 
 ### 有序性 <a id = "ordering"></a>
 
@@ -148,8 +148,26 @@ public void write() {
 7. 对象终结规则：一个对象的构造方法调用结束先行发生于它的`finalize()`方法的开始。
 8. 传递性：如果操作A现行发生于操作B，操作B现行发生于操作C，那么操作A现行发生于操作C。
 
+## volatile <a id="volatile"></a>
+
+上文多次提到了`volatile`关键字，现在我们来看看它的作用和原理。
+
+`volatile`有以下3个作用：
+
+- 保证可见性
+
+- 保证有序性
+
+我们在上文中提到代码的执行顺序可能因为编译器和CPU进行指令重排序导致其和编写时的顺序不一致，从而在多线程环境下产生一些问题。
+`volatile`可以起到禁止指令重排序的作用
+
+- 保证64位变量的原子性
+
+可以保证对`long`和`double`类型变量的读写操作是原子的。Java内存模型规定虚拟机对32位数据类型的操作必须是原子的，而对于64位数据类型规定如果是`volatile`变量那么虚拟机需要保证读写操作是原子的，如果不是`volatile`变量那么虚拟机可以分成2次32位的操作而不必保证原子性。目前商用虚拟机都实现了对64位数据类型的原子操作（即使没有`volatile`），因此为了保证原子性，`volatile`并不是必要的。
+
 ## 参考
 
 1. [《全面理解Java内存模型(JMM)及volatile关键字》](https://blog.csdn.net/javazejian/article/details/72772461)
 2. [《从源代码到Runtime发生的重排序编译器重排序指令重排序内存系统重排序阻止重排序》](https://cloud.tencent.com/developer/article/1036747)
 3. [《谈乱序执行和内存屏障》](https://blog.csdn.net/dd864140130/article/details/56494925)
+4. [《volatile关键字的作用、原理》](https://monkeysayhi.github.io/2016/11/29/volatile%E5%85%B3%E9%94%AE%E5%AD%97%E7%9A%84%E4%BD%9C%E7%94%A8%E3%80%81%E5%8E%9F%E7%90%86/)
