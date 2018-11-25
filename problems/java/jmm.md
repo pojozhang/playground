@@ -195,7 +195,7 @@ instance = new Singleton();
 
 该赋值语句并不是一个原子操作，它可以拆分成以下几个步骤。
 
-1. 为对象开辟分配空间。
+1. 为对象分配内存空间。
 2. 初始化对象，这里是设置`number`字段的值。
 3. 把引用指向1中分配的内存地址，这里的引用就是`instance`变量。
 
@@ -209,6 +209,20 @@ instance = new Singleton();
 
 虚拟机在底层使用内存屏障解决可见性和重排序的问题。
 
+内存屏障是一个CPU指令，它主要有两个功能。
+
+1. 保证某些特定操作的执行顺序。
+2. 影响一些数据的可见性。
+
+Java中有以下4种内存屏障。
+
+|    屏障类型    |          指令示例          |                            说明                                |
+| ------------- | ------------------------ | -------------------------------------------------------------- |
+|  LoadLoad     | Load1;LoadLoad;Load2     | 保证Load1数据的装载先于Load2及其后所有装载指令的的操作。               |
+|  StoreStore   | Store1;StoreStore;Store2 | 保证Store1立刻刷新数据到内存的操作先于Store2及其后所有存储指令的操作。   |
+|  LoadStore    | Load1;LoadStore;Store2   | 保证Load1的数据装载先于Store2及其后所有的存储指令刷新数据到内存的操作。   |
+|  StoreLoad    | Store1;StoreLoad;Load2   | 保证Store1立刻刷新数据到内存的操作先于Load2及其后所有装载装载指令的操作。 |
+
 ## 参考
 
 1. [《全面理解Java内存模型(JMM)及volatile关键字》](https://blog.csdn.net/javazejian/article/details/72772461)
@@ -216,3 +230,4 @@ instance = new Singleton();
 3. [《谈乱序执行和内存屏障》](https://blog.csdn.net/dd864140130/article/details/56494925)
 4. [《volatile关键字的作用、原理》](https://monkeysayhi.github.io/2016/11/29/volatile%E5%85%B3%E9%94%AE%E5%AD%97%E7%9A%84%E4%BD%9C%E7%94%A8%E3%80%81%E5%8E%9F%E7%90%86/)
 5 [《一文解决内存屏障》](https://monkeysayhi.github.io/2017/12/28/%E4%B8%80%E6%96%87%E8%A7%A3%E5%86%B3%E5%86%85%E5%AD%98%E5%B1%8F%E9%9A%9C/)
+6.[《揭秘内存屏障》](http://wiki.jikexueyuan.com/project/disruptor-getting-started/storage-barrier.html)
