@@ -5,6 +5,7 @@
 判断你是否能够到达最后一个位置。
 
 **示例 1:**
+
 ```
 输入: [2,3,1,1,4]
 输出: true
@@ -12,11 +13,13 @@
 ```
 
 **示例 2:**
+
 ```
 输入: [3,2,1,0,4]
 输出: false
 解释: 无论怎样，你总会到达索引为 3 的位置。但该位置的最大跳跃长度是 0 ， 所以你永远不可能到达最后一个位置。
 ```
 
-#### 实现
+## 实现
+
 - [Go](https://github.com/pojozhang/playground/blob/master/solutions/go/src/playground/algorithm/jump_game.go)

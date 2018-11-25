@@ -5,6 +5,7 @@
 **说明:** 叶子节点是指没有子节点的节点。
 
 **示例：**
+
 给定二叉树 `[3,9,20,null,null,15,7]`，
 
 ```
@@ -17,5 +18,6 @@
 
 返回它的最大深度 3 。
 
-#### 实现
+## 实现
+
 - [Java](https://github.com/pojozhang/playground/blob/master/solutions/java/src/main/java/playground/algorithm/MaximumDepthOfBinaryTree.java)

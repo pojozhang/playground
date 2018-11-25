@@ -5,6 +5,7 @@
 不要另外定义一个数组，您必须通过用 O(1) 额外内存原地修改输入的数组来做到这一点。
 
 示例：
+
 ```
 给定数组: nums = [1,1,2],
 
@@ -12,5 +13,6 @@
 不需要理会新的数组长度后面的元素
 ```
 
-#### 实现
+## 实现
+
 - [Java](https://github.com/pojozhang/playground/blob/master/solutions/java/src/main/java/playground/algorithm/RemoveDuplicates.java)

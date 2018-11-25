@@ -4,6 +4,7 @@
 返回滑动窗口最大值。
 
 **示例:**
+
 ```
 输入: nums = [1,3,-1,-3,5,3,6,7], 和 k = 3
 输出: [3,3,5,5,6,7] 
@@ -24,5 +25,6 @@
 **进阶：**
 你能在线性时间复杂度内解决此题吗？
 
-#### 实现
+## 实现
+
 - [Java](https://github.com/pojozhang/playground/blob/master/solutions/java/src/main/java/playground/algorithm/SlidingWindowMaximum.java)

@@ -6,6 +6,7 @@
 ![](http://upload.wikimedia.org/wikipedia/commons/thumb/7/73/Telephone-keypad2.svg/200px-Telephone-keypad2.svg.png)
 
 **示例:**
+
 ```
 输入："23"
 输出：["ad", "ae", "af", "bd", "be", "bf", "cd", "ce", "cf"].
@@ -14,5 +15,6 @@
 **说明:**
 尽管上面的答案是按字典序排列的，但是你可以任意选择答案输出的顺序。
 
-#### 实现
+## 实现
+
 - [Go](https://github.com/pojozhang/playground/blob/master/solutions/go/src/playground/algorithm/letter_combinations_of_a_phone_number.go)

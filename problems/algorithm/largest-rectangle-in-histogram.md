@@ -10,7 +10,7 @@
 以上是柱状图的示例，其中每个柱子的宽度为 1，给定的高度为 `[2,1,5,6,2,3]`。
 
 图中阴影部分为所能勾勒出的最大矩形面积，其面积为 `10` 个单位。
- 
+
 **示例:**
 
 ```
@@ -18,5 +18,6 @@
 输出: 10
 ```
 
-#### 实现
+## 实现
+
 - [Go](https://github.com/pojozhang/playground/blob/master/solutions/go/src/playground/algorithm/largest_rectangle_in_histogram.go)

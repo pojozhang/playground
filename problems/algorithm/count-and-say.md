@@ -17,16 +17,19 @@
 注意：整数顺序将表示为一个字符串。
 
 **示例 1:**
+
 ```
 输入: 1
 输出: "1"
 ```
 
 **示例 2:**
+
 ```
 输入: 4
 输出: "1211"
 ```
 
-#### 实现
+## 实现
+
 - [Java](https://github.com/pojozhang/playground/blob/master/solutions/java/src/main/java/playground/algorithm/CountAndSay.java)

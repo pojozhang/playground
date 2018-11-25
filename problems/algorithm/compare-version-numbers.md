@@ -7,22 +7,26 @@
 例如，`2.5` 不是“两个半”，也不是“差一半到三”，而是第二版中的第五个小版本。
 
 **示例 1:**
+
 ```
 输入: version1 = "0.1", version2 = "1.1"
 输出: -1
 ```
 
 **示例 2:**
+
 ```
 输入: version1 = "1.0.1", version2 = "1"
 输出: 1
 ```
 
 **示例 3:**
+
 ```
 输入: version1 = "7.5.2.4", version2 = "7.5.3"
 输出: -1
 ```
 
-#### 实现
+## 实现
+
 - [Go](https://github.com/pojozhang/playground/blob/master/solutions/go/src/playground/algorithm/compare_version_numbers.go)

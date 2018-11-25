@@ -5,12 +5,14 @@
 你可以假设除了数字 0 之外，这两个数字都不会以零开头。
 
 示例：
+
 ```
 输入：(2 -> 4 -> 3) + (5 -> 6 -> 4)
 输出：7 -> 0 -> 8
 原因：342 + 465 = 807
 ```
 
-#### 实现
+## 实现
+
 - [Java](https://github.com/pojozhang/playground/blob/master/solutions/java/src/main/java/playground/algorithm/AddTwoNumbers.java)
 - [Go](https://github.com/pojozhang/playground/blob/master/solutions/go/src/playground/algorithm/add_two_numbers.go)

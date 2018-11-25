@@ -9,35 +9,41 @@
 注意空字符串可被认为是有效字符串。
 
 示例 1:
+
 ```
 输入: "()"
 输出: true
 ```
 
 示例 2:
+
 ```
 输入: "()[]{}"
 输出: true
 ```
 
 示例 3:
+
 ```
 输入: "(]"
 输出: false
 ```
 
 示例 4:
+
 ```
 输入: "([)]"
 输出: false
 ```
 
 示例 5:
+
 ```
 输入: "{[]}"
 输出: true
 ```
 
-#### 实现
+## 实现
+
 - [Java](https://github.com/pojozhang/playground/blob/master/solutions/java/src/main/java/playground/algorithm/ValidParentheses.java)
 - [Go](https://github.com/pojozhang/playground/blob/master/solutions/go/src/playground/algorithm/valid_parentheses.go)

@@ -5,6 +5,7 @@
 答案中不可以包含重复的四元组。
 
 **示例：**
+
 ```
 给定数组 nums = [1, 0, -1, 0, -2, 2]，和 target = 0。
 满足要求的四元组集合为：
@@ -15,6 +16,7 @@
 ]
 ```
 
-#### 实现
+## 实现
+
 - [Go](https://github.com/pojozhang/playground/blob/master/solutions/go/src/playground/algorithm/four_sum.go)
 - [Java](https://github.com/pojozhang/playground/blob/master/solutions/java/src/main/java/playground/algorithm/FourSum.java)

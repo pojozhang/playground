@@ -6,17 +6,20 @@
 你的算法应该具有线性时间复杂度。 你可以不使用额外空间来实现吗？
 
 **示例 1:**
+
 ```
 输入: [2,2,3,2]
 输出: 3
 ```
 
 **示例 2:**
+
 ```
 输入: [0,1,0,1,0,1,99]
 输出: 99
 ```
 
-#### 实现
+## 实现
+
 - [Java](https://github.com/pojozhang/playground/blob/master/solutions/java/src/main/java/playground/algorithm/SingleNumber2.java)
 - [Go](https://github.com/pojozhang/playground/blob/master/solutions/go/src/playground/algorithm/single_number_2.go)

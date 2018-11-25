@@ -7,6 +7,7 @@
 在杨辉三角中，每个数是它左上方和右上方的数的和。
 
 **示例:**
+
 ```
 输入: 5
 输出:
@@ -19,5 +20,6 @@
 ]
 ```
 
-#### 实现
+## 实现
+
 - [Go](https://github.com/pojozhang/playground/blob/master/solutions/go/src/playground/algorithm/pascals_triangle.go)

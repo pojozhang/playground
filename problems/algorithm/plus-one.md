@@ -5,6 +5,7 @@
 你可以假设除了整数 0 之外，这个整数不会以零开头。
 
 **示例 1:**
+
 ```
 输入: [1,2,3]
 输出: [1,2,4]
@@ -12,11 +13,13 @@
 ```
 
 **示例 2:**
+
 ```
 输入: [4,3,2,1]
 输出: [4,3,2,2]
 解释: 输入数组表示数字 4321。
 ```
 
-#### 实现
+## 实现
+
 - [Java](https://github.com/pojozhang/playground/blob/master/solutions/java/src/main/java/playground/algorithm/PlusOne.java)

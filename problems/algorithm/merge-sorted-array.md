@@ -7,6 +7,7 @@
 你可以假设 nums1 有足够的空间（空间大小大于或等于 m + n）来保存 nums2 中的元素。
 
 **示例:**
+
 ```
 输入:
 nums1 = [1,2,3,0,0,0], m = 3
@@ -14,5 +15,6 @@ nums2 = [2,5,6],       n = 3
 输出: [1,2,2,3,5,6]
 ```
 
-#### 实现
+## 实现
+
 - [Go](https://github.com/pojozhang/playground/blob/master/solutions/go/src/playground/algorithm/merge_sorted_array.go)

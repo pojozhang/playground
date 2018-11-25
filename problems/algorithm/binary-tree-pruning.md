@@ -30,8 +30,10 @@
 ![](https://s3-lc-upload.s3.amazonaws.com/uploads/2018/04/05/1028.png)
 
 **说明:**
+
 1. 给定的二叉树最多有 `100` 个节点。
 2. 每个节点的值只会为 `0` 或 `1` 。
 
-#### 实现
+## 实现
+
 - [Go](https://github.com/pojozhang/playground/blob/master/solutions/go/src/playground/algorithm/binary_tree_pruning.go)

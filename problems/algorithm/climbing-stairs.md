@@ -5,6 +5,7 @@
 **注意：** 给定 n 是一个正整数。
 
 **示例 1：**
+
 ```
 输入： 2
 输出： 2
@@ -14,6 +15,7 @@
 ```
 
 **示例 2：**
+
 ```
 输入： 3
 输出： 3
@@ -23,5 +25,6 @@
 3.  2 步 + 1 步
 ```
 
-#### 实现
+## 实现
+
 - [Java](https://github.com/pojozhang/playground/blob/master/solutions/java/src/main/java/playground/algorithm/ClimbingStairs.java)

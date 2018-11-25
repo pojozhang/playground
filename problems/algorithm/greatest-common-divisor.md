@@ -2,17 +2,22 @@
 
 求两个数的最大公约数。
 
-#### 实现
+## 实现
+
 - [Java](https://github.com/pojozhang/playground/blob/master/solutions/java/src/main/java/playground/algorithm/GreatestCommonDivisor.java)
 
-#### 思路
+## 思路
+
 1. 欧几里得算法（辗转相除法）
+
 **计算公式**
+
 ```
 gcd(a,b) = gcd(b,a mod b)
 ```
 
 **证明**
+
 1. 假设 m = gcd(a,b)，m是a和b的最大公约数，则m可以被a和b整除，记作m|a，m|b。
 2. 假设 n = gcd(b,a mod b)，n是b和a mod b的最大公约数。同理，n|b，n|a mod b。
 3. 因为 a = x*b + a mod b，所以 a/n = x*(b/n) + (a mod b)/n，由2可知 n|b，n|a mod b，所以 n|a，所以n是a和b的公约数。

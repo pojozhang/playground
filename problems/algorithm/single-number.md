@@ -6,16 +6,19 @@
 你的算法应该具有线性时间复杂度。 你可以不使用额外空间来实现吗？
 
 **示例 1:**
+
 ```
 输入: [2,2,1]
 输出: 1
 ```
 
 **示例 2:**
+
 ```
 输入: [4,1,2,1,2]
 输出: 4
 ```
 
-#### 实现
+## 实现
+
 - [Go](https://github.com/pojozhang/playground/blob/master/solutions/go/src/playground/algorithm/single_number.go)

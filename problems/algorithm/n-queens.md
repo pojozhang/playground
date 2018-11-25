@@ -9,6 +9,7 @@ n 皇后问题研究的是如何将 n 个皇后放置在 n×n 的棋盘上，�
 每一种解法包含一个明确的 n 皇后问题的棋子放置方案，该方案中 `'Q'` 和 `'.'` 分别代表了皇后和空位。
 
 **示例:**
+
 ```
 输入: 4
 输出: [
@@ -24,5 +25,6 @@ n 皇后问题研究的是如何将 n 个皇后放置在 n×n 的棋盘上，�
 解释: 4 皇后问题存在两个不同的解法。
 ```
 
-#### 实现
+## 实现
+
 - [Go](https://github.com/pojozhang/playground/blob/master/solutions/go/src/playground/algorithm/n_queens.go)

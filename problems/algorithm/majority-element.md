@@ -4,6 +4,7 @@
 你可以假设数组是非空的，并且给定的数组总是存在众数。
 
 **示例 1:**
+
 ```
 输入: [3,2,3]
 输出: 3
@@ -15,5 +16,6 @@
 输出: 2
 ```
 
-#### 实现
+## 实现
+
 - [Go](https://github.com/pojozhang/playground/blob/master/solutions/go/src/playground/algorithm/majority_element.go)

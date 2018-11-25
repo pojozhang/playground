@@ -5,6 +5,7 @@
 你的目标是使用最少的跳跃次数到达数组的最后一个位置。
 
 **示例:**
+
 ```
 输入: [2,3,1,1,4]
 输出: 2
@@ -14,5 +15,6 @@
 **说明:**
 假设你总是可以到达数组的最后一个位置。
 
-#### 实现
+## 实现
+
 - [Go](https://github.com/pojozhang/playground/blob/master/solutions/go/src/playground/algorithm/jump_game_2.go)

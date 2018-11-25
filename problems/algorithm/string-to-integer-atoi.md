@@ -15,12 +15,14 @@
 假设我们的环境只能存储 32 位有符号整数，其数值范围是 [−2<sup>31</sup>,  2<sup>31</sup> − 1]。如果数值超过可表示的范围，则返回  INT_MAX (2<sup>31</sup> − 1) 或 INT_MIN (−2<sup>31</sup>) 。
 
 示例 1:
+
 ```
 输入: "42"
 输出: 42
 ```
 
 示例 2:
+
 ```
 输入: "   -42"
 输出: -42
@@ -29,6 +31,7 @@
 ```
 
 示例 3:
+
 ```
 输入: "4193 with words"
 输出: 4193
@@ -36,6 +39,7 @@
 ```
 
 示例 4:
+
 ```
 输入: "words and 987"
 输出: 0
@@ -44,6 +48,7 @@
 ```
 
 示例 5:
+
 ```
 输入: "-91283472332"
 输出: -2147483648
@@ -51,5 +56,6 @@
      因此返回 INT_MIN (−2<sup>31</sup>) 。
 ```
 
-#### 实现
+## 实现
+
 - [Java](https://github.com/pojozhang/playground/blob/master/solutions/java/src/main/java/playground/algorithm/StringToInteger.java)

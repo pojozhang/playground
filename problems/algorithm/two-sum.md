@@ -5,6 +5,7 @@
 你可以假设每个输入都只会有一种答案，同样的元素不能被重用。
 
 示例:
+
 ```
 给定 nums = [2, 7, 11, 15], target = 9
 
@@ -12,7 +13,8 @@
 所以返回 [0, 1]
 ```
 
-#### 实现
+## 实现
+
 - [Java](https://github.com/pojozhang/playground/blob/master/solutions/java/src/main/java/playground/algorithm/TwoSum.java)
 - [Go](https://github.com/pojozhang/playground/blob/master/solutions/go/src/playground/algorithm/two_sum.go)
 - [Python](https://github.com/pojozhang/playground/blob/master/solutions/python/algorithm/add_two_numbers.py)

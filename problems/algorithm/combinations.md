@@ -3,6 +3,7 @@
 给定两个整数 n 和 k，返回 1 ... n 中所有可能的 k 个数的组合。
 
 **示例:**
+
 ```
 输入: n = 4, k = 2
 输出:
@@ -16,5 +17,6 @@
 ]
 ```
 
-#### 实现
+## 实现
+
 - [Go](https://github.com/pojozhang/playground/blob/master/solutions/go/src/playground/algorithm/combinations.go)

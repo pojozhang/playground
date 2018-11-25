@@ -4,28 +4,33 @@
 你可以假设数组中无重复元素。
 
 **示例 1:**
+
 ```
 输入: [1,3,5,6], 5
 输出: 2
 ```
 
 **示例 2:**
+
 ```
 输入: [1,3,5,6], 2
 输出: 1
 ```
 
 **示例 3:**
+
 ```
 输入: [1,3,5,6], 7
 输出: 4
 ```
 
 **示例 4:**
+
 ```
 输入: [1,3,5,6], 0
 输出: 0
 ```
 
-#### 实现
+## 实现
+
 - [Java](https://github.com/pojozhang/playground/blob/master/solutions/java/src/main/java/playground/algorithm/SearchInsertPosition.java)

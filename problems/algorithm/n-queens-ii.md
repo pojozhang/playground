@@ -8,6 +8,7 @@ n 皇后问题研究的是如何将 n 个皇后放置在 n×n 的棋盘上，�
 给定一个整数 n，返回 n 皇后不同的解决方案的数量。
 
 **示例:**
+
 ```
 输入: 4
 输出: 2
@@ -24,5 +25,6 @@ n 皇后问题研究的是如何将 n 个皇后放置在 n×n 的棋盘上，�
 ]
 ```
 
-#### 实现
+## 实现
+
 - [Go](https://github.com/pojozhang/playground/blob/master/solutions/go/src/playground/algorithm/n_queens_2.go)

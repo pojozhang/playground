@@ -7,5 +7,6 @@
 与 target 最接近的三个数的和为 2. (-1 + 2 + 1 = 2).
 ```
 
-#### 实现
+## 实现
+
 - [Java](https://github.com/pojozhang/playground/blob/master/solutions/java/src/main/java/playground/algorithm/ThreeSumClosest.java)

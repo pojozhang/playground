@@ -7,6 +7,7 @@
 不能使用代码库中的排序函数来解决这道题。
 
 **示例:**
+
 ```
 输入: [2,0,2,1,1,0]
 输出: [0,0,1,1,2,2]
@@ -17,5 +18,6 @@
 首先，迭代计算出0、1 和 2 元素的个数，然后按照0、1、2的排序，重写当前数组。
 你能想出一个仅使用常数空间的一趟扫描算法吗？
 
-#### 实现
+## 实现
+
 - [Go](https://github.com/pojozhang/playground/blob/master/solutions/go/src/playground/algorithm/sort_colors.go)

@@ -8,6 +8,7 @@
 累加序列里的数不会以 0 开头，所以不会出现 `1, 2, 03` 或者 `1, 02, 3` 的情况。
 
 **示例 1:**
+
 ```
 输入: "112358"
 输出: true 
@@ -15,14 +16,16 @@
 ```
 
 **示例 2:**
+
 ```
 输入: "199100199"
-输出: true 
+输出: true
 解释: 累加序列为: 1, 99, 100, 199。1 + 99 = 100, 99 + 100 = 199
 ```
 
 **进阶:**
 你如何处理一个溢出的过大的整数输入?
 
-#### 实现
+## 实现
+
 - [Go](https://github.com/pojozhang/playground/blob/master/solutions/go/src/playground/algorithm/additive_number.go)

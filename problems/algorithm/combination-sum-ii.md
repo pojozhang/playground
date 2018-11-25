@@ -5,9 +5,10 @@
 
 **说明：**
 所有数字（包括目标数）都是正整数。
-解集不能包含重复的组合。 
+解集不能包含重复的组合。
 
 **示例 1:**
+
 ```
 输入: candidates = [10,1,2,7,6,1,5], target = 8,
 所求解集为:
@@ -20,6 +21,7 @@
 ```
 
 **示例 2:**
+
 ```
 输入: candidates = [2,5,2,1,2], target = 5,
 所求解集为:
@@ -29,5 +31,6 @@
 ]
 ```
 
-#### 实现
+## 实现
+
 - [Java](https://github.com/pojozhang/playground/blob/master/solutions/java/src/main/java/playground/algorithm/CombinationSum2.java)

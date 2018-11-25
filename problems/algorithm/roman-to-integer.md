@@ -1,6 +1,7 @@
 # [罗马数字转整数](https://leetcode-cn.com/problems/roman-to-integer/description/)
 
 罗马数字包含以下七种字符: `I`， `V`， `X`， `L`，`C`，`D` 和 `M`。
+
 ```
 字符          数值
 I             1
@@ -22,24 +23,28 @@ M             1000
 给定一个罗马数字，将其转换成整数。输入确保在 1 到 3999 范围内。
 
 示例 1:
+
 ```
 输入: "III"
 输出: 3
 ```
 
 示例 2:
+
 ```
 输入: "IV"
 输出: 4
 ```
 
 示例 3:
+
 ```
 输入: "IX"
 输出: 9
 ```
 
 示例 4:
+
 ```
 输入: "LVIII"
 输出: 58
@@ -47,12 +52,14 @@ M             1000
 ```
 
 示例 5:
+
 ```
 输入: "MCMXCIV"
 输出: 1994
 解释: M = 1000, CM = 900, XC = 90 and IV = 4.
 ```
 
-#### 实现
+## 实现
+
 - [Java](https://github.com/pojozhang/playground/blob/master/solutions/java/src/main/java/playground/algorithm/RomanToInteger.java)
 - [Go](https://github.com/pojozhang/playground/blob/master/solutions/go/src/playground/algorithm/roman_to_integer.go)
