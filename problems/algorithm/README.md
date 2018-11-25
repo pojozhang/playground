@@ -149,4 +149,4 @@
 
 ## 其它
 
-- [ ] [LRU缓存机制](lru-cache.md)
+- [x] [LRU缓存机制](lru-cache.md)

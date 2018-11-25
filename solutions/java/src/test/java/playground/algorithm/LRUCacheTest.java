@@ -1,30 +1,72 @@
 package playground.algorithm;
 
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.Test;
 
 class LRUCacheTest {
 
-    private static final int CAPACITY = 10;
-    private static final int KEY = 1;
     private LRUCache cache;
-
-    @BeforeEach
-    void setUp() {
-        cache = new LRUCache(CAPACITY);
-    }
 
     @Test
     void case_1() {
-        assertEquals(LRUCache.CACHE_MISS, cache.get(KEY));
+        cache = new LRUCache(2);
+
+        assertEquals(LRUCache.CACHE_MISS, cache.get(1));
     }
 
     @Test
     void case_2() {
-        cache.put(KEY, 1);
+        cache = new LRUCache(2);
 
-        assertEquals(1, cache.get(KEY));
+        cache.put(1, 1);
+
+        assertEquals(1, cache.get(1));
+    }
+
+    @Test
+    void case_3() {
+        cache = new LRUCache(2);
+        cache.put(1, 1);
+        cache.put(2, 2);
+
+        assertEquals(1, cache.get(1));
+
+        cache.put(3, 3);
+
+        assertEquals(LRUCache.CACHE_MISS, cache.get(2));
+
+        cache.put(4, 4);
+
+        assertEquals(LRUCache.CACHE_MISS, cache.get(1));
+        assertEquals(3, cache.get(3));
+        assertEquals(4, cache.get(4));
+    }
+
+    @Test
+    void case_4() {
+        cache = new LRUCache(1);
+        cache.put(2, 1);
+
+        assertEquals(1, cache.get(2));
+
+        cache.put(3, 2);
+
+        assertEquals(LRUCache.CACHE_MISS, cache.get(2));
+        assertEquals(2, cache.get(3));
+    }
+
+    @Test
+    void case_5() {
+        cache = new LRUCache(2);
+        cache.put(2, 1);
+        cache.put(2, 2);
+
+        assertEquals(2, cache.get(2));
+
+        cache.put(1, 1);
+        cache.put(4, 1);
+
+        assertEquals(LRUCache.CACHE_MISS, cache.get(2));
     }
 }

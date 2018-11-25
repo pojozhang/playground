@@ -8,6 +8,7 @@
 你是否可以在 **O(1)** 时间复杂度内完成这两种操作？
 
 **示例:**
+
 ```java
 LRUCache cache = new LRUCache( 2 /* 缓存容量 */ );
 cache.put(1, 1);
@@ -21,4 +22,6 @@ cache.get(3);       // 返回  3
 cache.get(4);       // 返回  4
 ```
 
-#### 实现
+## 实现
+
+- [Java](https://github.com/pojozhang/playground/blob/master/solutions/java/src/main/java/playground/algorithm/LRUCache.java)
