@@ -166,7 +166,7 @@ public void write() {
 我们在上文中提到代码的执行顺序可能因为编译器和CPU进行指令重排序导致其和编写时的顺序不一致，从而在多线程环境下产生一些问题。`volatile`可以起到禁止指令重排序的作用，我们看下面的例子，这是一个典型的用双重检查锁机制实现的单例模式。
 
 ```java
-class Singleton{
+public class Singleton{
 
     private static Singleton instance;
 
@@ -183,6 +183,10 @@ class Singleton{
             }
         }
         return instance;
+    }
+
+    public static void main(String[] args) {
+        Singleton.getInstance();
     }
 }
 ```
@@ -228,7 +232,7 @@ y = 3;       //5
 内存屏障是一个CPU指令，不同的硬件平台有不同的实现，它主要有两个功能。
 
 1. 阻止屏障前后的指令重排序。
-2. 强制把缓存中的数据同步到主内存，让其它CPU核心缓存的对应数据失效。
+2. 强制把缓存中的数据同步到内存，让其它CPU核心缓存的对应数据失效。
 
 在硬件层面有2种内存屏障。
 
@@ -249,14 +253,40 @@ JMM根据以下策略插入屏障。
 - 在每个`volatile`写操作前插入一个`StoreStore`屏障。
 - 在每个`volatile`写操作后插入一个`StoreLoad`屏障。
 
-![](resources/jmm_7.png)
+![](resources/jmm_7.jpg)
 
 - 在每个`volatile`读操作后插入一个`LoadLoad`屏障。
 - 在每个`volatile`读操作后插入一个`LoadStore`屏障。
 
-![](resources/jmm_8.png)
+![](resources/jmm_8.jpg)
 
+对`volatile`变量的访问在编译后生成的字节码中并不能看出和访问普通变量的区别，但我们可以通过JIT产生的汇编代码观察。
 
+我们需要用到hsdis工具，MAC用户可以从[这里](resources/hsdis-amd64.dylib)获取编译后的成品。我们把它放在一个目录下，然后设置环境变量，只要设置到文件夹那一层。
+
+```bash
+export LD_LIBRARY_PATH=path_to_hisdis
+```
+
+然后执行以下命令把生成的汇编代码导出到文件中。
+
+```bash
+java -XX:+UnlockDiagnosticVMOptions -XX:+PrintAssembly -Xcomp -XX:CompileCommand=dontinline,*Singleton.getInstance -XX:CompileCommand=compileonly,*Singleton.getInstance Singleton > result.txt
+```
+
+通过对比我们可以看到在有`volatile`修饰的版本中，多执行了以下的语句。
+
+```assembly
+0x0000000119bda482: lock addl $0x0,-0x40(%rsp)  ;*putstatic instance {reexecute=0 rethrow=0 return_oop=0}
+                                                ; - Singleton::getInstance@24 (line 14)
+```
+
+这里的关键就是`lock`指令，在[CAS](cas.md)一文中就曾提到过该指令的2个功能。
+
+1. 可以保证在多核心环境下让某个核心独占使用一部分共享内存。
+2. 把缓存中的数据同步回内存中，并让其它核心中对应的缓存数据失效。
+
+实际上它还有另一个功能：阻止CPU对它两边的指令进行重排序。因此依靠`lock`指令我们就实现了`volatile`变量在CPU层面的有序性和可见性。
 
 ## 参考
 
