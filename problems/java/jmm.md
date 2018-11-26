@@ -54,7 +54,7 @@ Java内存模型定义了8种操作来实现如何把变量从主内存读到工
 
 ### 有序性 <a id = "ordering"></a>
 
-CPU最后执行指令的顺序未必和我们写的代码顺序一一对应，很有可能在执行时是乱序的，这是因为编译器、处理器和内存系统为了提高性能会对指令进行重排序。
+CPU最后执行指令的顺序未必和我们写的代码顺序一一对应，很有可能在执行时是乱序的，这是因为编译器、处理器和内存系统为了提高性能会对指令进行重排序。只要在重排序前后不影响单个线程中程序执行的结果，那么就有可以进行重排序，这就是`as-if-serial`原则。
 
 - 编译器重排序
 
@@ -201,27 +201,62 @@ instance = new Singleton();
 
 如果指令重排序后2和3进行了互换，那么当`instance`被指向1中分配的内存地址时，对象还没有初始化完成，也就是说，虽然`instance`不为`null`，但它有可能还没有完成初始化，在多线程环境下就有可能会有线程拿到未完全初始化的对象。因此我们需要在`instance`前加上`volatile`禁止重排序。
 
+```java
+private static volatile Singleton instance;
+```
+
 - 保证64位变量的原子性
 
 可以保证对`long`和`double`类型变量的读写操作是原子的。Java内存模型规定虚拟机对32位数据类型的操作必须是原子的，而对于64位数据类型规定如果是`volatile`变量那么虚拟机需要保证读写操作是原子的，如果不是`volatile`变量那么虚拟机可以分成2次32位的操作而不必保证原子性。目前商用虚拟机都实现了对64位数据类型的原子操作（即使没有`volatile`），因此为了保证原子性，`volatile`其实并不是必要的（当然还是推荐这么做）。
 
 ### volatile的原理
 
-虚拟机在底层使用内存屏障解决可见性和重排序的问题。
+在编译器层面，在重排序时不会把对`volate`变量访问语句前的语句放在后面执行，也不会把对`volate`变量访问语句后的语句放在前面执行。比如一下代码中1和2不会在3之后，4和5不会在3之前，但是1和2、4和5可以重排序。
 
-内存屏障是一个CPU指令，它主要有两个功能。
+```java
+// flag是volatile变量。
 
-1. 保证某些特定操作的执行顺序。
-2. 影响一些数据的可见性。
+x = 0;       //1
+y = 1;       //2
+flag = true; //3
+x = 2;       //4
+y = 3;       //5
+```
 
-Java中有以下4种内存屏障。
+在CPU层面，虚拟机在底层使用内存屏障解决可见性和重排序的问题。
 
-|    屏障类型    |          指令示例          |                            说明                                |
-| ------------- | ------------------------ | -------------------------------------------------------------- |
-|  LoadLoad     | Load1;LoadLoad;Load2     | 保证Load1数据的装载先于Load2及其后所有装载指令的的操作。               |
-|  StoreStore   | Store1;StoreStore;Store2 | 保证Store1立刻刷新数据到内存的操作先于Store2及其后所有存储指令的操作。   |
-|  LoadStore    | Load1;LoadStore;Store2   | 保证Load1的数据装载先于Store2及其后所有的存储指令刷新数据到内存的操作。   |
-|  StoreLoad    | Store1;StoreLoad;Load2   | 保证Store1立刻刷新数据到内存的操作先于Load2及其后所有装载装载指令的操作。 |
+内存屏障是一个CPU指令，不同的硬件平台有不同的实现，它主要有两个功能。
+
+1. 阻止屏障前后的指令重排序。
+2. 强制把缓存中的数据同步到主内存，让其它CPU核心缓存的对应数据失效。
+
+在硬件层面有2种内存屏障。
+
+1. Load屏障，在指令前插入Load屏障可以让CPU缓存中的数据失效，从而强制从主内存中加载数据。
+2. Store屏障，在指令后插入Store屏障可以强制把CPU缓存中的数据同步到主内存中。
+
+Java中有以下4种内存屏障，是Load屏障和Store屏障的组合。
+
+|    屏障类型    |          指令示例          |                            说明                                   |
+| ------------- | ------------------------ | ----------------------------------------------------------------- |
+|  LoadLoad     | Load1;LoadLoad;Load2     | 在Load2及后续读取操作要读取的数据被访问前，保证Load1要读取的数据被读取完毕。 |
+|  StoreStore   | Store1;StoreStore;Store2 | 在Store2及后续写入操作执行前，保证Store1的写入操作对其它处理器可见。        |
+|  LoadStore    | Load1;LoadStore;Store2   | 保证Load1的数据装载先于Store2及其后所有的存储指令刷新数据到内存的操作。     |
+|  StoreLoad    | Store1;StoreLoad;Load2   | 在Load2及后续所有读取操作执行前，保证Store1的写入对所有处理器可见。         |
+
+JMM根据以下策略插入屏障。
+
+- 在每个`volatile`写操作前插入一个`StoreStore`屏障。
+- 在每个`volatile`写操作后插入一个`StoreLoad`屏障。
+
+![](resources/jmm_7.png)
+
+- 在每个`volatile`读操作后插入一个`LoadLoad`屏障。
+- 在每个`volatile`读操作后插入一个`LoadStore`屏障。
+
+![](resources/jmm_8.png)
+
+
 
 ## 参考
 
@@ -229,5 +264,7 @@ Java中有以下4种内存屏障。
 2. [《从源代码到Runtime发生的重排序编译器重排序指令重排序内存系统重排序阻止重排序》](https://cloud.tencent.com/developer/article/1036747)
 3. [《谈乱序执行和内存屏障》](https://blog.csdn.net/dd864140130/article/details/56494925)
 4. [《volatile关键字的作用、原理》](https://monkeysayhi.github.io/2016/11/29/volatile%E5%85%B3%E9%94%AE%E5%AD%97%E7%9A%84%E4%BD%9C%E7%94%A8%E3%80%81%E5%8E%9F%E7%90%86/)
-5 [《一文解决内存屏障》](https://monkeysayhi.github.io/2017/12/28/%E4%B8%80%E6%96%87%E8%A7%A3%E5%86%B3%E5%86%85%E5%AD%98%E5%B1%8F%E9%9A%9C/)
-6.[《揭秘内存屏障》](http://wiki.jikexueyuan.com/project/disruptor-getting-started/storage-barrier.html)
+5. [《一文解决内存屏障》](https://monkeysayhi.github.io/2017/12/28/%E4%B8%80%E6%96%87%E8%A7%A3%E5%86%B3%E5%86%85%E5%AD%98%E5%B1%8F%E9%9A%9C/)
+6. [《揭秘内存屏障》](http://wiki.jikexueyuan.com/project/disruptor-getting-started/storage-barrier.html)
+7. [《内存屏障》](https://www.jianshu.com/p/2ab5e3d7e510)
+8. [《深入理解volatile》](https://juejin.im/post/5bb4a26fe51d450e7b174c16)
