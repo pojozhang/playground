@@ -94,10 +94,22 @@ Certificate:
 
 - `Serial Number`：证书序号。
 - `Issuer`：颁发者。
-- `Subject`：证书颁发的目标。
+- `Subject`：证书持有者。
 - `Validity`：证书期限。
 - `Public Key`：公钥相关的信息
 - `Signature`：签名相关的信息。
+
+### 证书链
+
+在上面的步骤中我们简化了问题，实际上客户端最后拿到的证书的颁发机构很有可能没有内置在系统中，这样我们就找不到对应的公钥。
+
+证书颁发机构实际上是有层级关系的，第一级叫`root CA`，。
+
+![](resources/https_5.jpg)
+
+
+![](resources/https_4.jpg)
+
 
 ## 请求流程
 
@@ -127,7 +139,7 @@ Certificate:
 
     客户端校验证书是否还在有效期内，并且根据证书内的颁发者到CA仓库寻找CA公钥，通过CA公钥对证书中的签名进行解密后得到一个哈希值，把它和客户端计算出来的哈希值进行比对，如果比对结果一致，那么就通过验证，否则就向用户提示异常。
 
-    ![](resources/https_3.jpg)
+    ![](resources/https_3.png)
 
     验证通过后，客户端取出证书中的用于非对称加密的公钥（不是CA公钥），然后再生成一个随机数`Number3`并用取出的公钥对它进行加密生成`PreMaster Key`。
 
@@ -153,8 +165,17 @@ Certificate:
 
 在上述步骤完成之后，客户端和服务端就可以用对称加密的方式对之后的数据传输进行加密了。
 
+## 优化
+
+### Session ID
+
+客户端在首次建立连接时可以带上一个会话标识`Session ID`，服务端可以把会话标识对应的协商信息保存起来，在后续的`Client Hello`消息中客户端同样带上这个标识符，服务端可以查找是否有匹配的数据，如果有，那么就可以快速完成连接的建立。
+
 ## 参考
 
 1. [《HTTPS原理详解》](https://blog.upyun.com/?p=1347)
 2. [《详解https是如何确保安全的？》](http://www.wxtlife.com/2016/03/27/%E8%AF%A6%E8%A7%A3https%E6%98%AF%E5%A6%82%E4%BD%95%E7%A1%AE%E4%BF%9D%E5%AE%89%E5%85%A8%E7%9A%84%EF%BC%9F/)
 3. [《SSL/TLS 握手过程详解》](https://www.jianshu.com/p/7158568e4867)
+4. [《TLS 握手优化详解》](https://imququ.com/post/optimize-tls-handshake.html)
+5. [《证书链-Digital Certificates》](https://www.jianshu.com/p/46e48bc517d0)
+6. [《HTTPS中证书链不完整的解决方案》](https://www.tangzongchao.com/2016/02/24/HTTPS%E4%B8%AD%E8%AF%81%E4%B9%A6%E9%93%BE%E4%B8%8D%E5%AE%8C%E6%95%B4%E7%9A%84%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88/)
