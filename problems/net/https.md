@@ -105,7 +105,7 @@ Certificate:
 
 证书颁发机构实际上是有层级关系的，第一级叫`root CA`，。
 
-![](resources/https_5.jpg)
+![](resources/https_5.png)
 
 
 ![](resources/https_4.jpg)
