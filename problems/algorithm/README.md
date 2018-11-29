@@ -5,7 +5,6 @@
 - [x] [两数之和](two-sum.md)
 - [x] [两数相加](add-two-numbers.md)
 - [x] [从排序数组中删除重复项](remove-duplicates.md)
-- [x] [二分查找](binary-search.md)
 - [x] [两个排序数组的中位数](median-of-two-sorted-arrays.md)
 - [x] [三数之和](3sum.md)
 - [x] [接雨水](trapping-rain-water.md)
@@ -132,6 +131,11 @@
 - [x] [位1的个数](number-of-1-bits.md)
 - [x] [2的幂](power-of-two.md)
 - [x] [只出现一次的数字 II](single-number-ii.md)
+
+## 二分查找
+
+- [x] [二分查找](binary-search.md)
+- [ ] [搜索旋转排序数组](search-in-rotated-sorted-array.md)
 
 ## 贪心
 
