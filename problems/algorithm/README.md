@@ -135,7 +135,7 @@
 ## 二分查找
 
 - [x] [二分查找](binary-search.md)
-- [ ] [搜索旋转排序数组](search-in-rotated-sorted-array.md)
+- [x] [搜索旋转排序数组](search-in-rotated-sorted-array.md)
 
 ## 贪心
 
