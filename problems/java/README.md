@@ -57,7 +57,7 @@
 - [解释执行还是编译执行](jit.md)
 - [类文件结构](classfile.md)
 - [类加载机制](classloader.md)
-- [垃圾回收机制](garbage-collection.md)
+- [垃圾回收机制](gc.md)
 
 ## 诊断
 
