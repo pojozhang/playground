@@ -97,7 +97,7 @@ public class Test {
 
 ### MajorGC(Full GC)
 
-## Stop-The-World
+## Stop-The-World(STW)
 
 在进行垃圾收集前，虚拟机需要进入一个稳定的状态，在垃圾收集的过程中对象的引用关系不能发生变化，就好像整个系统在某个时间点上冻结了，这就要求除了GC线程以外其它所有的线程必须被暂停，这就是`Stop-The-World`的由来。
 `Stop-The-World`是通过安全点（safepoint）机制实现的。安全点是指代码中的一些特定位置，当线程运行到这些位置时线程的状态是确定的，需要等到所有的线程抵达安全点GC才能进行，安全点主要有以下几个位置。
@@ -111,26 +111,48 @@ public class Test {
 
 ## 垃圾收集器
 
-本文将介绍以下几种垃圾收集器，如下图所示，两个垃圾收集器之间的连线表示它们可以搭配使用。
+本文将介绍以下几种垃圾收集器，如图所示，两个垃圾收集器之间的连线表示它们可以搭配使用。
 
 ![](resources/gc_6.png)
 
-### Serial
+### Serial/Serial Old
 
+Serial是单线程的垃圾收集器，是采用复制算法的新生代收集器，它工作时需要暂停所有非GC线程直到垃圾收集工作完成。
+Serial Old是Serial的老年代版本，采用标记-整理算法。
 
+![](resources/gc_7.png)
 
 ### ParNew
 
-### Parallel Scavenge
+ParNew是Serial的多线程版本，两者在垃圾收集算法、Stop-The-World、对象分配规则等部分完全一致，ParNew也是一个新生代的垃圾收集器。
 
-### Serial Old
+![](resources/gc_8.png)
 
-### Parallel Old
+### Parallel Scavenge/Parallel Old
+
+Parallel Scavenge（/ˈskavənj/，清除）是一个多线程的新生代垃圾收集器，它也采用复制算法进行垃圾回收。Parallel Scavenge和ParNew的区别是，Parallel Scavenge关注的是提高吞吐量，适合程序在后台运算而不需要和用户频繁交互的场景，它关注的是一段时间内垃圾收集的总时间；ParNew关注的是尽量缩短Stop-The-World的时间，适合程序需要和用户频繁交互的场景，停顿时间越短那么对用户请求响应的速度就越快。
+
+> 吞吐量 = CPU运行用户代码的时间 / （CPU运行用户代码的时间 + 垃圾收集时间），假设虚拟机总归运行100分钟，其中垃圾收集时间是1分钟，那么运行用户代码时间就是99分钟，那么吞吐量就是99%。
+
+Parallel Old是Parallel Scavenge的老年代版本，是一个多线程的采用标记-整理算法的收集器。
+
+![](resources/gc_9.png)
 
 ### CMS
 
-### G1
+CMS，全称Concurrent Mark Sweep，是一种支持并发的采用标记-清除算法的老年代垃圾收集器。它的收集过程分为以下4个步骤。
 
+1. 初始标记
+  标记与GC Roots**直接**关联的对象。由于只标记与GC Roots**直接**关联的对象，数量较少，因此这一阶段虽然会引发STW，但时间比较短暂。
+2. 并发标记
+  
+3. 重新标记
+
+4. 并发清除
+
+![](resources/gc_10.png)
+
+### G1
 
 ## 参考
 
@@ -138,3 +160,4 @@ public class Test {
 2. [《GC算法之一 标记-清除算法》](https://zhuanlan.zhihu.com/p/51095294)
 3. [《JVM安全点介绍》](https://www.ezlippi.com/blog/2018/01/safepoint.html)
 4. [《Elasticsearch Log GC日志分析详解》](https://blog.csdn.net/ZYC88888/article/details/83023484)
+5. [《图解CMS垃圾回收机制，你值得拥有》](https://www.jianshu.com/p/2a1b2f17d3e4)
