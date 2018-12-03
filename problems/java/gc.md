@@ -143,12 +143,30 @@ Parallel Old是Parallel Scavenge的老年代版本，是一个多线程的采用
 CMS，全称Concurrent Mark Sweep，是一种支持并发的采用标记-清除算法的老年代垃圾收集器。它的收集过程分为以下4个步骤。
 
 1. 初始标记
-  标记与GC Roots**直接**关联的对象。由于只标记与GC Roots**直接**关联的对象，数量较少，因此这一阶段虽然会引发STW，但时间比较短暂。
-2. 并发标记
-  
-3. 重新标记
 
-4. 并发清除
+  这一步会标记在老年代中与GC Roots**直接**关联的或者被新生代中存活对象引用到的老年代对象。这一阶段虽然会引发STW，但时间比较短暂。
+
+  ![](resources/gc_11.png)
+
+2. 并发标记
+
+  通过上一阶段中找出的对象递归的找出所有存活对象。这一阶段是和用户线程并发执行的，垃圾收集的代码和用户的代码是交错执行的，因此在标记过程中对象的引用状态可能会发生变化。
+
+  ![](resources/gc_12.png)
+
+3. 预清理阶段
+
+  在这个阶段会找出上一阶段中遗漏的存活对象。由于并发标记阶段垃圾收集和用户代码是交替执行的，因此在垃圾收集的同时引用可能发生变化，部分存活对象会被遗漏。
+  为了找出所有存活的对象，最简单的方法是扫描整个老年代，但是这样做效率太低，虚拟机采用了一种优化的机制，称为CardTable。
+
+4. 可终止的预处理
+
+5. 重新标记
+
+6. 并发清理
+
+7. 并发重置
+
 
 ![](resources/gc_10.png)
 
@@ -161,3 +179,5 @@ CMS，全称Concurrent Mark Sweep，是一种支持并发的采用标记-清除�
 3. [《JVM安全点介绍》](https://www.ezlippi.com/blog/2018/01/safepoint.html)
 4. [《Elasticsearch Log GC日志分析详解》](https://blog.csdn.net/ZYC88888/article/details/83023484)
 5. [《图解CMS垃圾回收机制，你值得拥有》](https://www.jianshu.com/p/2a1b2f17d3e4)
+6. [《CMS垃圾回收器详解》](https://blog.csdn.net/zqz_zqz/article/details/70568819)
+7. [《GC Algorithms: Implementations》](https://plumbr.io/handbook/garbage-collection-algorithms-implementations)
