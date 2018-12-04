@@ -67,6 +67,32 @@ public class Test {
 
 通过以上输出可以看到，`finalize()`方法只被调用了一次，因此第一次对象自救成功，第二次自救失败。
 
+## 内存分配策略
+
+## GC的分类
+
+按照垃圾收集在堆上的范围可以分为以下几类。
+
+- Partial GC
+
+回收部分堆，又可以细分为几下几类。
+
+  - Young GC
+
+  回收新生代。
+
+  - Old GC
+
+  回收老年代。
+
+  - Mixed GC
+
+  回收整个新生代以及部分老年代。
+
+- Full GC
+
+回收整个堆，包括新生代，老年代和永久代。
+
 ## 垃圾收集算法
 
 ### 标记-清除
@@ -92,10 +118,6 @@ public class Test {
 ## 分代收集
 
 分代收集是指根据对象的存活周期的长短将内存划分为几块，目前普遍的做法是分为新生代和老年代。通常每次垃圾收集时都会有大批对象死去，只有少部分可以存活，对于那些死去的对象，我们把它放在新生代的内存区域中并采用复制算法进行回收，而把另一些经历了多次GC依然存活的对象放在老年代中并采用标记-清除或标记-整理算法进行回收。
-
-### Minor GC
-
-### MajorGC(Full GC)
 
 ## Stop-The-World(STW)
 
@@ -187,6 +209,12 @@ CMS，全称Concurrent Mark Sweep，是一种支持并发的采用标记-清除�
 
 #### Concurrent Mode Failure
 
+由于CMS的垃圾收集线程是和用户线程一起并发执行的，在垃圾收集的同时会不断有对象从新生代晋升到老年代，如果这个时候老年代空间用完了，就会出现`Concurrent Mode Failure`错误，虚拟机会临时启用Serial Old收集器进行老年代的垃圾回收。参数`-XX:CMSInitiatingOccupancyFraction`可以指定当老年代空间使用率超过多少后启动CMS进行垃圾回收。
+
+#### 内存碎片
+
+由于CMS采用的是标记-清除算法，因此可能产生大量的内存碎片，导致无法给大对象找到足够大的连续内存空间。
+
 ### G1
 
 ## 参考
@@ -199,3 +227,4 @@ CMS，全称Concurrent Mark Sweep，是一种支持并发的采用标记-清除�
 6. [《CMS垃圾回收器详解》](https://blog.csdn.net/zqz_zqz/article/details/70568819)
 7. [《GC Algorithms: Implementations》](https://plumbr.io/handbook/garbage-collection-algorithms-implementations)
 8. [《[JVM]GC那些事(七)CMS》](https://htchz.me/4242301031.html)
+9. [《Major GC和Full GC的区别是什么》](https://www.zhihu.com/question/41922036)
