@@ -79,11 +79,11 @@ public class Test {
 
   - Young GC
 
-  回收新生代。
+  回收新生代，也称Minor GC。
 
   - Old GC
 
-  回收老年代。
+  回收老年代，也称Major GC。
 
   - Mixed GC
 
@@ -91,7 +91,7 @@ public class Test {
 
 - Full GC
 
-回收整个堆，包括新生代，老年代和永久代。
+回收整个堆，包括新生代，老年代和永久代（或者元空间）。
 
 ## 垃圾收集算法
 
