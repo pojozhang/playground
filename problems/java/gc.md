@@ -67,8 +67,6 @@ public class Test {
 
 通过以上输出可以看到，`finalize()`方法只被调用了一次，因此第一次对象自救成功，第二次自救失败。
 
-## 内存分配策略
-
 ## GC的分类
 
 按照垃圾收集在堆上的范围可以分为以下几类。
@@ -106,9 +104,37 @@ public class Test {
 
 ![](resources/gc_5.png)
 
-## 分代收集
+## 内存分配和回收策略
 
-分代收集是指根据对象的存活周期的长短将内存划分为几块，目前普遍的做法是分为新生代和老年代。通常每次垃圾收集时都会有大批对象死去，只有少部分可以存活，对于那些死去的对象，我们把它放在新生代的内存区域中并采用复制算法进行回收，而把另一些经历了多次GC依然存活的对象放在老年代中并采用标记-清除或标记-整理算法进行回收。
+上面介绍的几种垃圾收集算法各有利弊，在性能方面复制算法效率最高，但需要浪费一半的内存空间，其余两个算法效率较低但不浪费内存空间，因此没有完美的算法。那么我们到底选择哪一种算法进行垃圾收集？
+
+在实际的场景中，大部分对象的存活时间都非常短暂，只有一小部分的对象会长时间的存活，针对这种两种情况，我们可以区别对待，对于那些短暂存活的对象我们可以采用性能较好的复制算法进行回收，对于剩下的小部分对象就采用标记-清除或标记-整理算法进行回收。
+
+![](resources/gc_16.gif)
+
+根据这个思路，我们把堆分为两块区域，用来存放短暂存活对象的区域叫新生代，存放小部分长时间存活的对象的区域叫老年代。虚拟机通常把新生代进一步细分为三个区域：一个Eden区和两个Survivor区，两个Survivor区分别称为From和To。Eden区和单个Survivor区的大小比例默认是8:1，也就是说如果新生代总大小是10MB，那么Eden区分配8MB，两个Survivor区各1MB。
+
+![](resources/gc_17.png)
+
+大部分情况下新对象会在Eden区内分配内存，经过上一次Minor GC存活下来的对象会在From中（两个Survivor区域在一开始都是空的）。
+
+![](resources/gc_18.png)
+
+当Eden区空间不足时会触发一次Minor GC。
+
+![](resources/gc_19.png)
+
+经过Minor GC后，Eden和From中存活下来的对象会被复制到To中，然后把Eden和From区清空。
+
+![](resources/gc_20.png)
+
+虚拟机会给每个存活对象一个年龄计数器，第一次经过Minor GC生存下来后设置对象的初始年龄为1岁，之后每经历一次Minor GC并生存下来年龄就增加1岁，增加到一定的年龄就把对象晋升到老年代，默认是15岁，可以通过`-XX:MaxTenuringThreshold`参数指定。
+
+![](resources/gc_21.png)
+
+### TLAB
+
+
 
 ## Stop-The-World(STW)
 
@@ -118,7 +144,7 @@ public class Test {
 - 方法返回前。
 - 调用方法后。
 - 抛出异常的位置。
-- 循环的末位。
+- 循环的末尾。
 
 选择这些位置主要考虑的因素是避免线程长时间不进入安全点，从而导致GC一直无法进行。
 
@@ -220,3 +246,4 @@ CMS，全称Concurrent Mark Sweep，是一种支持并发的采用标记-清除�
 7. [《GC Algorithms: Implementations》](https://plumbr.io/handbook/garbage-collection-algorithms-implementations)
 8. [《[JVM]GC那些事(七)CMS》](https://htchz.me/4242301031.html)
 9. [《Major GC和Full GC的区别是什么》](https://www.zhihu.com/question/41922036)
+10. [《Java Garbage Collection Basics》](https://www.oracle.com/webfolder/technetwork/tutorials/obe/java/gc01/index.html)
