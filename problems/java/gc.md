@@ -142,6 +142,10 @@ public class Test {
 
 ### TLAB
 
+在高并发情况下如果有大量线程同时在堆上给新创建的对象分配内存就会有线程安全问题，多个线程可能会申请到同一块内存，这个时候虚拟机会通过锁的方式避免以上的问题，但是会降低性能，因此引入了TLAB技术。
+
+TLAB的全称是ThreadLocalAllocBuffer，是Eden区的一块内存。每个线程在初始化是会申请一块内存作为Buffer，只有线程自己可以在这个Buffer上进行操作，当Buffer容量不够的时候，再重新从Eden区域申请一块继续使用（这一步仍旧需要锁）。也就是说通过预先申请内存的方式降低了申请内存的次数，从而提升性能。
+
 ## Stop-The-World(STW)
 
 在进行垃圾收集前，虚拟机需要进入一个稳定的状态，在垃圾收集的过程中对象的引用关系不能发生变化，就好像整个系统在某个时间点上冻结了，这就要求除了GC线程以外其它所有的线程必须被暂停，这就是`Stop-The-World`的由来。
@@ -241,6 +245,14 @@ CMS，全称Concurrent Mark Sweep，是一种支持并发的采用标记-清除�
 
 ### G1
 
+## 常见参数
+
+![](resources/gc_22.png)
+
+- Xms：初始堆大小。
+- Xmx：最大对大小。
+- Xmn：年轻代大小。
+
 ## 参考
 
 1. [《GC算法与种类》](https://www.cnblogs.com/qdhxhz/p/9211095.html)
@@ -253,3 +265,4 @@ CMS，全称Concurrent Mark Sweep，是一种支持并发的采用标记-清除�
 8. [《[JVM]GC那些事(七)CMS》](https://htchz.me/4242301031.html)
 9. [《Major GC和Full GC的区别是什么》](https://www.zhihu.com/question/41922036)
 10. [《Java Garbage Collection Basics》](https://www.oracle.com/webfolder/technetwork/tutorials/obe/java/gc01/index.html)
+11. [《JVM源码分析之线程局部缓存TLAB》](https://www.jianshu.com/p/cd85098cca39)
