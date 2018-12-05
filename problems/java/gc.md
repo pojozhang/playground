@@ -245,6 +245,17 @@ CMS，全称Concurrent Mark Sweep，是一种支持并发的采用标记-清除�
 
 ### G1
 
+G1的意思是Garbage First，是JDK9中的默认垃圾收集器，它的设计目标是取代CMS。
+
+1. 初始标记
+
+2. 根区域扫描
+
+3. 并发标记
+
+4. 重新标记
+
+
 ## 常见参数
 
 ![](resources/gc_22.png)
@@ -266,3 +277,4 @@ CMS，全称Concurrent Mark Sweep，是一种支持并发的采用标记-清除�
 9. [《Major GC和Full GC的区别是什么》](https://www.zhihu.com/question/41922036)
 10. [《Java Garbage Collection Basics》](https://www.oracle.com/webfolder/technetwork/tutorials/obe/java/gc01/index.html)
 11. [《JVM源码分析之线程局部缓存TLAB》](https://www.jianshu.com/p/cd85098cca39)
+12. [《Java Hotspot G1 GC的一些关键技术》](https://tech.meituan.com/g1.html)
