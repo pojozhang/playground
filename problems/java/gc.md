@@ -80,7 +80,7 @@ public class Test {
     - Mixed GC  
     回收整个新生代以及部分老年代。
 - Full GC  
-回收整个堆，包括新生代，老年代和永久代（或者元空间）。当准备要触发一次Young GC时，如果统计数据显示之前Young GC的平均晋升（对新生代进行回收时会有一部分对象晋升到老年代）大小比目前老年代剩余的空间大，那么就不会触发Young GC而是转为触发Full GC。
+回收整个堆，包括新生代，老年代和永久代（或者元空间）。
 
 ## 垃圾收集算法
 
@@ -116,25 +116,31 @@ public class Test {
 
 ![](resources/gc_17.png)
 
-大部分情况下新对象会在Eden区内分配内存，经过上一次Minor GC存活下来的对象会在From中（两个Survivor区域在一开始都是空的）。
+大部分情况下新对象会在Eden区内分配内存，经过上一次Young GC存活下来的对象会在From中（两个Survivor区域在一开始都是空的）。
 
 ![](resources/gc_18.png)
 
-当Eden区空间不足时会触发一次Minor GC。
+当Eden区空间不足时会触发一次Young GC。
 
 ![](resources/gc_19.png)
 
-经过Minor GC后，Eden和From中存活下来的对象会被复制到To中，然后把Eden和From区清空。
+经过Young GC后，Eden和From中存活下来的对象会被复制到To中，然后把Eden和From区清空。
 
 ![](resources/gc_20.png)
 
-虚拟机会给每个存活对象一个年龄计数器，第一次经过Minor GC生存下来后设置对象的初始年龄为1岁，之后每经历一次Minor GC并生存下来年龄就增加1岁，增加到一定的年龄就把对象晋升到老年代，默认是15岁，可以通过`-XX:MaxTenuringThreshold`参数指定。
+虚拟机会给每个存活对象一个年龄计数器，第一次经过Young GC生存下来后设置对象的初始年龄为1岁，之后每经历一次Young GC并生存下来年龄就增加1岁，增加到一定的年龄就把对象晋升到老年代，默认是15岁，可以通过`-XX:MaxTenuringThreshold`参数指定。
 
 ![](resources/gc_21.png)
 
+### 动态对象年龄判定
+
+除了上面的年龄阈值，当Survivor区中对象的空间超过一定百分比（可以通过`-XX:TargetSurvivorRatio`设置，默认是50%）后，年龄较大的对象也会被晋升至老年代即使它还没有达到正常晋升所要求的年龄阈值。
+
+### 空间分配担保
+
+如果在经过一次Young GC后存活下来的对象太多，导致Survivor区放不下，那么就需要把这部分对象直接分配到老年代中。那么这里就需要判断老年代是否有足够的空间存放Survivor区放不下的对象，其做法是在发生Young GC之前，如果当前老年代的连续空间大于新生代对象总大小或历次Young GC的平均晋升大小，那么就会触发Young GC，否则转为触发Full GC以便让老年代腾出更多的空间。如果在Full GC后依然无法存放，那么就抛出`java.lang.OutOfMemoryError: Java heap space`异常。
+
 ### TLAB
-
-
 
 ## Stop-The-World(STW)
 
@@ -201,7 +207,7 @@ CMS，全称Concurrent Mark Sweep，是一种支持并发的采用标记-清除�
 
 在这个阶段会标记上一阶段中遗漏的存活对象。由于并发标记阶段垃圾收集和用户代码是交替执行的，因此在垃圾收集的同时引用可能发生变化，部分存活对象会被遗漏。比如上一阶段中的A、B对象，原本对象B到GC Roots不可达，因此没有被标记，而在之后的过程中因为没有STW，对象B又可能被对象A引用，这就出现了漏标的现象，如果此时进行回收，那么对象B就会被清除，但实际上此时对象B是可达的。
 
-为了防止遗标，最简单的方法是扫描整个堆，但是这样做效率太低，虚拟机采用了一种优化的机制，它使用两种数据结构来记录并发标记期间引用的变化，分别是`Mod Union Table`和`Card Table`，前者用来记录在并发标记阶段Minor GC导致的引用变化，后者用来记录用户线程导致的引用变化。虚拟机通过检查这两个数据结构就能知道哪里的引用发生了变化，比如图中的A、B对象，在对象A引用了对象B后，就会把`Card Table`中对象A对应的`Card`标为`Dirty`。
+为了防止遗标，最简单的方法是扫描整个堆，但是这样做效率太低，虚拟机采用了一种优化的机制，它使用两种数据结构来记录并发标记期间引用的变化，分别是`Mod Union Table`和`Card Table`，前者用来记录在并发标记阶段Young GC导致的引用变化，后者用来记录用户线程导致的引用变化。虚拟机通过检查这两个数据结构就能知道哪里的引用发生了变化，比如图中的A、B对象，在对象A引用了对象B后，就会把`Card Table`中对象A对应的`Card`标为`Dirty`。
 
 ![](resources/gc_13.png)
 
@@ -213,7 +219,7 @@ CMS，全称Concurrent Mark Sweep，是一种支持并发的采用标记-清除�
 
 这一阶段是对上一阶段预清理的延续，由于在并发标记过程中不断有新生代的对象晋升到老年代，虚拟机会不断的执行预清理的步骤直到Eden区的空间使用率达到一定的百分比（可以通过`-XX:CMSScheduleRemarkEdenPenetration`设置，默认是50%），然后再进入下面的重新标记阶段。
   
-此外，CMS还会在一段时间内等待Minor GC的发生，因为在接下来的重新标记阶段虚拟机需要扫描整个堆中的存活对象，如果在那之前执行了Minor GC，那么会过滤掉大部分死亡的对象，为此CMS提供了`-XX:CMSMaxAbortablePrecleanTime`参数，默认是5秒，如果在这段时间内没有发生Minor GC，那么就进入重新标记阶段。还有一个参数`-XX:CMSScavengeBeforeRemark`，可以在重新标记之前强制进行Minor GC，代价是由于重新标记需要STW，而Minor GC也需要STW，那么停顿时间就会比较久。
+此外，CMS还会在一段时间内等待Young GC的发生，因为在接下来的重新标记阶段虚拟机需要扫描整个堆中的存活对象，如果在那之前执行了Young GC，那么会过滤掉大部分死亡的对象，为此CMS提供了`-XX:CMSMaxAbortablePrecleanTime`参数，默认是5秒，如果在这段时间内没有发生Young GC，那么就进入重新标记阶段。还有一个参数`-XX:CMSScavengeBeforeRemark`，可以在重新标记之前强制进行Young GC，代价是由于重新标记需要STW，而Young GC也需要STW，那么停顿时间就会比较久。
 
 5. 重新标记
 
