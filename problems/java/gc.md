@@ -247,6 +247,15 @@ CMS，全称Concurrent Mark Sweep，是一种支持并发的采用标记-清除�
 
 G1的意思是Garbage First，是JDK9中的默认垃圾收集器，它的设计目标是取代CMS。
 
+和其它垃圾收集器不同的是，G1把堆分为多个大小相等的Region（默认2048个），每个Region的大小只能是2的幂次方，比如1M、2M、4M、8M等，可以通过`-XX:G1HeapRegionSize`参数指定，不同Region之间的内存地址是不连续的。一个Region可以充当新生代的Eden区（E），新生代的Survivor区（S），老年代（O）以及用于存储巨型对象的区域（H），巨型对象是指大小超过单个Region大小一半的对象，会直接分配在一个或多个连续的Region中。
+
+![](resources/gc_23.png)
+
+G1在进行垃圾回收时，不是把整个新生代或整个老年代进行回收，而是只收集一部分Region。在做可达性分析时，为了避免全堆扫描，每个Region在初始化时，同时还会初始化一个Remembered Set（RSet），用来记录其它Region指向当前Region中对象的引用。一个Region会被划分为多个Card，默认每个Card是512 bytes，
+
+![](resources/gc_24.png)
+
+
 1. 初始标记
 
 2. 根区域扫描
@@ -278,3 +287,5 @@ G1的意思是Garbage First，是JDK9中的默认垃圾收集器，它的设计�
 10. [《Java Garbage Collection Basics》](https://www.oracle.com/webfolder/technetwork/tutorials/obe/java/gc01/index.html)
 11. [《JVM源码分析之线程局部缓存TLAB》](https://www.jianshu.com/p/cd85098cca39)
 12. [《Java Hotspot G1 GC的一些关键技术》](https://tech.meituan.com/g1.html)
+13. [《G1垃圾收集器介绍》](https://www.jianshu.com/p/0f1f5adffdc1)
+14. [《G1垃圾收集器之RSet》](https://www.jianshu.com/p/870abddaba41)
