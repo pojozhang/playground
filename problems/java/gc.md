@@ -146,10 +146,6 @@ public class Test {
 
 TLAB的全称是ThreadLocalAllocBuffer，是Eden区的一块内存。每个线程在初始化是会申请一块内存作为Buffer，只有线程自己可以在这个Buffer上进行操作，当Buffer容量不够的时候，再重新从Eden区域申请一块继续使用（这一步仍旧需要锁）。也就是说通过预先申请内存的方式降低了申请内存的次数，从而提升性能。
 
-### 跨代引用
-
-
-
 ## Stop-The-World(STW)
 
 在进行垃圾收集前，虚拟机需要进入一个稳定的状态，在垃圾收集的过程中对象的引用关系不能发生变化，就好像整个系统在某个时间点上冻结了，这就要求除了GC线程以外其它所有的线程必须被暂停，这就是`Stop-The-World`的由来。
@@ -247,25 +243,51 @@ CMS，全称Concurrent Mark Sweep，是一种支持并发的采用标记-清除�
 
 ### G1
 
-G1的意思是Garbage First，是JDK9中的默认垃圾收集器，它的设计目标是取代CMS。
+G1的意思是Garbage First，是JDK9中的默认垃圾收集器，它的设计目标是取代CMS，尽管G1依然存在STW，但是它可以设置期望的STW时间，通过`-XX:MaxGCPauseMillis`参数进行设置，默认200毫秒。
 
-和其它垃圾收集器不同的是，G1把堆分为多个大小相等的Region（默认2048个），每个Region的大小只能是2的幂次方，比如1M、2M、4M、8M等，可以通过`-XX:G1HeapRegionSize`参数指定，不同Region之间的内存地址是不连续的。一个Region可以充当新生代的Eden区（E），新生代的Survivor区（S），老年代（O）以及用于存储巨型对象的区域（H），巨型对象是指大小超过单个Region大小一半的对象，会直接分配在一个或多个连续的Region中。
+#### Region
+
+和其它垃圾收集器不同的是，G1把堆分为多个大小相等的Region（默认2048个），每个Region的大小只能是2的幂次方，比如1M、2M、4M、8M等，可以通过`-XX:G1HeapRegionSize`参数指定，不同Region之间的内存地址是不连续的。一个Region可以充当新生代的Eden区（E），新生代的Survivor区（S），老年代（O）以及存储巨型对象的老年代（H），巨型对象是指大小超过单个Region大小一半的对象，会直接分配在一个或多个连续的Region中，这些区域也属于老年代。
 
 ![](resources/gc_23.png)
 
-G1在进行垃圾回收时，不是把整个新生代或整个老年代进行回收，而是只收集一部分Region。G1同样为跨代引用的情况进行了优化，每个Region在初始化时，同时还会初始化一个Remembered Set（RSet），用来记录其它Region指向当前Region中对象的引用。一个Region会被划分为多个Card，默认每个Card是512 bytes，
+#### 垃圾回收模式
+
+与之前介绍的几个垃圾回收器不同的是，G1同时支持对新生代和老年代进行垃圾回收。
+
+当创建新对象时，虚拟机通常为其在Eden区分配空间（对于巨型对象则直接分配到老年代），当Eden区耗尽时就会触发Young GC，这个过程需要STW，存活下来的对象会被复制到Survivor区或者晋升到老年代的某个Region中。
+
+当越来越多的对象晋升到老年代，并且老年代的空间使用率达到阈值后（通过`-XX:InitiatingHeapOccupancyPercent`设置阈值，默认45%），虚拟机会触发Mixed GC，这种GC方式会回收整个新生代和部分老年代，它分为两个阶段：全局并发标记（global concurrent marking）和拷贝存活对象（evacuation）。
+
+全局并发标记阶段有以下几个步骤。
+
+- 初始标记
+
+标记GC Roots直接关联的对象，这个阶段需要STW。
+
+- 并发标记
+
+通过上一阶段中找出的对象递归的找出所有存活对象，和用户线程并发执行的，不需要STW。
+
+- 最终标记
+
+标记上两个阶段遗漏的对象，需要STW。
+
+- 清理
+
+统计每个Region中被标记为存活对象的数量，如果发现完全没有存活对象的Region，那么就会把它整体回收并放到空闲Region列表中。
+
+拷贝存活对象阶段会根据**停顿预测模型**把一部分Region里的存活对象用复制算法拷贝到空闲Region中，停顿预测模型是根据GC的统计数据和用户期望的STW时间通过数学公式计算出本次GC需要回收的Region数量，这一阶段需要STW。
+
+此外，由于G1也有并发收集的过程，因此也存在CMS中的Concurrent Mode Failure问题，G1中称为Allocation Failure。当Mixed GC来不及回收时，老年代空间被迅速填满，这时G1会临时用Serial Old收集器回收整个堆，也就是Full GC，这会造成长时间的停顿。
+
+#### Remembered Set
+
+G1在初始化每个Region时，同时还会初始化一个Remembered Set（RSet），用来记录其它Region指向当前Region中对象的引用，一个Region会被划分为多个Card，默认每个Card是512字节，下图中Region1和Region3分别引用了Region2里的对象，Region2的RSet里就会记录相关引用。处于性能考虑，虚拟机并不会在每次给引用类型的字段赋值后就立刻更新RSet，而是会把字段对应的Card放到队列中，由另外的线程进行RSet的更新工作。
 
 ![](resources/gc_24.png)
 
-
-1. 初始标记
-
-2. 根区域扫描
-
-3. 并发标记
-
-4. 重新标记
-
+RSet的作用是避免在可达性分析时进行全堆扫描，比如Region1中的对象A被Region2的对象B引用，假设对象B是GC根，那么对象A不能被回收，如果没有RSet，那么我们就不知道对象A被哪些对象引用了，那么就需要扫描所有的Region才能知道对象A是否可达，有了RSet，就可以直接找出引用A的对象，避免了全堆扫描。
 
 ## 常见参数
 
@@ -291,4 +313,4 @@ G1在进行垃圾回收时，不是把整个新生代或整个老年代进行回
 12. [《Java Hotspot G1 GC的一些关键技术》](https://tech.meituan.com/g1.html)
 13. [《G1垃圾收集器介绍》](https://www.jianshu.com/p/0f1f5adffdc1)
 14. [《G1垃圾收集器之RSet》](https://www.jianshu.com/p/870abddaba41)
-15. [《为什么跨代引用是GC root》](https://www.jianshu.com/p/671495682e46)
+15. [《深入理解 Java G1 垃圾收集器》](http://blog.jobbole.com/109170/)
