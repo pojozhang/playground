@@ -93,49 +93,73 @@ final V putVal(int hash, K key, V value, boolean onlyIfAbsent,
     if ((tab = table) == null || (n = tab.length) == 0)
         n = (tab = resize()).length;
 
+    // 变量i代表插入到table数组中的位置，变量p就是该位置上的节点。
     // (n - 1) & hash 在这里等价于 hash % n，这个等价关系成立的条件是n是2的幂次，在HashMap的各个函数中都遵循这个要求，因此可以满足。
     // 这里用位运算的原因是，相比取模运算，位运算的效率更高。
-    // 如果tab[i = (n - 1) & hash] == null表示数组的这一格是空的，还没有元素，那么就创建新的键值对节点。
+    // 如果p == null表示数组的这一格是空的，那么就创建新的键值对节点，这里的节点类型是链表的节点，而不是红黑树的节点。
     if ((p = tab[i = (n - 1) & hash]) == null)
         tab[i] = newNode(hash, key, value, null);
     else {
+        // 进入这个代码分支就表示table[i]处存在节点p了。
         Node<K,V> e; K k;
+
+        // 如果table[i]处首节点p的键和我们要插入的键相同，就把变量p赋值给变量e。
+        // 两个键相同的条件是键的哈希值相同，或者内存地址相同，或者通过equals()方法对比后相同。
         if (p.hash == hash &&
             ((k = p.key) == key || (key != null && key.equals(k))))
             e = p;
         else if (p instanceof TreeNode)
+            // 如果table[i]处首节点p的键和我们要插入的键不相同，并且p是红黑树的节点类型，那么就把键值对插入到红黑树中。
             e = ((TreeNode<K,V>)p).putTreeVal(this, tab, hash, key, value);
         else {
+            // 如果table[i]处首节点p的键和我们要插入的键不相同，并且p是链表的节点类型，那么就进入以下代码块。
             for (int binCount = 0; ; ++binCount) {
                 if ((e = p.next) == null) {
+                    // 把键值对插入到链表的末尾。
                     p.next = newNode(hash, key, value, null);
-                    if (binCount >= TREEIFY_THRESHOLD - 1) // -1 for 1st
+                    // 如果链表的节点数量超过了阈值，就把链表转为红黑树。
+                    // TREEIFY_THRESHOLD的值是 static final int TREEIFY_THRESHOLD = 8;
+                    if (binCount >= TREEIFY_THRESHOLD - 1)
                         treeifyBin(tab, hash);
                     break;
                 }
+                // 在遍历链变的过程中如果找到了一个节点的键和我们要插入的键相同，那么就中断循环。
                 if (e.hash == hash &&
                     ((k = e.key) == key || (key != null && key.equals(k))))
                     break;
                 p = e;
             }
         }
+
+
+        // 变量e表示在插入键值对之前就已经存在的节点。
+        // 如果e不为null，则表示之前相同的键已经存在了。
         if (e != null) {
             V oldValue = e.value;
+            // 更新键对应的值。
             if (!onlyIfAbsent || oldValue == null)
                 e.value = value;
+            // 回调方法，默认是空方法。
             afterNodeAccess(e);
+            // 返回更新之前的值。
             return oldValue;
         }
     }
+    // modCount的类型是transient int modCount;
+    // 表示map修改的次数，在用迭代器遍历map时用modCount检测map是否进行过修改。
     ++modCount;
+
+    // 如果键值对数量超过了阈值，那么就要进行扩容。
     if (++size > threshold)
         resize();
+
+    // 回调方法，默认是空方法。
     afterNodeInsertion(evict);
     return null;
 }
 ```
 
-键值对节点对应的数据结构如下。
+上面代码中用到的链表节点对应的数据结构如下。
 
 ```java
 // java.util.HashMap.Node
@@ -145,6 +169,18 @@ static class Node<K,V> implements Map.Entry<K,V> {
     final K key;
     V value;
     Node<K,V> next;
+}
+```
+
+红黑树节点的数据结构如下，其中`TreeNode`继承自`LinkedHashMap.Entry`，而`LinkedHashMap.Entry`又继承自`HashMap.Node`，也就是说上面的`Node`是`TreeNode`的祖父类。
+
+```java
+static final class TreeNode<K,V> extends LinkedHashMap.Entry<K,V> {
+    TreeNode<K,V> parent;
+    TreeNode<K,V> left;
+    TreeNode<K,V> right;
+    TreeNode<K,V> prev;
+    boolean red;
 }
 ```
 
