@@ -43,7 +43,7 @@
 - [HashMap](hashmap.md)
 - ConcurrentHashMap
 - TreeMap
-- HashSet
+- [HashSet](hashset.md)
 - LinkedHashSet
 - TreeSet
 
