@@ -521,12 +521,6 @@ public static void main(String[] args) {
 }
 ```
 
-## 线程安全问题
-
-`HashMap`是线程不安全的。
-
-
-
 ## 参考
 
 1. [《JDK1.8--HashMap》](https://www.jianshu.com/p/3287cd3cec4b)
