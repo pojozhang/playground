@@ -332,6 +332,8 @@ final Node<K,V>[] resize() {
 
 ![](resources/hashmap_3.png)
 
+从`resize()`方法中我们可以总结出一个公式：下一次调整数组大小的阈值`threshold` = 数组新的容量`newCap` * 负载因子`loadFactor`。负载因子过小会导致数组空闲位置太多，利用率太低；负载因子过大会导致哈希碰撞更频繁。
+
 ## get(Object)
 
 该方法通过键查找对应的值，内部调用`getNode()`方法。
@@ -454,7 +456,9 @@ public int size() {
 }
 ```
 
-## entrySet()
+## 迭代器
+
+由于`HashMap`没有实现`Iterable`接口，因此我们无法直接遍历存储在map中的键值对，但我们可以通过`entrySet()`方法获得一个`Set<Map.Entry<K,V>>`类型的实例，由于`Set`接口继承自`Iterable`接口，因此我们可以通过它遍历map中所有的键值对。
 
 ```java
 public Set<Map.Entry<K,V>> entrySet() {
@@ -463,9 +467,65 @@ public Set<Map.Entry<K,V>> entrySet() {
 }
 ```
 
+第一次调用该方法会创建一个`EntrySet`对象，缓存在`entrySet`字段中。`EntrySet`是`HashMap`的非静态内部类，实现了`Iterable`接口，因此拥有一个`iterator()`方法返回一个`EntryIterator`类型的对象。
+
+```java
+// java.util.HashMap.EntrySet
+final class EntrySet extends AbstractSet<Map.Entry<K,V>> {
+
+    public final Iterator<Map.Entry<K,V>> iterator() {
+        return new EntryIterator();
+    }
+
+    // 省略了其它字段和方法。
+}
+```
+
+`EntryIterator`同样也是`HashMap`的一个非静态内部类，它通过调用基类`HashIterator`中的方法`nextNode()`达到遍历的目的。
+
+```java
+// java.util.HashMap.EntryIterator
+final class EntryIterator extends HashIterator
+    implements Iterator<Map.Entry<K,V>> {
+    public final Map.Entry<K,V> next() { return nextNode(); }
+}
+
+// java.util.HashMap.HashIterator#nextNode
+final Node<K,V> nextNode() {
+    Node<K,V>[] t;
+    Node<K,V> e = next;
+    // 检测在遍历时是否对hashmap进行了修改。
+    if (modCount != expectedModCount)
+        throw new ConcurrentModificationException();
+    // 已遍历完所有的节点。
+    if (e == null)
+        throw new NoSuchElementException();
+    // 如果下一个节点为空，那么在数组中寻找下一个不为null的格子。
+    if ((next = (current = e).next) == null && (t = table) != null) {
+        do {} while (index < t.length && (next = t[index++]) == null);
+    }
+    return e;
+}
+```
+
+## Nullable
+
+`HashMap`允许键和值是`null`。
+
+```java
+public static void main(String[] args) {
+    Map<String, String> map = new HashMap<>();
+    map.put(null, "hello");
+    map.put("hello", null);
+    System.out.println(map.get(null)); // 此处打印“hello”。
+}
+```
+
 ## 线程安全问题
 
 `HashMap`是线程不安全的。
+
+
 
 ## 参考
 
