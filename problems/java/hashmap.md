@@ -62,6 +62,43 @@ static final int tableSizeFor(int cap) {
 }
 ```
 
+## HashMap(Map<? extends K, ? extends V>)
+
+该构造方法把一个`Map`对象放入当前`HashMap`中。
+
+```java
+public HashMap(Map<? extends K, ? extends V> m) {
+    this.loadFactor = DEFAULT_LOAD_FACTOR;
+    putMapEntries(m, false);
+}
+
+final void putMapEntries(Map<? extends K, ? extends V> m, boolean evict) {
+    int s = m.size();
+    if (s > 0) {
+        // 当前hashmap未初始化。
+        if (table == null) {
+            // 根据待插入map的大小计算hashmap的容量。
+            float ft = ((float)s / loadFactor) + 1.0F;
+            int t = ((ft < (float)MAXIMUM_CAPACITY) ?
+                        (int)ft : MAXIMUM_CAPACITY);
+            if (t > threshold)
+                // 找到比t大的最小的2的幂次。
+                threshold = tableSizeFor(t);
+        }
+        else if (s > threshold)
+            // 如果待插入的map的键值对数量大于阈值，那么就进行扩容。
+            resize();
+
+        // 遍历键值对，调用putVal()方法插入到当前hashmap中。
+        for (Map.Entry<? extends K, ? extends V> e : m.entrySet()) {
+            K key = e.getKey();
+            V value = e.getValue();
+            putVal(hash(key), key, value, false, evict);
+        }
+    }
+}
+```
+
 ## put(K, V)
 
 该方法把键值对放入map中，内部调用`putVal()`方法。
@@ -186,18 +223,226 @@ static final class TreeNode<K,V> extends LinkedHashMap.Entry<K,V> {
 
 ## resize()
 
+对`table`数组进行扩容。
+
+```java
+final Node<K,V>[] resize() {
+    // 当前table数组。
+    Node<K,V>[] oldTab = table;
+    // 当前table数组的容量。
+    int oldCap = (oldTab == null) ? 0 : oldTab.length;
+    // 当前扩容阈值。
+    int oldThr = threshold;
+    int newCap, newThr = 0;
+
+    // 如果当前table数组非空，那么进入以下代码块。
+    if (oldCap > 0) {
+        // 如果当前容量大于等于MAXIMUM_CAPACITY，那么就把阈值设置为Integer.MAX_VALUE。
+        // MAXIMUM_CAPACITY的值是1 << 30，即2^30。
+        // 当HashMap中键值对的数量超过MAXIMUM_CAPACITY，就不会再为table数组扩容，因此这里直接return。
+        if (oldCap >= MAXIMUM_CAPACITY) {
+            threshold = Integer.MAX_VALUE;
+            return oldTab;
+        }
+        // 这种情况下oldCap的最大值是(1 << 30) - 1 ，因此oldCap << 1的最大值是((1 << 30) - 1) << 1，不会溢出。
+        // 新的容量newCap是当前容量的两倍。
+        // DEFAULT_INITIAL_CAPACITY的值是16。
+        else if ((newCap = oldCap << 1) < MAXIMUM_CAPACITY &&
+                    oldCap >= DEFAULT_INITIAL_CAPACITY)
+            // 新的阈值也是两倍。
+            newThr = oldThr << 1;
+    }
+    // 这种情况下table还没有被初始化，在构造阶段设置了table数组的初始容量，比如使用了可以指定初始容量的构造器来创建对象。
+    else if (oldThr > 0)
+        newCap = oldThr;
+    else {
+        // 这是用户使用无参构造器创建对象的情况。
+        newCap = DEFAULT_INITIAL_CAPACITY;
+        // DEFAULT_LOAD_FACTOR的值是0.75。
+        newThr = (int)(DEFAULT_LOAD_FACTOR * DEFAULT_INITIAL_CAPACITY);
+    }
+
+    // 在上面几种情况中，当满足if (oldThr > 0)时，newThr没被赋值，此时它的值是0。
+    if (newThr == 0) {
+        float ft = (float)newCap * loadFactor;
+        newThr = (newCap < MAXIMUM_CAPACITY && ft < (float)MAXIMUM_CAPACITY ?
+                    (int)ft : Integer.MAX_VALUE);
+    }
+    threshold = newThr;
+    // 初始化新的table数组。
+    Node<K,V>[] newTab = (Node<K,V>[])new Node[newCap];
+    table = newTab;
+    // 如果当前table还没有初始化，那么直接return。
+    if (oldTab != null) {
+        for (int j = 0; j < oldCap; ++j) {
+            Node<K,V> e;
+            if ((e = oldTab[j]) != null) {
+                oldTab[j] = null;
+                if (e.next == null)
+                    // 如果在原table[j]的位置只有一个节点，那么就直接把该节点分配到新的table数组中。
+                    newTab[e.hash & (newCap - 1)] = e;
+                else if (e instanceof TreeNode)
+                    // 将红黑树中的节点重新分配到新数组中。
+                    ((TreeNode<K,V>)e).split(this, newTab, j, oldCap);
+                else {
+                    Node<K,V> loHead = null, loTail = null;
+                    Node<K,V> hiHead = null, hiTail = null;
+                    Node<K,V> next;
+                    do {
+                        // 对于链表节点的重新分配有特殊的算法。
+                        next = e.next;
+                        // 根据e.hash & oldCap的结果是否等于0把链表中所有的节点分为两个链表。
+                        // loHead/loTail，hiHead/hiTail分别是两个链表的头尾指针。
+                        // e.hash & oldCap为0的这部分节点在新的数组中的位置和原来的位置保持一致，比如原来在索引15的位置，那么在新数组中的索引依然是15。
+                        // e.hash & oldCap不为0的这部分节点在新的数组中的位置等于原来的位置加上原来数组容量的偏移量，比如原来在索引5的位置，原来数组的容量是16，那么在新数组中的索引号就是 5 + 16 = 21。
+                        if ((e.hash & oldCap) == 0) {
+                            if (loTail == null)
+                                loHead = e;
+                            else
+                                loTail.next = e;
+                            loTail = e;
+                        }
+                        else {
+                            if (hiTail == null)
+                                hiHead = e;
+                            else
+                                hiTail.next = e;
+                            hiTail = e;
+                        }
+                    } while ((e = next) != null);
+                    // 分配e.hash & oldCap为0的节点组成的链表。
+                    if (loTail != null) {
+                        loTail.next = null;
+                        newTab[j] = loHead;
+                    }
+                    // 分配e.hash & oldCap不为0的节点组成的链表。
+                    if (hiTail != null) {
+                        hiTail.next = null;
+                        newTab[j + oldCap] = hiHead;
+                    }
+                }
+            }
+        }
+    }
+    return newTab;
+}
+```
+
+以下是重新分配链表节点的示意图。
+
+![](resources/hashmap_3.png)
+
 ## get(Object)
 
+该方法通过键查找对应的值，内部调用`getNode()`方法。
+
+```java
+public V get(Object key) {
+    Node<K,V> e;
+    return (e = getNode(hash(key), key)) == null ? null : e.value;
+}
+
+final Node<K,V> getNode(int hash, Object key) {
+    Node<K,V>[] tab; Node<K,V> first, e; int n; K k;
+    // 如果table数组未初始化或者容量等于0，或者键对应的节点不存在，那么方法就返回null。
+    if ((tab = table) != null && (n = tab.length) > 0 &&
+        (first = tab[(n - 1) & hash]) != null) {
+        // 如果首节点的键就是目标键，那么就返回首节点first。
+        if (first.hash == hash &&
+            ((k = first.key) == key || (key != null && key.equals(k))))
+            return first;
+        if ((e = first.next) != null) {
+            // 如果首节点是红黑树的节点，那么就在红黑树中进一步查找。
+            if (first instanceof TreeNode)
+                return ((TreeNode<K,V>)first).getTreeNode(hash, key);
+
+            // 如果首节点不是红黑树节点，那么就遍历链表寻找匹配的节点。
+            do {
+                if (e.hash == hash &&
+                    ((k = e.key) == key || (key != null && key.equals(k))))
+                    return e;
+            } while ((e = e.next) != null);
+        }
+    }
+
+    // 找不到匹配的节点，返回null。
+    return null;
+}
+```
+
 ## getOrDefault(Object, V)
+
+该方法用于查找键对应的值，如果键不存在就返回默认值。
 
 ```java
 public V getOrDefault(Object key, V defaultValue) {
     Node<K,V> e;
+    // 通过getNode()方法查找键对应的节点，如果节点不存在就返回事先定义的默认值，否则就返回节点的值。
     return (e = getNode(hash(key), key)) == null ? defaultValue : e.value;
 }
 ```
 
 ## remove(Object)
+
+删除键对应的键值对，内部调用`removeNode()`方法删除键对应的节点。
+
+```java
+public V remove(Object key) {
+    Node<K,V> e;
+    return (e = removeNode(hash(key), key, null, false, true)) == null ? null : e.value;
+}
+
+final Node<K,V> removeNode(int hash, Object key, Object value,
+                           boolean matchValue, boolean movable) {
+    Node<K,V>[] tab; Node<K,V> p; int n, index;
+    // 如果table数组未初始化或者容量等于0，或者键对应的节点不存在，那么方法就返回null。
+    if ((tab = table) != null && (n = tab.length) > 0 &&
+        (p = tab[index = (n - 1) & hash]) != null) {
+        Node<K,V> node = null, e; K k; V v;
+        // 判断首节点p是否匹配，如果匹配那么把p赋值给变量node。
+        if (p.hash == hash &&
+            ((k = p.key) == key || (key != null && key.equals(k))))
+            node = p;
+        else if ((e = p.next) != null) {
+            // 如果首节点不匹配并且它是红黑树的节点，那么就从红黑树中查找匹配的节点。
+            if (p instanceof TreeNode)
+                node = ((TreeNode<K,V>)p).getTreeNode(hash, key);
+            else {
+                // 否则遍历链表找到匹配的节点。
+                do {
+                    if (e.hash == hash &&
+                        ((k = e.key) == key ||
+                            (key != null && key.equals(k)))) {
+                        node = e;
+                        break;
+                    }
+                    p = e;
+                } while ((e = e.next) != null);
+            }
+        }
+
+        // 以上代码执行完毕后，如果变量node不为null，那么它就存储了匹配到的节点，也就是待删除的节点，如果node是null，则代表没有找到目标节点。
+        if (node != null && (!matchValue || (v = node.value) == value ||
+                                (value != null && value.equals(v)))) {
+            if (node instanceof TreeNode)
+                // 如果待删除节点是红黑树节点，那么就调用removeTreeNode()方法从红黑树中删除节点。
+                ((TreeNode<K,V>)node).removeTreeNode(this, tab, movable);
+            else if (node == p)
+                // 如果待删除节点就是首节点，那么把首节点设置为链表的下一个节点。
+                tab[index] = node.next;
+            else
+                // 如果待删除节点不是链表的首节点，那么就调整next指针把节点移除。
+                p.next = node.next;
+            ++modCount;
+            --size;
+            // 回调方法，默认是空方法。
+            afterNodeRemoval(node);
+            return node;
+        }
+    }
+    return null;
+}
+```
 
 ## size()
 
@@ -206,6 +451,15 @@ public V getOrDefault(Object key, V defaultValue) {
 ```java
 public int size() {
     return size;
+}
+```
+
+## entrySet()
+
+```java
+public Set<Map.Entry<K,V>> entrySet() {
+    Set<Map.Entry<K,V>> es;
+    return (es = entrySet) == null ? (entrySet = new EntrySet()) : es;
 }
 ```
 
