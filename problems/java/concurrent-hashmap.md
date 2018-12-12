@@ -110,20 +110,26 @@ public void putAll(Map<? extends K, ? extends V> m) {
 
 ## put(K, V)
 
+该方法把键值对放入map中，内部调用`putVal()`方法。
+
 ```java
 public V put(K key, V value) {
     return putVal(key, value, false);
 }
 
 final V putVal(K key, V value, boolean onlyIfAbsent) {
+    // 键和值都不能是null。
     if (key == null || value == null) throw new NullPointerException();
+    // 获得哈希值。
     int hash = spread(key.hashCode());
     int binCount = 0;
     for (Node<K,V>[] tab = table;;) {
         Node<K,V> f; int n, i, fh; K fk; V fv;
+        // 如果table数组是空的，那么就进行初始化。
         if (tab == null || (n = tab.length) == 0)
             tab = initTable();
-        else if ((f = tabAt(tab, i = (n - 1) & hash)) == null) {
+        else if ((f = tabAt(tab, i = (n - 1) & hash)) == null) { // 通过Unsafe类获得tab[i]处的节点。
+            // 当节点不存在时，用CAS在table[i]处创建新节点，只有当table[i]原本是null时才能创建成功。
             if (casTabAt(tab, i, null, new Node<K,V>(hash, key, value)))
                 break;                   // no lock when adding to empty bin
         }
@@ -136,7 +142,7 @@ final V putVal(K key, V value, boolean onlyIfAbsent) {
             return fv;
         else {
             V oldVal = null;
-            synchronized (f) {
+            synchronized (f) { // 锁住首节点。
                 if (tabAt(tab, i) == f) {
                     if (fh >= 0) {
                         binCount = 1;
@@ -182,6 +188,48 @@ final V putVal(K key, V value, boolean onlyIfAbsent) {
     }
     addCount(1L, binCount);
     return null;
+}
+
+// Hash算法。
+static final int spread(int h) {
+    return (h ^ (h >>> 16)) & HASH_BITS;
+}
+
+// 初始化table数组。
+private final Node<K,V>[] initTable() {
+    Node<K,V>[] tab; int sc;
+    while ((tab = table) == null || tab.length == 0) {
+        if ((sc = sizeCtl) < 0)
+            // 如果sizeCtl<0，则表示table数组正在被初始化，因此当前线程应该让出CPU时间。
+            Thread.yield();
+        else if (U.compareAndSetInt(this, SIZECTL, sc, -1)) { // 否则使用CAS把sizeCtl设为-1。
+            // 如果CAS操作成功，那么操作线程就对table数组进行初始化操作，其它线程就会在下一个循环中执行上面的分支，让出CPU时间。
+            try {
+                if ((tab = table) == null || tab.length == 0) {
+                    // 初始化table数组。
+                    int n = (sc > 0) ? sc : DEFAULT_CAPACITY;
+                    Node<K,V>[] nt = (Node<K,V>[])new Node<?,?>[n];
+                    table = tab = nt;
+                    sc = n - (n >>> 2);
+                }
+            } finally {
+                // 设置新的阈值为0.75*table.length。
+                sizeCtl = sc;
+            }
+            break;
+        }
+    }
+    return tab;
+}
+
+// 通过Unsafe类获得tab[i]处的元素。
+static final <K,V> Node<K,V> tabAt(Node<K,V>[] tab, int i) {
+    return (Node<K,V>)U.getObjectAcquire(tab, ((long)i << ASHIFT) + ABASE);
+}
+
+static final <K,V> boolean casTabAt(Node<K,V>[] tab, int i,
+                                    Node<K,V> c, Node<K,V> v) {
+    return U.compareAndSetObject(tab, ((long)i << ASHIFT) + ABASE, c, v);
 }
 ```
 
@@ -230,7 +278,7 @@ private final void tryPresize(int size) {
 }
 ```
 
-## get()
+## get(Object)
 
 ```java
 public V get(Object key) {
