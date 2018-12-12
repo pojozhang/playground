@@ -23,16 +23,25 @@ public ConcurrentHashMap() {
 
 ## ConcurrentHashMap(int)
 
+该构造方法可以根据传入的初始容量设置字段`sizeCtl`的值。
+
 ```java
 public ConcurrentHashMap(int initialCapacity) {
+    // 检查参数合法性。
     if (initialCapacity < 0)
         throw new IllegalArgumentException();
     int cap = ((initialCapacity >= (MAXIMUM_CAPACITY >>> 1)) ?
                 MAXIMUM_CAPACITY :
+                // 取大于等于（initialCapacity*1.5+1）的最小的2的幂数。
+                // 比如initialCapacity=10，那么cap等于16，因为大于等于（10*1.5+1）的最小的2的幂数是2^4。
                 tableSizeFor(initialCapacity + (initialCapacity >>> 1) + 1));
     this.sizeCtl = cap;
 }
 
+// 该方法和HashMap中的同名方法是一样的。
+// 返回大于等于cap的最小的2的幂数。
+// 当 cap = 2 时，方法返回值为2，因为 2 ^ 1 = 2。
+// 当 cap = 31 时，方法返回值是32，因为 2 ^ 4 = 16 < 31 而 2 ^ 5 = 32 > 31。
 private static final int tableSizeFor(int c) {
     int n = c - 1;
     n |= n >>> 1;
@@ -44,7 +53,21 @@ private static final int tableSizeFor(int c) {
 }
 ```
 
+字段`sizeCtl`的信息如下所示。
+
+```java
+private transient volatile int sizeCtl;
+```
+
+它用来控制底层数组的初始化和扩容，不同的取值范围代表不同的情况。
+
+1. -1，表示数组正在被初始化。
+2. -N，N是大于1的正整数，表示有N-1个线程正在进行扩容。
+3. 大于等于0，当数组未初始化时表示需要初始化的大小，否则表示需要对数组进行扩容的阈值。
+
 ## ConcurrentHashMap(int, float)
+
+该构造方法内部调用了另一个构造方法。
 
 ```java
 public ConcurrentHashMap(int initialCapacity, float loadFactor) {
@@ -53,8 +76,10 @@ public ConcurrentHashMap(int initialCapacity, float loadFactor) {
 
 public ConcurrentHashMap(int initialCapacity,
                          float loadFactor, int concurrencyLevel) {
+    // 检查参数合法性。
     if (!(loadFactor > 0.0f) || initialCapacity < 0 || concurrencyLevel <= 0)
         throw new IllegalArgumentException();
+    // 这段代码的目的也是设置sizeCtl字段的值。
     if (initialCapacity < concurrencyLevel)
         initialCapacity = concurrencyLevel;
     long size = (long)(1.0 + (long)initialCapacity / loadFactor);
@@ -66,6 +91,8 @@ public ConcurrentHashMap(int initialCapacity,
 
 ## ConcurrentHashMap(Map<? extends K, ? extends V>)
 
+该构造方法把一个`Map`对象放入当前`ConcurrentHashMap`中。
+
 ```java
 public ConcurrentHashMap(Map<? extends K, ? extends V> m) {
     this.sizeCtl = DEFAULT_CAPACITY;
@@ -73,7 +100,9 @@ public ConcurrentHashMap(Map<? extends K, ? extends V> m) {
 }
 
 public void putAll(Map<? extends K, ? extends V> m) {
+    // 扩容。
     tryPresize(m.size());
+    // 遍历源map，通过putVal()方法把键值对放入当前map中。
     for (Map.Entry<? extends K, ? extends V> e : m.entrySet())
         putVal(e.getKey(), e.getValue(), false);
 }
@@ -153,6 +182,51 @@ final V putVal(K key, V value, boolean onlyIfAbsent) {
     }
     addCount(1L, binCount);
     return null;
+}
+```
+
+## tryPresize(int)
+
+```java
+private final void tryPresize(int size) {
+    // 计算扩容后的目标大小。
+    int c = (size >= (MAXIMUM_CAPACITY >>> 1)) ? MAXIMUM_CAPACITY :
+        tableSizeFor(size + (size >>> 1) + 1);
+    int sc;
+    while ((sc = sizeCtl) >= 0) {
+        // table是底层数组。
+        // 它的类型是transient volatile Node<K,V>[] table;
+        Node<K,V>[] tab = table; int n;
+        // table没有被初始化或者是空的，那么进行初始化。
+        if (tab == null || (n = tab.length) == 0) {
+            n = (sc > c) ? sc : c;
+            // 用CAS把sizeCtl赋值为-1，以表示正在对数组进行初始化。
+            // 当多个线程并发执行时，只有一个能成功把sizeCtl赋值为-1。
+            if (U.compareAndSetInt(this, SIZECTL, sc, -1)) {
+                try {
+                    // 初始化table。
+                    if (table == tab) {
+                        Node<K,V>[] nt = (Node<K,V>[])new Node<?,?>[n];
+                        table = nt;
+                        // n - (n >>> 2) 等价于 n - (n / 4)，也就是 0.75 * n。
+                        sc = n - (n >>> 2);
+                    }
+                } finally {
+                    // 下一次扩容的阈值是0.75 * n。
+                    sizeCtl = sc;
+                }
+            }
+        }
+        else if (c <= sc || n >= MAXIMUM_CAPACITY)
+            // 容量足够或已达到最大容量，不进行扩容。
+            break;
+        else if (tab == table) {
+            int rs = resizeStamp(n);
+            if (U.compareAndSetInt(this, SIZECTL, sc,
+                                    (rs << RESIZE_STAMP_SHIFT) + 2))
+                transfer(tab, null);
+        }
+    }
 }
 ```
 
@@ -301,3 +375,4 @@ public static void main(String[] args) {
 ## 参考
 
 1. [《Java7/8 中的 HashMap 和 ConcurrentHashMap 全解析》](https://javadoop.com/post/hashmap#Java8%20ConcurrentHashMap)
+2. [《深入浅出ConcurrentHashMap1.8》](https://www.jianshu.com/p/c0642afe03e0)
