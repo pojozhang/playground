@@ -62,7 +62,7 @@ private transient volatile int sizeCtl;
 它用来控制底层数组的初始化和扩容，不同的取值范围代表不同的情况。
 
 1. -1，表示数组正在被初始化。
-2. -N，N是大于1的正整数，表示有N-1个线程正在进行扩容。
+2. 小于-1，表示有一个或多个线程正在进行扩容。
 3. 大于等于0，当数组未初始化时表示需要初始化的大小，否则表示需要对数组进行扩容的阈值。
 
 ## ConcurrentHashMap(int, float)
@@ -196,6 +196,7 @@ final V putVal(K key, V value, boolean onlyIfAbsent) {
         }
     }
     // 更新计数。
+    // 对table扩容的逻辑也在addCount()方法中。
     addCount(1L, binCount);
     return null;
 }
@@ -247,7 +248,7 @@ static final <K,V> boolean casTabAt(Node<K,V>[] tab, int i,
 
 ## addCount(long, int)
 
-增加计数。
+增加计数并在满足条件的情况下调用`transfer()`方法对数组进行扩容。
 
 ```java
 private final void addCount(long x, int check) {
@@ -279,23 +280,31 @@ private final void addCount(long x, int check) {
         s = sumCount();
     }
 
-    // 下面这部分代码的作用是判断是否需要对table数组进行扩容，
-    // 这就是为什么在之前的put()方法中没有扩容相关的代码。
+    // 下面这部分代码的作用是判断是否需要对table数组进行扩容，如果需要，那么就调用transfer()方法进行扩容。
     if (check >= 0) {
         Node<K,V>[] tab, nt; int n, sc;
         while (s >= (long)(sc = sizeCtl) && (tab = table) != null &&
                 (n = tab.length) < MAXIMUM_CAPACITY) {
+            // 获得一个扩容标志，具体可以看后文对该方法的解释。
+            // 如果入参n相同，那么得到的结果相同；如果参数不同，那么得到的结果也不同。
             int rs = resizeStamp(n);
+            // sizeCtl小于0
             if (sc < 0) {
+                // sizeCtl的高16位记录的就是resizeStamp(n)的值
                 if ((sc >>> RESIZE_STAMP_SHIFT) != rs || sc == rs + 1 ||
                     sc == rs + MAX_RESIZERS || (nt = nextTable) == null ||
                     transferIndex <= 0)
                     break;
+                // 扩容线程的数量加1。
                 if (U.compareAndSetInt(this, SIZECTL, sc, sc + 1))
+                    // 扩容。
                     transfer(tab, nt);
             }
+            // sizeCtl大于等于0，表示还没有线程参与扩容，当前线程第一个监测到需要扩容。
+            // 关于这段代码的解释可以查看对resizeStamp()方法的解释。
             else if (U.compareAndSetInt(this, SIZECTL, sc,
                                             (rs << RESIZE_STAMP_SHIFT) + 2))
+                // 扩容。
                 transfer(tab, null);
             s = sumCount();
         }
@@ -321,6 +330,28 @@ final long sumCount() {
     CounterCell(long x) { value = x; }
 }
 ```
+
+## resizeStamp(int)
+
+这个方法比较难理解，它的执行过程是根据传入的参数`n`（`n`是`table`数组的长度）进行位运算，然后返回计算结果。
+
+```java
+static final int resizeStamp(int n) {
+    // RESIZE_STAMP_BITS是值为16的常量。
+    return Integer.numberOfLeadingZeros(n) | (1 << (RESIZE_STAMP_BITS - 1));
+}
+```
+
+在理解该方法的功能之前，我们先举一个例子。假设n=16时，其二进制表示是`0000000000000000 0000000000010000`,`Integer.numberOfLeadingZeros(n)`方法的作用是获取参数`n`的二进制表示中从最左边开始连续的0的个数，因此这里`Integer.numberOfLeadingZeros(16)`的值是27，其二进制表示是`0000000000000000 0000000000011011`。`1 << (RESIZE_STAMP_BITS - 1)`的值是32768，其二进制表示是`0000000000000000 1000000000000000`，`27 | 32768`的值的二进制表示是`0000000000000000 1000000000011011`。那么这个看似毫无意义的二进制有什么用呢？我们回过头来看`addCount()`方法中的一段代码。
+
+```java
+// RESIZE_STAMP_SHIFT是值为16的常量。
+if (U.compareAndSetInt(this, SIZECTL, sc, (rs << RESIZE_STAMP_SHIFT) + 2))
+    // 扩容。
+    transfer(tab, null);
+```
+
+代码中变量`rs`的值就是`resizeStamp(n)`的返回值，假设`rs`的值就是上面的那串二进制，那么`rs << RESIZE_STAMP_SHIFT`的二进制是`1000000000011011 0000000000000000`，`(rs << RESIZE_STAMP_SHIFT) + 2`的值是`1000000000011011 0000000000000010`，这个32位的整数实际上要分为两部分看，高16位和低16位（左高右低），高16位表示对长度为n的`table`数组进行扩容的标志，低16位表示有多少个线程正在对`table`进行扩容，这里的计数从1开始，实际参与扩容的线程数需要减1，因为当低16位的值等于1的时候，表示`table`数组正在被初始化，所以上面这段代码在`(rs << RESIZE_STAMP_SHIFT)`后加2表示有1个线程在进行扩容。
 
 ## tryPresize(int)
 
@@ -376,7 +407,6 @@ private final void transfer(Node<K,V>[] tab, Node<K,V>[] nextTab) {
         stride = MIN_TRANSFER_STRIDE; // subdivide range
     if (nextTab == null) {            // initiating
         try {
-            @SuppressWarnings("unchecked")
             Node<K,V>[] nt = (Node<K,V>[])new Node<?,?>[n << 1];
             nextTab = nt;
         } catch (Throwable ex) {      // try to cope with OOME
@@ -639,7 +669,7 @@ public int size() {
 ```java
 public static void main(String[] args) {
     Map<String, String> map = new ConcurrentHashMap<>();
-    // 以下3中用法都是不允许的，会抛出java.lang.NullPointerException异常。
+    // 以下三种用法都是不允许的，会抛出java.lang.NullPointerException异常。
     map.put(null, "hello");
     map.put("hello", null);
     System.out.println(map.get(null));
@@ -652,3 +682,4 @@ public static void main(String[] args) {
 2. [《深入浅出ConcurrentHashMap1.8》](https://www.jianshu.com/p/c0642afe03e0)
 3. [《谈谈ConcurrentHashMap1.7和1.8的不同实现》](https://www.jianshu.com/p/e694f1e868ec)
 4. [《为并发而生的 ConcurrentHashMap（Java 8）》](https://cloud.tencent.com/developer/article/1013643)
+5. [《java8集合框架(三)－Map的实现类（ConcurrentHashMap）》](http://wuzhaoyang.me/2016/09/05/java-collection-map-2.html)
