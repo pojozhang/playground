@@ -13,5 +13,6 @@
 - [Java](problems/java/README.md)
 - [MySQL](problems/mysql/README.md)
 - [Redis](problems/redis/README.md)
+- [RabbitMQ](problems/rabbitmq/README.md)
 - [Docker](problems/docker/README.md)
 - [硬件](problems/hardware/README.md)
