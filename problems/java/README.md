@@ -66,6 +66,7 @@
 ## Spring
 
 - AOP
+- Eureka的心跳机制
 
 ## 其它框架
 
