@@ -132,7 +132,7 @@ final V putVal(K key, V value, boolean onlyIfAbsent) {
         else if ((f = tabAt(tab, i = (n - 1) & hash)) == null) {
             // 当节点不存在时，用CAS在table[i]处创建新节点，只有当table[i]原本是null时才能创建成功。
             if (casTabAt(tab, i, null, new Node<K,V>(hash, key, value)))
-                break;                   // no lock when adding to empty bin
+                break;
         }
         else if ((fh = f.hash) == MOVED)
             tab = helpTransfer(tab, f);
@@ -276,21 +276,23 @@ private final void addCount(long x, int check) {
         }
         if (check <= 1)
             return;
-        // 计算简直对总数，赋值给变量s。
+        // 计算键值对总数，赋值给变量s。
         s = sumCount();
     }
 
     // 下面这部分代码的作用是判断是否需要对table数组进行扩容，如果需要，那么就调用transfer()方法进行扩容。
     if (check >= 0) {
         Node<K,V>[] tab, nt; int n, sc;
+        // 键值对数量大于等于阈值sizeCtl那么就进行扩容。
         while (s >= (long)(sc = sizeCtl) && (tab = table) != null &&
                 (n = tab.length) < MAXIMUM_CAPACITY) {
             // 获得一个扩容标志，具体可以看后文对该方法的解释。
             // 如果入参n相同，那么得到的结果相同；如果参数不同，那么得到的结果也不同。
             int rs = resizeStamp(n);
-            // sizeCtl小于0
+            // sizeCtl小于0表示正在扩容。
             if (sc < 0) {
-                // sizeCtl的高16位记录的就是resizeStamp(n)的值
+                // 扩容已结束或参与的线程数达到最大值，则中断循环。
+                // sizeCtl的高16位记录的就是resizeStamp(n)的值。
                 if ((sc >>> RESIZE_STAMP_SHIFT) != rs || sc == rs + 1 ||
                     sc == rs + MAX_RESIZERS || (nt = nextTable) == null ||
                     transferIndex <= 0)
@@ -306,6 +308,7 @@ private final void addCount(long x, int check) {
                                             (rs << RESIZE_STAMP_SHIFT) + 2))
                 // 扩容。
                 transfer(tab, null);
+            // 重新统计键值对个数，进入下一个循环。
             s = sumCount();
         }
     }
@@ -390,8 +393,10 @@ private final void tryPresize(int size) {
             break;
         else if (tab == table) {
             int rs = resizeStamp(n);
+            // 扩容线程的数量加1。
             if (U.compareAndSetInt(this, SIZECTL, sc,
                                     (rs << RESIZE_STAMP_SHIFT) + 2))
+                // 扩容。
                 transfer(tab, null);
         }
     }
@@ -400,16 +405,23 @@ private final void tryPresize(int size) {
 
 ## transfer(Node<K,V>[], Node<K,V>[])
 
+该方法用于扩容，其步骤是：先创建一个大小是`table`两倍的`nextTable`数组，再把`table`中的所有键值对复制到`nextTable`中。
+
 ```java
 private final void transfer(Node<K,V>[] tab, Node<K,V>[] nextTab) {
     int n = tab.length, stride;
+    // NCPU是CPU核心数，它的值被初始化为Runtime.getRuntime().availableProcessors()。
+
     if ((stride = (NCPU > 1) ? (n >>> 3) / NCPU : n) < MIN_TRANSFER_STRIDE)
-        stride = MIN_TRANSFER_STRIDE; // subdivide range
-    if (nextTab == null) {            // initiating
+        stride = MIN_TRANSFER_STRIDE;
+    // 如果nextTable是空的，那么就创建一个是table数组两倍大小的新数组。
+    // 当多个线程对nextTable进行初始化时，transfer()方法的调用者会用CAS保证只有单个线程会对其进行初始化。
+    if (nextTab == null) {
         try {
             Node<K,V>[] nt = (Node<K,V>[])new Node<?,?>[n << 1];
             nextTab = nt;
-        } catch (Throwable ex) {      // try to cope with OOME
+        // 这里可能发生OOM异常。
+        } catch (Throwable ex) {
             sizeCtl = Integer.MAX_VALUE;
             return;
         }
@@ -419,7 +431,7 @@ private final void transfer(Node<K,V>[] tab, Node<K,V>[] nextTab) {
     int nextn = nextTab.length;
     ForwardingNode<K,V> fwd = new ForwardingNode<K,V>(nextTab);
     boolean advance = true;
-    boolean finishing = false; // to ensure sweep before committing nextTab
+    boolean finishing = false;
     for (int i = 0, bound = 0;;) {
         Node<K,V> f; int fh;
         while (advance) {
@@ -683,3 +695,4 @@ public static void main(String[] args) {
 3. [《谈谈ConcurrentHashMap1.7和1.8的不同实现》](https://www.jianshu.com/p/e694f1e868ec)
 4. [《为并发而生的 ConcurrentHashMap（Java 8）》](https://cloud.tencent.com/developer/article/1013643)
 5. [《java8集合框架(三)－Map的实现类（ConcurrentHashMap）》](http://wuzhaoyang.me/2016/09/05/java-collection-map-2.html)
+6. [《并发编程——ConcurrentHashMap#transfer() 扩容逐行分析》](https://juejin.im/post/5b00160151882565bd2582e0)
