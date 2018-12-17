@@ -360,6 +360,8 @@ if (U.compareAndSetInt(this, SIZECTL, sc, (rs << RESIZE_STAMP_SHIFT) + 2))
 
 ## tryPresize(int)
 
+根据传入的`size`参数进行扩容。
+
 ```java
 private final void tryPresize(int size) {
     // 计算扩容后的目标大小。
@@ -441,12 +443,12 @@ private final void transfer(Node<K,V>[] tab, Node<K,V>[] nextTab) {
     // 扩容结束标志，true表示扩容结束。
     boolean finishing = false;
     // 每个数组会被分配数组上的一个区间，互相不重叠。
-    // i是当前线程正在转移的索引，bound是当前线程需要进行转移的最小索引。
+    // i是当前线程需要进行转移的最大索引，bound是当前线程需要进行转移的最小索引。
     for (int i = 0, bound = 0;;) {
         Node<K,V> f; int fh;
         while (advance) {
             int nextIndex, nextBound;
-            // 如果i-1小于bound，说明之前分配给线程的区间已经完成转移了，上面提到过bound是需要转移的最小的索引，因此小于bound自然
+            // i - 1 >= bound说明分配给线程的区间还没处理完成。
             if (--i >= bound || finishing)
                 advance = false;
             // 这里会把transferIndex的值赋给nextIndex。
@@ -592,6 +594,10 @@ private final void transfer(Node<K,V>[] tab, Node<K,V>[] nextTab) {
 }
 ```
 
+通过以上源码，我们可以看到，`ConcurrentHashMap`是通过把整个数组拆分成多个区域分配给不同线程处理，从而实现了在多线程进行扩容。
+
+![](resources/concurrent_hashmap_3.png)
+
 ## get(Object)
 
 该方法通过键查找对应的值。
@@ -621,6 +627,40 @@ public V get(Object key) {
     }
     // 找不到匹配的键，返回null。
     return null;
+}
+```
+
+当我们调用`get()`方法查询节点时，当前map可能正处于扩容阶段，如果键对应数组中的槽正在被扩容，那么此时该位置首节点的类型是`ForwardingNode`，是`Node`的一个子类，它覆盖了基类的`find()`方法可以对转移中的节点进行查询。
+
+```java
+// java.util.concurrent.ConcurrentHashMap.ForwardingNode#find
+Node<K,V> find(int h, Object k) {
+    outer: for (Node<K,V>[] tab = nextTable;;) {
+        Node<K,V> e; int n;
+        // 如果nextTable是空的或者nextTable对应的位置没有节点，那么说明不存在匹配的节点，返回null。
+        if (k == null || tab == null || (n = tab.length) == 0 ||
+            (e = tabAt(tab, (n - 1) & h)) == null)
+            return null;
+        for (;;) {
+            int eh; K ek;
+            // 找到匹配的节点则返回。
+            if ((eh = e.hash) == h &&
+                ((ek = e.key) == k || (ek != null && k.equals(ek))))
+                return e;
+            if (eh < 0) {
+                // 如果首节点是一个ForwardingNode节点，说明又发生了扩容，重新跳转到最外层循环。
+                if (e instanceof ForwardingNode) {
+                    tab = ((ForwardingNode<K,V>)e).nextTable;
+                    continue outer;
+                }
+                else
+                    // 否则调用链表或红黑树节点的find()方法进行搜索。
+                    return e.find(h, k);
+            }
+            if ((e = e.next) == null)
+                return null;
+        }
+    }
 }
 ```
 
