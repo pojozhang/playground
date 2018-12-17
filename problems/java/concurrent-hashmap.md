@@ -136,6 +136,7 @@ final V putVal(K key, V value, boolean onlyIfAbsent) {
         }
         // 节点正在扩容。
         else if ((fh = f.hash) == MOVED)
+            // 帮助扩容。
             tab = helpTransfer(tab, f);
         // 键值对已存在。
         else if (onlyIfAbsent
@@ -245,6 +246,32 @@ static final <K,V> Node<K,V> tabAt(Node<K,V>[] tab, int i) {
 static final <K,V> boolean casTabAt(Node<K,V>[] tab, int i,
                                     Node<K,V> c, Node<K,V> v) {
     return U.compareAndSetObject(tab, ((long)i << ASHIFT) + ABASE, c, v);
+}
+
+// 当前线程参与扩容操作中。
+// ConcurrentHashMap支持多线程同时进行扩容，每个线程负责转移table数组的一部分节点。
+final Node<K,V>[] helpTransfer(Node<K,V>[] tab, Node<K,V> f) {
+    Node<K,V>[] nextTab; int sc;
+    if (tab != null && (f instanceof ForwardingNode) &&
+        (nextTab = ((ForwardingNode<K,V>)f).nextTable) != null) {
+        // 具体可以参考resizeStamp()方法的介绍。
+        int rs = resizeStamp(tab.length);
+        while (nextTab == nextTable && table == tab &&
+                (sc = sizeCtl) < 0) {
+            // 扩容已经结束或已达到上限，则中断操作。
+            if ((sc >>> RESIZE_STAMP_SHIFT) != rs || sc == rs + 1 ||
+                sc == rs + MAX_RESIZERS || transferIndex <= 0)
+                break;
+            // 参与扩容的线程数加1。
+            if (U.compareAndSetInt(this, SIZECTL, sc, sc + 1)) {
+                // 扩容。
+                transfer(tab, nextTab);
+                break;
+            }
+        }
+        return nextTab;
+    }
+    return table;
 }
 ```
 
@@ -677,18 +704,23 @@ final V replaceNode(Object key, V value, Object cv) {
     int hash = spread(key.hashCode());
     for (Node<K,V>[] tab = table;;) {
         Node<K,V> f; int n, i, fh;
+        // 如果节点不存在，中断循环。
         if (tab == null || (n = tab.length) == 0 ||
             (f = tabAt(tab, i = (n - 1) & hash)) == null)
             break;
+        // 如果正在扩容，那么当前线程也参与扩容。
         else if ((fh = f.hash) == MOVED)
             tab = helpTransfer(tab, f);
         else {
             V oldVal = null;
             boolean validated = false;
+            // 获取首节点的锁。
             synchronized (f) {
+                // 双重检查。
                 if (tabAt(tab, i) == f) {
                     if (fh >= 0) {
                         validated = true;
+                        // 遍历链表。
                         for (Node<K,V> e = f, pred = null;;) {
                             K ek;
                             if (e.hash == hash &&
@@ -703,6 +735,7 @@ final V replaceNode(Object key, V value, Object cv) {
                                     else if (pred != null)
                                         pred.next = e.next;
                                     else
+                                        // CAS替换首节点。
                                         setTabAt(tab, i, e.next);
                                 }
                                 break;
@@ -712,6 +745,7 @@ final V replaceNode(Object key, V value, Object cv) {
                                 break;
                         }
                     }
+                    // 红黑树的情况。
                     else if (f instanceof TreeBin) {
                         validated = true;
                         TreeBin<K,V> t = (TreeBin<K,V>)f;
@@ -736,6 +770,7 @@ final V replaceNode(Object key, V value, Object cv) {
             if (validated) {
                 if (oldVal != null) {
                     if (value == null)
+                        // 更新计数。
                         addCount(-1L, -1);
                     return oldVal;
                 }
