@@ -134,9 +134,11 @@ final V putVal(K key, V value, boolean onlyIfAbsent) {
             if (casTabAt(tab, i, null, new Node<K,V>(hash, key, value)))
                 break;
         }
+        // 节点正在扩容。
         else if ((fh = f.hash) == MOVED)
             tab = helpTransfer(tab, f);
-        else if (onlyIfAbsent // check first node without acquiring lock
+        // 键值对已存在。
+        else if (onlyIfAbsent
                     && fh == hash
                     && ((fk = f.key) == key || (fk != null && key.equals(fk)))
                     && (fv = f.val) != null)
@@ -405,16 +407,16 @@ private final void tryPresize(int size) {
 
 ## transfer(Node<K,V>[], Node<K,V>[])
 
-该方法用于扩容，其步骤是：先创建一个大小是`table`两倍的`nextTable`数组，再把`table`中的所有键值对复制到`nextTable`中。
+该方法用于扩容，其大致步骤是：先创建一个大小是`table`两倍的`nextTable`数组，再把`table`中的所有键值对复制到`nextTable`中。需要注意的是，`ConcurrentHashMap`的扩容操作是可以有多个线程同时参与的，而不是`HashMap`那样只有单线程进行扩容。
 
 ```java
 private final void transfer(Node<K,V>[] tab, Node<K,V>[] nextTab) {
     int n = tab.length, stride;
-    // NCPU是CPU核心数，它的值被初始化为Runtime.getRuntime().availableProcessors()。
-
+    // NCPU是CPU核心数，它的值被初始化为Runtime.getRuntime().availableProcessors()，这里的核心数不是物理核心数，比如对于一颗支持超线程技术的双核CPU，该方法可能会返回4。
+    // 变量stride的中文意思是步进，是指每个CPU核心需要对数组中多少节点进行处理（这里只看首节点），最少每个核心需要处理MIN_TRANSFER_STRIDE个节点，MIN_TRANSFER_STRIDE是值为16的常量。
     if ((stride = (NCPU > 1) ? (n >>> 3) / NCPU : n) < MIN_TRANSFER_STRIDE)
         stride = MIN_TRANSFER_STRIDE;
-    // 如果nextTable是空的，那么就创建一个是table数组两倍大小的新数组。
+    // 如果nextTable是空的，那么就创建一个大小是table数组两倍的新数组。
     // 当多个线程对nextTable进行初始化时，transfer()方法的调用者会用CAS保证只有单个线程会对其进行初始化。
     if (nextTab == null) {
         try {
@@ -422,26 +424,37 @@ private final void transfer(Node<K,V>[] tab, Node<K,V>[] nextTab) {
             nextTab = nt;
         // 这里可能发生OOM异常。
         } catch (Throwable ex) {
+            // 扩容失败，中断操作。
             sizeCtl = Integer.MAX_VALUE;
             return;
         }
         nextTable = nextTab;
+        // transferIndex表示当前正在转移的数组中节点的下标。
         transferIndex = n;
     }
     int nextn = nextTab.length;
+    // ForwardingNode节点用来占位，当其它线程发现数组中某个首节点是ForwardingNode类型的，那么就跳过该节点。
     ForwardingNode<K,V> fwd = new ForwardingNode<K,V>(nextTab);
+    // 每个线程需要处理数组中多个位置的节点。
+    // advance表示是否还要处理数组中的下一个位置。
     boolean advance = true;
+    // 扩容结束标志，true表示扩容结束。
     boolean finishing = false;
+    // 每个数组会被分配数组上的一个区间，互相不重叠。
+    // i是当前线程正在转移的索引，bound是当前线程需要进行转移的最小索引。
     for (int i = 0, bound = 0;;) {
         Node<K,V> f; int fh;
         while (advance) {
             int nextIndex, nextBound;
+            // 如果i-1小于bound，说明之前分配给线程的区间已经完成转移了，上面提到过bound是需要转移的最小的索引，因此小于bound自然
             if (--i >= bound || finishing)
                 advance = false;
+            // 这里会把transferIndex的值赋给nextIndex。
             else if ((nextIndex = transferIndex) <= 0) {
                 i = -1;
                 advance = false;
             }
+            // CAS修改transferIndex=transferIndex-stride。
             else if (U.compareAndSetInt
                         (this, TRANSFERINDEX, nextIndex,
                         nextBound = (nextIndex > stride ?
@@ -453,30 +466,47 @@ private final void transfer(Node<K,V>[] tab, Node<K,V>[] nextTab) {
         }
         if (i < 0 || i >= n || i + n >= nextn) {
             int sc;
+            // 扩容完成。
             if (finishing) {
+                // 更新table和重置nextTable。
                 nextTable = null;
                 table = nextTab;
+                // 更新阈值。
                 sizeCtl = (n << 1) - (n >>> 1);
                 return;
             }
+            // 参与扩容的线程数减1。
             if (U.compareAndSetInt(this, SIZECTL, sc = sizeCtl, sc - 1)) {
+                // 在介绍resizeStamp()方法时说过如果有1个线程参与扩容，那么sizeCtl = ( resizeStamp(n) << RESIZE_STAMP_SHIFT ) + 2，因此这里if中的条件说明还有其它线程参与扩容，因此还不能结束。
                 if ((sc - 2) != resizeStamp(n) << RESIZE_STAMP_SHIFT)
                     return;
+                // 上面的if语句没有执行，那么说明没有其它线程进行扩容了，可以把finishing设为true以结束扩容。
                 finishing = advance = true;
-                i = n; // recheck before commit
+                i = n;
             }
         }
+        // CAS设置首节点为ForwardingNode节点。
+        // 这里同时也把table[i]处的首节点赋值给了变量f。
         else if ((f = tabAt(tab, i)) == null)
             advance = casTabAt(tab, i, null, fwd);
+        // MOVED是值为-1的常量，哈希值是-1表示该下标处的节点已经由其它线程处理过了。
+        // ForwardingNode节点的哈希就是MOVED，因此也表示这是一个ForwardingNode节点。
         else if ((fh = f.hash) == MOVED)
-            advance = true; // already processed
+            advance = true;
         else {
+            // 代码执行到这里才算真正开始转移节点。
+            // 获取首节点的锁。
             synchronized (f) {
+                // 双重检查。
                 if (tabAt(tab, i) == f) {
                     Node<K,V> ln, hn;
+                    // 哈希值大于0表示是链表。
                     if (fh >= 0) {
+                        // 根据fh & table.length算法把链表中的节点进行分组，由于table的长度是2的幂次，因此fh & table.length只可能是0或1。
                         int runBit = fh & n;
                         Node<K,V> lastRun = f;
+                        // 遍历链表。
+                        // lastRun记录最后一个runBit发生变化的节点，之后的所有节点的fh & table.length值不变。
                         for (Node<K,V> p = f.next; p != null; p = p.next) {
                             int b = p.hash & n;
                             if (b != runBit) {
@@ -484,14 +514,18 @@ private final void transfer(Node<K,V>[] tab, Node<K,V>[] nextTab) {
                                 lastRun = p;
                             }
                         }
+                        // 如果最后更新的runBit是0，那么就把lastRun赋值给ln，ln代表低位。
                         if (runBit == 0) {
                             ln = lastRun;
                             hn = null;
                         }
+                        // 反之就把lastRun赋值给hn，hn代表高位。
                         else {
                             hn = lastRun;
                             ln = null;
                         }
+                        // 再次遍历。
+                        // 把节点按之前的规则分为两组。
                         for (Node<K,V> p = f; p != lastRun; p = p.next) {
                             int ph = p.hash; K pk = p.key; V pv = p.val;
                             if ((ph & n) == 0)
@@ -499,16 +533,23 @@ private final void transfer(Node<K,V>[] tab, Node<K,V>[] nextTab) {
                             else
                                 hn = new Node<K,V>(ph, pk, pv, hn);
                         }
+                        // 设置新数组i处的元素为低位链表。
                         setTabAt(nextTab, i, ln);
+                        // 设置新数组i+n处的元素为高位链表。
+                        // 之所以是i+n是因为高位链表中的节点从原数组i处转移到新书组i+n处时正好可以命中哈希。
                         setTabAt(nextTab, i + n, hn);
+                        // 把原来数组的i处节点更新为占位符。
                         setTabAt(tab, i, fwd);
                         advance = true;
                     }
+                    // 下面是红黑树的情况。
                     else if (f instanceof TreeBin) {
                         TreeBin<K,V> t = (TreeBin<K,V>)f;
                         TreeNode<K,V> lo = null, loTail = null;
                         TreeNode<K,V> hi = null, hiTail = null;
                         int lc = 0, hc = 0;
+                        // 遍历红黑树。
+                        // 和链表同样的逻辑分为两组。
                         for (Node<K,V> e = t.first; e != null; e = e.next) {
                             int h = e.hash;
                             TreeNode<K,V> p = new TreeNode<K,V>
@@ -530,12 +571,17 @@ private final void transfer(Node<K,V>[] tab, Node<K,V>[] nextTab) {
                                 ++hc;
                             }
                         }
+                        // 如果节点数量小于UNTREEIFY_THRESHOLD，那么就转化成链表，反之创建一颗新的树。
+                        // UNTREEIFY_THRESHOLD是值为6的常量。
                         ln = (lc <= UNTREEIFY_THRESHOLD) ? untreeify(lo) :
                             (hc != 0) ? new TreeBin<K,V>(lo) : t;
                         hn = (hc <= UNTREEIFY_THRESHOLD) ? untreeify(hi) :
                             (lc != 0) ? new TreeBin<K,V>(hi) : t;
+                        // 设置新数组i处的元素为低位树。
                         setTabAt(nextTab, i, ln);
+                        // 设置新数组i+n处的元素为高位树。
                         setTabAt(nextTab, i + n, hn);
+                        // 把原来数组的i处节点更新为占位符。
                         setTabAt(tab, i, fwd);
                         advance = true;
                     }
