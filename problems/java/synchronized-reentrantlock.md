@@ -1,50 +1,14 @@
-# synchronized和lock
+# synchronized和ReentrantLock
 
-## 原子性
+在Java中我们经常使用`synchronized`关键字和`ReentrantLock`锁来实现线程安全，在深入理解它们的作用和原理之前，我们先要了解并发编程中的几个概念。
 
-原子性是指在几个操作成为一个不可分割的整体，在调用过程中不可中断也不会被其它线程干扰，就像是执行一个命令一样。
-下面的代码由于它不是一个原子操作，而是读取->自增->写回的复合操作，当有多个线程同时执行这三个操作时顺序就可能发生交错，从而导致结果与预期不符。
+## 概念
 
-```java
-count++;  
-```
+### 线程同步
 
-![](resources/synchronized_lock_2.png)
+线程同步是指多个线程并发访问共享数据时，保证任意时刻该数据只能被一个线程进行访问，通常可以用互斥锁、信号量等方式实现同步。`synchronized`关键字和`ReentrantLock`锁就是用互斥的方法实现线程同步。
 
-## 可见性
-
-可见性是指一个线程对一个共享变量的修改可以被其它线程立刻看到。
-
-在下面的代码中`running`就是一个共享变量，线程A和线程B都拥有它，线程B通过改变`running`的值从而让线程A退出死循环，但实际上这里存在着隐患。
-
-```java
-// 线程A
-public void run() {
-    while (running) {
-        System.out.println("running");
-    }
-}
-
-// 线程B
-public void shutdown() {
-    running = false;
-}
-```
-
-隐患要从Java的内存模型说起。如下图所示，Java内存分为主内存和工作内存，所有变量都存储在主内存中，每个线程有各自独立的工作内存，工作内存里保存着它用到的主内存中变量的副本。也就是说线程不直接操作主内存中的变量，而是操作该变量在工作内存里的一份拷贝，并且有多少个线程用到这个变量就有多少个拷贝，因此上述代码中的线程A和线程B都持有`running`变量的一个副本，当线程B修改它持有的`running`变量副本的时候并不能保证线程A能看到。
-
-![](resources/synchronized_lock_1.png)
-
-为了能让线程A及时看到线程B对`running`变量的修改，必须要做两件事：
-
-1. 线程B把修改后的值写入主内存。
-2. 线程A从主内存中读取最新的值。
-
-## 有序性
-
-有序性是指程序执行顺序按代码的顺序执行。
-
-## 可重入锁
+### 可重入锁
 
 可重入指的是同一把锁可以被同一个线程多次获取。通常的实现是锁的内部有一个计数器，当一个线程获取锁时计数器就加1同时记录锁的拥有者，解锁时减1，计数器减为0时锁就被释放。
 
@@ -111,9 +75,13 @@ public void test();
       22: return
 ```
 
-我们可以看到`synchronized`代码块的首位加上了`monitorenter`和`monitorexit`指令。
+我们可以看到`synchronized`代码块的首尾加上了`monitorenter`和`monitorexit`指令。
 
-在JVM中每个对象都有一个与之对应的`monitor`，当`monitor`被占用时对象就被上锁，并且这个`monitor`也有一个计数器，可以被同一个线程多次获取，因此我们可以看到它就是一个可重入锁。当JVM执行`monitorenter`指令时就会去尝试获取这把锁，当执行`monitorexit`指令时就把锁的计数器减去1，如果减为0，那么就释放。
+在JVM中每个对象都有一个与之对应的`monitor`，当`monitor`被占用时对应的对象就被上锁，并且这个`monitor`也有一个计数器，可以被同一个线程多次获取，因此我们可以看到它相当于是一把可重入锁。当JVM执行`monitorenter`指令时就会去尝试获取这把锁，当执行`monitorexit`指令时就把锁的计数器减去1，如果减为0，那么就释放。
+
+
+
+### 源代码
 
 现在我们看一下当JVM执行`monitorenter`指令时具体做了什么，你可以在[这里](https://github.com/unofficial-openjdk/openjdk/blob/jdk8u/jdk8u/hotspot/src/share/vm/interpreter/interpreterRuntime.cpp)找到源码。
 
