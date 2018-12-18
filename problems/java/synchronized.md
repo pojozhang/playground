@@ -1,12 +1,12 @@
 # synchronized
 
-在Java中我们经常使用`synchronized`关键字和`ReentrantLock`锁来实现线程安全，在深入理解它们的作用和原理之前，我们先要了解并发编程中的几个概念。
+在Java中我们经常使用`synchronized`关键字实现线程安全，在深入理解它的作用和原理之前，我们先要了解并发编程中的几个概念。
 
 ## 概念
 
 ### 线程同步
 
-线程同步是指多个线程并发访问共享数据时，保证任意时刻该数据只能被一个线程进行访问，通常可以用互斥锁、信号量等方式实现同步。`synchronized`关键字和`ReentrantLock`锁就是用互斥的方法实现线程同步。
+线程同步是指多个线程并发访问共享数据时，保证任意时刻该数据只能被一个线程进行访问，通常可以用互斥锁、信号量等方式实现同步。`synchronized`关键字就是用互斥的方法实现线程同步，互斥是指任意时刻只有一个线程可以执行某段代码。
 
 ### 可重入锁
 
@@ -32,13 +32,11 @@ private synchronized void b() {
 
 > [示例：不可重入锁](https://github.com/pojozhang/playground/blob/master/solutions/java/src/main/java/playground/interview/NonReentrantLock.java)
 
-## synchronized <a id="synchronized"></a>
+### 公平锁
 
-`synchronized`修饰符有三个作用：
+公平锁是指当多个线程等待一把锁时，按照申请锁的先后顺序依次获得锁，先申请的优先线程当锁被释放时可以优先获得这把锁；非公平锁则相反，当锁被释放时任何一个等待锁的线程都有机会获得锁。
 
-1. 保证原子性
-2. 保证可见性
-3. 保证有序性
+## 原理
 
 我们先看一段代码：
 
@@ -90,7 +88,19 @@ public void test() {
 }
 ```
 
-### 源代码
+### 锁的优化
+
+当多个线程同时到达`synchronized`块时，只有一个线程可以获得`monitor`对象，其余线程会被阻塞，由于Java的线程是直接映射到操作系统的原生线程上的，因此阻塞或唤醒一个线程需要从用户态切到内核态，由操作系统帮助完成。用户态和内核态之间的转换需要临时保存当前系统的一些状态，比如CPU寄存器的值，堆栈信息等，以便未来当线程被唤醒后可以继续执行，这一过程需要耗费较多的CPU时间，我们这一方式称为重量级锁。
+
+JVM对此进行了优化，不会直接使用重量级锁，而是采取多种优化机制，下面一一介绍。
+
+#### 自旋锁
+
+#### 轻量级锁
+
+#### 偏向锁
+
+## 源代码分析
 
 现在我们看一下当JVM执行`monitorenter`指令时具体做了什么，你可以在[这里](https://github.com/unofficial-openjdk/openjdk/blob/jdk8u/jdk8u/hotspot/src/share/vm/interpreter/interpreterRuntime.cpp)找到源码。
 
@@ -168,6 +178,14 @@ ObjectMonitor() {
 
 - `_owner`指向持有`ObjectMonitor`对象的线程。
 - ``
+
+## 其它特性
+
+`synchronized`关键字除了可以达到进行线程同步外，还有以下的特性：
+
+1. 保证原子性
+2. 保证可见性
+3. 保证有序性
 
 ## 参考
 

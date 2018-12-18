@@ -50,7 +50,7 @@ Java内存模型定义了8种操作来实现如何把变量从主内存读到工
 
 ### 可见性
 
-可见性是指一个线程修改了共享变量的值，其它的线程能立刻得知被修改后的最新值。除了[volatile](#volatile)外，[synchronized](synchronized-lock.md#synchronized)和`final`也可以实现可见性（只针对初始化后不可被修改的基本类型对象）。
+可见性是指一个线程修改了共享变量的值，其它的线程能立刻得知被修改后的最新值。除了[volatile](#volatile)外，[synchronized](synchronized.md)和`final`也可以实现可见性（只针对初始化后不可被修改的基本类型对象）。
 
 ### 有序性 <a id = "ordering"></a>
 
