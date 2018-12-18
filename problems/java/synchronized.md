@@ -1,4 +1,4 @@
-# synchronized和ReentrantLock
+# synchronized
 
 在Java中我们经常使用`synchronized`关键字和`ReentrantLock`锁来实现线程安全，在深入理解它们的作用和原理之前，我们先要了解并发编程中的几个概念。
 
@@ -77,9 +77,18 @@ public void test();
 
 我们可以看到`synchronized`代码块的首尾加上了`monitorenter`和`monitorexit`指令。
 
-在JVM中每个对象都有一个与之对应的`monitor`，当`monitor`被占用时对应的对象就被上锁，并且这个`monitor`也有一个计数器，可以被同一个线程多次获取，因此我们可以看到它相当于是一把可重入锁。当JVM执行`monitorenter`指令时就会去尝试获取这把锁，当执行`monitorexit`指令时就把锁的计数器减去1，如果减为0，那么就释放。
+在JVM中每个对象都有一个与之对应的`monitor`，当对象的`monitor`被占用时就表示对象已经就其它线程占用，每个`monitor`拥有一个计数器，如果被同一个线程多次获取，那么就把计数器加上1，如果被线程释放，那么就把计数器减去1，相当于是一把可重入锁。当JVM执行`monitorenter`指令时就会去尝试获取这把锁，当执行`monitorexit`指令时就把锁的计数器减去1，如果减为0，那么就释放。
 
+上面我们说只有对象才有对应的`monitor`，而基本类型不属于对象，因此以下代码是**不能**通过编译的。
 
+```java
+public void test() {
+    int n = 0;
+    synchronized (n) {
+        System.out.println("test");
+    }
+}
+```
 
 ### 源代码
 
@@ -160,10 +169,6 @@ ObjectMonitor() {
 - `_owner`指向持有`ObjectMonitor`对象的线程。
 - ``
 
-## lock
+## 参考
 
-锁的状态总共有四种：无锁状态、偏向锁、轻量级锁和重量级锁。
-
-### 偏向锁
-
-偏向锁是JDK1.6之后引入的。
+1. [《JVM源码分析之synchronized实现》](https://www.jianshu.com/p/c5058b6fe8e5)
