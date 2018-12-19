@@ -23,11 +23,12 @@
 ## 多线程
 
 - [线程](thread.md)
-- [AQS](aqs.md)
 - [写一个死锁的例子](https://github.com/pojozhang/playground/blob/master/solutions/java/src/test/java/playground/interview/DeadLockTest.java)
 - [CountDownLatch、CyclicBarrier 和 Semaphore 的区别](https://github.com/pojozhang/playground/blob/master/solutions/java/src/test/java/playground/interview/ThreadSyncTest.java)
 - [CAS](cas.md)
-- [synchronized和lock](synchronized-lock.md)
+- [synchronized](synchronized.md)
+- [AQS](aqs.md)
+- ReentrantLock
 - [wait()、notify() 和 notifyAll()](wait-notify-notifyAll.md)
 - ForkJoinPool
 
@@ -41,7 +42,7 @@
 - [LinkedList](linkedlist.md)
 - [CopyOnWriteArrayList](copy-on-write-array-list.md)
 - [HashMap](hashmap.md)
-- ConcurrentHashMap
+- [ConcurrentHashMap](concurrent-hashmap.md)
 - TreeMap
 - [HashSet](hashset.md)
 - LinkedHashSet
@@ -66,6 +67,7 @@
 ## Spring
 
 - AOP
+- Eureka的心跳机制
 
 ## 其它框架
 
