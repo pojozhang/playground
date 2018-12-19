@@ -34,7 +34,7 @@ private synchronized void b() {
 
 ### 公平锁
 
-公平锁是指当多个线程等待一把锁时，按照申请锁的先后顺序依次获得锁，先申请的优先线程当锁被释放时可以优先获得这把锁；非公平锁则相反，当锁被释放时任何一个等待锁的线程都有机会获得锁。
+公平锁是指当多个线程等待一把锁时，按照申请锁的先后顺序依次获得锁，先申请的优先线程当锁被释放时可以优先获得这把锁；非公平锁则相反，当锁被释放时任何一个等待锁的线程都有机会获得锁。`synchronized`是非公平的。
 
 ## 原理
 
@@ -48,9 +48,9 @@ public void test() {
 }
 ```
 
-上述代码中，当有多个线程执行到`synchronized`这一句时，同一时刻只有一个线程能进入下面的代码块中，其余线程会一直阻塞直到之前的线程退出了代码块。
+上述代码中，当有多个线程执行到`synchronized`这一句时，同一时刻只有一个线程能进入下面的代码块中，其余线程会一直阻塞直到之前的线程退出同步块。
 
-下面是对这段代码进行编译后再用`javap`工具打印出的字节码：
+下面是对这段代码进行编译后再用`javap`工具打印出的字节码。
 
 ```java
 public void test();
@@ -90,103 +90,113 @@ public void test() {
 
 ### 锁的优化
 
-当多个线程同时到达`synchronized`块时，只有一个线程可以获得`monitor`对象，其余线程会被阻塞，由于Java的线程是直接映射到操作系统的原生线程上的，因此阻塞或唤醒一个线程需要从用户态切到内核态，由操作系统帮助完成。用户态和内核态之间的转换需要临时保存当前系统的一些状态，比如CPU寄存器的值，堆栈信息等，以便未来当线程被唤醒后可以继续执行，这一过程需要耗费较多的CPU时间，我们这一方式称为重量级锁。
+当多个线程同时到达`synchronized`块时，只有一个线程可以获得`monitor`对象，其余线程会被阻塞，由于Java的线程是直接映射到操作系统的原生线程上的，因此阻塞或唤醒一个线程需要从用户态切到内核态，由操作系统帮助完成。用户态和内核态之间的转换需要临时保存当前系统的一些状态，比如CPU寄存器的值，堆栈信息等，以便未来当线程被唤醒后可以继续执行，这一过程需要耗费较多的CPU时间，我们把这一方式称为**重量级锁**。
 
 JVM对此进行了优化，不会直接使用重量级锁，而是采取多种优化机制，下面一一介绍。
 
 #### 自旋锁
 
-#### 轻量级锁
+通常共享数据被一个线程锁定后，它的锁定状态只会持续较短的时候然后就会被释放。针对这种情况JVM引入了自旋锁的概念，自旋是指循环，自旋锁就是指通过循环的方式获得锁，伪代码如下。
 
-#### 偏向锁
-
-## 源代码分析
-
-现在我们看一下当JVM执行`monitorenter`指令时具体做了什么，你可以在[这里](https://github.com/unofficial-openjdk/openjdk/blob/jdk8u/jdk8u/hotspot/src/share/vm/interpreter/interpreterRuntime.cpp)找到源码。
-
-```cpp
-IRT_ENTRY_NO_ASYNC(void, InterpreterRuntime::monitorenter(JavaThread* thread, BasicObjectLock* elem))
-#ifdef ASSERT
-  thread->last_frame().interpreter_frame_verify_monitor(elem);
-#endif
-  if (PrintBiasedLockingStatistics) {
-    Atomic::inc(BiasedLocking::slow_path_entry_count_addr());
-  }
-  Handle h_obj(thread, elem->obj());
-  assert(Universe::heap()->is_in_reserved_or_null(h_obj()),
-         "must be NULL or an object");
-  if (UseBiasedLocking) {
-    // Retry fast entry if bias is revoked to avoid unnecessary inflation
-    ObjectSynchronizer::fast_enter(h_obj, elem->lock(), true, CHECK);
-  } else {
-    ObjectSynchronizer::slow_enter(h_obj, elem->lock(), CHECK);
-  }
-  assert(Universe::heap()->is_in_reserved_or_null(elem->obj()),
-         "must be NULL or an object");
-#ifdef ASSERT
-  thread->last_frame().interpreter_frame_verify_monitor(elem);
-#endif
-IRT_END
-```
-
-你可以在[这里](https://github.com/unofficial-openjdk/openjdk/blob/jdk8u/jdk8u/hotspot/src/share/vm/runtime/synchronizer.cpp)找到源码。
-
-```cpp
-void ObjectSynchronizer::fast_enter(Handle obj, BasicLock* lock, bool attempt_rebias, TRAPS) {
- if (UseBiasedLocking) {
-    if (!SafepointSynchronize::is_at_safepoint()) {
-      BiasedLocking::Condition cond = BiasedLocking::revoke_and_rebias(obj, attempt_rebias, THREAD);
-      if (cond == BiasedLocking::BIAS_REVOKED_AND_REBIASED) {
-        return;
-      }
-    } else {
-      assert(!attempt_rebias, "can not rebias toward VM thread");
-      BiasedLocking::revoke_at_safepoint(obj);
-    }
-    assert(!obj->mark()->has_bias_pattern(), "biases should be revoked by now");
- }
-
- slow_enter (obj, lock, THREAD) ;
+```java
+for(; ; ){
+  // 尝试获取锁。
 }
 ```
 
-在HotSpot虚拟机中，`monitor`的实现是`ObjectMonitor`，可以在[这里](https://github.com/unofficial-openjdk/openjdk/blob/jdk8u/jdk8u/hotspot/src/share/vm/runtime/objectMonitor.hpp)看到源码，其数据结构如下：
+在实际中，自旋通常不是死循环，而是有一个循环次数的阈值，如果循环的次数超过了阈值依然没有获取锁，那么就按照重量级锁的步骤阻塞线程。在JDK1.6之后该阈值是JVM根据系统的运行状态动态设定的，如果上一次自旋成功获得了锁，那么JVM会认为本次自旋可以获得锁的概率较大，阈值也会相应提高；相反，如果以往对于某个锁通过自旋的方式很少能够成功获得，那么之后就可能直接跳过自旋的过程，避免浪费CPU时间。
 
-```cpp
-ObjectMonitor() {
-    _header       = NULL;
-    _count        = 0;
-    _waiters      = 0,
-    _recursions   = 0;
-    _object       = NULL;
-    _owner        = NULL;
-    _WaitSet      = NULL;
-    _WaitSetLock  = 0 ;
-    _Responsible  = NULL ;
-    _succ         = NULL ;
-    _cxq          = NULL ;
-    FreeNext      = NULL ;
-    _EntryList    = NULL ;
-    _SpinFreq     = 0 ;
-    _SpinClock    = 0 ;
-    OwnerIsThread = 0 ;
-    _previous_owner_tid = 0;
-  }
+自旋锁有以下几个缺点。
+
+1. 如果一个锁被占用的时间较长，那么其它线程的自旋浪费了CPU时间。
+2. 如果有大量的线程试图获得一把锁，那么就会有大量的线程进行自旋，比较消耗CPU资源。
+
+#### 轻量级锁
+
+在了解轻量级锁之前，我们需要对JVM中对象的内存布局有一定的了解。一个Java对象主要分为3个部分：对象头、对象本身的数据以及用来对齐填充的数据，其中对象头又可分为Mark Word、指向方法区中类型数据的指针，如果是数组对象，那么还有额外的长度字段。
+
+![对象的内存布局](resources/synchronized_1.png)
+
+Mark Word是JVM实现轻量级锁的关键，包含哈希码、GC分代年龄等数据，这部分数据的长度是32位或64位（取决于虚拟机是32位或64位）。Mark Word中存储的内容不是固定的，它会根据长度为2的标志位决定当前存储的内容，如下图所示。
+
+![Mark Word](resources/synchronized_2.png)
+
+在了解了Mark Word后，让我们回到轻量级锁的实现上。当一个线程进入同步块后，如果锁对象处于未锁定状态，JVM会在当前线程的栈帧中建立一个称为Lock Record的空间用来存储锁对象当前的Mark Word的拷贝（该副本被称为Displaced Mark Word）。
+
+![](resources/synchronized_3.png)
+
+然后用CAS将锁对象的Mark Word更新为指向Lock Record的指针，如果更新成功，那么当前线程就持有该对象的锁，这时会更新对象头中标志位，让对象进入轻量级锁定状态。
+
+![](resources/synchronized_4.png)
+
+如果更新失败，虚拟机会检查Mark Word是否是指向当前线程的栈帧，因为`synchronized`是可重入的，如果是，那么说明当前线程已经持有该对象的锁，可以直接进入同步块；否则说明锁已经被其它线程占用，这时只能膨胀为重量级锁，当前线程会修改锁对象的标志位并修改其Mark Word内容为指向重量级锁的指针，然后进入阻塞的状态，这时当轻量级锁持有者解锁时，使用CAS把Displaced Mark Word替换回去会发现更新失败，这是因为锁对象的Mark Word已经被修改了，持有轻量级锁的线程就会得知有其它线程在竞争，因此它需要释放锁并唤醒阻塞的线程。
+
+> 注意，锁对象在堆中，而Lock Record在线程的栈帧中。
+
+我们注意到，当有多个线程争抢一把锁时，轻量级锁需要升级到重量级锁，那么轻量级锁有什么用呢？
+轻量级锁的目的是提升线程同步的性能，它基于一个经验：对于大部分的锁，在整个同步周期内都不存在竞争。意思是在没有竞争的情况下使用轻量级锁可以提升性能，当然这个提升是相较重量级锁而言的。而在有竞争的时候，由于轻量级锁在重量级锁的基础上还要多执行一些操作，因此性能会更差。
+
+轻量级锁的核心思想是尽可能用CAS操作，减少重量级锁的阻塞和唤醒线程操作。
+
+#### 偏向锁
+
+偏向锁的字面意思是这把锁偏向于第一个获得它的线程。偏向锁和轻量级锁类似，也是针对无竞争情况下对同步的优化，它比轻量级锁更进一步，尽可能省去CAS操作，下面我们看下它的远离。
+
+偏向锁也是利用对象头中的Mark Word，当锁对象第一次被线程获取时，线程会通过CAS把线程的ID记录在Mark Word中，如果设置成功，那么该线程就持有了这个偏向锁，以后再进入该锁相关的同步块时不用再进行任何同步操作。如果发生了竞争，根据锁对象目前是否处于被锁定的状态，JVM会撤销锁对象的偏向把它恢复到未锁定状态或者膨胀为轻量级锁。
+
+#### 锁消除
+
+即时编译器在运行时会检查代码中的同步块是否有必要，如果没有同步的必要就会忽略同步操作直接执行，比如下面代码中的`lock`，它是一个局部变量，不会被其它线程访问到，因此不存在数据竞争的问题，不需要进行同步。
+
+```java
+void test() {
+    Object lock = new Object();
+    for (; ; ) {
+        synchronized (lock) {
+            System.out.println("test");
+        }
+    }
+}
 ```
 
-几个重要的属性：
+#### 锁粗化
 
-- `_owner`指向持有`ObjectMonitor`对象的线程。
-- ``
+如果JVM探测到一个区域内有零散的对某个对象的加解锁操作，JVM就会把同步的范围扩展到该区域的外部，比如下面这个例子。
 
-## 其它特性
+```java
+void test() {
+    for (; ; ) {
+        synchronized (this) {
+            System.out.println("test");
+        }
+    }
+}
+```
 
-`synchronized`关键字除了可以达到进行线程同步外，还有以下的特性：
+锁粗化后的代码可能像下面这样。
+
+```java
+void test() {
+    synchronized (this) {
+        for (; ; ) {
+            System.out.println("test");
+        }
+    }
+}
+```
+
+## 特性
+
+`synchronized`关键具有以下几种特性：
 
 1. 保证原子性
+
+通过互斥保证了原子性，同一时刻只有一个线程可以进入同步块，因此执行过程中不会被其它线程所影响。
+
 2. 保证可见性
+
+在进入同步块时，JVM会清空当前线程的工作内存然后从主存中把共享变量最新的副本拷贝到工作内存中；而在退出同步块前，JVM会把工作内存中对共享变量的修改刷新到主存中。通过这种方式保证了可见性。
+
 3. 保证有序性
 
-## 参考
-
-1. [《JVM源码分析之synchronized实现》](https://www.jianshu.com/p/c5058b6fe8e5)
+`synchronized`的有序性和`volatile`的有序性的理解有所区别，`volatile`的有序性是指禁止指令重排序，而`synchronized`的有序性和`as-if-serial`语义有关，它的意思是无论如何重排序，单线程程序的执行结果都不能被改变，由于`synchronized`代码块一次只能被一个线程所访问，实际上就是单线程的，因此可以保证有序性。`synchronized`**没有**禁止指令重排序的作用。
