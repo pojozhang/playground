@@ -28,7 +28,7 @@
 - [CAS](cas.md)
 - [synchronized](synchronized.md)
 - [AQS](aqs.md)
-- ReentrantLock
+- [锁](lock.md)
 - [wait()、notify() 和 notifyAll()](wait-notify-notifyAll.md)
 - ForkJoinPool
 
