@@ -12,7 +12,7 @@ JDK中锁的实现基于[AQS](aqs.md)框架，因此在看本文前需要对AQS�
 private final Sync sync;
 ```
 
-`ReentrantLock`锁有两种模式，一种是公平锁，另一种是非公平锁，无参构造器默认是非公平锁。
+`ReentrantLock`锁有两种模式，一种是公平锁，对应的实现是`FairSync`，另一种是非公平锁，对应的实现是`NonfairSync`，`NonfairSync`和`FairSync`都是`Sync`类的子类，无参构造器默认是非公平锁。
 
 ```java
 // 非公平锁。
@@ -26,11 +26,28 @@ public ReentrantLock(boolean fair) {
 }
 ```
 
-`NonfairSync`和`FairSync`都是`Sync`类的子类，它们实现了定义在`AQS`中的`tryAcquire()`方法尝试获取锁。
+`ReentrantLock`通过调用`Sync`的`acquire()`方法进行加锁，该方法实际上是定义在基类`AQS`中的。
+
+```java
+public void lock() {
+    sync.acquire(1);
+}
+```
+
+`acquire()`方法用到了模板方法的设计模式，子类需要自己实现`tryAcquire()`方法来获取锁，`NonfairSync`和`FairSync`都有各自的实现。
+
+```java
+// java.util.concurrent.locks.AbstractQueuedSynchronizer#acquire
+public final void acquire(int arg) {
+    if (!tryAcquire(arg) &&
+        acquireQueued(addWaiter(Node.EXCLUSIVE), arg))
+        selfInterrupt();
+}
+```
 
 ### 非公平锁
 
-`NonfairSync`实现了非公平锁的逻辑，是我们通常使用的模式。其`tryAcquire()`方法通过调用基类`Sync`中的`nonfairTryAcquire()`方法来获取锁。
+`NonfairSync`实现了非公平锁的逻辑，是我们常用的模式。其`tryAcquire()`方法通过调用基类`Sync`中的`nonfairTryAcquire()`方法来获取锁。
 
 ```java
 // java.util.concurrent.locks.ReentrantLock.NonfairSync#tryAcquire
