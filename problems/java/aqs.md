@@ -34,7 +34,7 @@ static final class Node {
     // 指向线程。
     volatile Thread thread;
 
-    // 
+    // 指向下一个等待条件的节点或表示模式：排他或共享模式。
     Node nextWaiter;
 }
 ```
@@ -57,7 +57,7 @@ public final void acquire(int arg) {
 }
 ```
 
-线程首先会调用`tryAcquire()`方法获取锁，该方法是抽象方法需要子类自己实现，如果方法返回`true`就表示成功拿到锁，由于`&&`短路的原理后面的条件就不用执行了；如果没有拿到锁那么就调用`addWaiter()`方法创建一个代表当前线程的`Node`对象并放到队列的末尾。
+线程首先会调用`tryAcquire()`方法获取锁，该方法需要子类自己实现，这里用到了模板方法的设计模式。如果方法返回`true`就表示成功拿到锁，由于`&&`短路的原理后面的条件就不用执行了；如果没有拿到锁那么就调用`addWaiter()`方法创建一个代表当前线程的`Node`对象并放到队列的末尾。
 
 ```java
 private Node addWaiter(Node mode) {
@@ -144,9 +144,9 @@ private void setHead(Node node) {
 static final int CANCELLED =  1;
 // 当节点状态是SIGNAL时，当后续节点加入队列时需要把后续节点的线程挂起，解锁时需要把后续节点的线程唤醒。
 static final int SIGNAL    = -1;
-// 线程在等待条件。
+// 线程正在等待条件。
 static final int CONDITION = -2;
-// 
+// 状态需要向后传播。
 static final int PROPAGATE = -3;
 ```
 
@@ -205,7 +205,7 @@ public static void main(String[] args) {
 
 ### 排他模式下锁的释放
 
-调用`release()`方法释放互斥锁。`tryRelease()`方法是一个抽象方法，需要子类自己实现，当`tryRelease()`返回`true`时表示解锁成功，此时需要唤醒后续节点的线程。
+调用`release()`方法释放互斥锁。`tryRelease()`方法同样需要子类自己实现，当`tryRelease()`返回`true`时表示解锁成功，此时需要唤醒后续节点的线程。
 
 ```java
 public final boolean release(int arg) {
@@ -242,7 +242,105 @@ private void unparkSuccessor(Node node) {
 
 ### 共享模式下锁的获取
 
+调用`acquireShared()`方法获取共享锁。这里同样用到了模板方法的设计模式，子类需要自己实现`tryAcquireShared()`方法。
+
+```java
+public final void acquireShared(int arg) {
+    if (tryAcquireShared(arg) < 0)
+        doAcquireShared(arg);
+}
+```
+
+如果`tryAcquireShared()`方法返回值大于等于0，说明成功获取锁，否则继续调用`doAcquireShared()`方法。
+
+```java
+private void doAcquireShared(int arg) {
+    // addWaiter的逻辑和排他模式中是一样的，为当前线程创建一个对应的Node对象，并放到队列的末尾。
+    // Node.SHARED表示节点是共享模式。
+    final Node node = addWaiter(Node.SHARED);
+    boolean interrupted = false;
+    try {
+        for (;;) {
+            // 变量p是node的前驱节点。
+            final Node p = node.predecessor();
+            if (p == head) {
+                // 如果p是首节点，那么node就是队列中第一个等待获取锁的节点。
+                // 再次尝试获取锁。
+                int r = tryAcquireShared(arg);
+                if (r >= 0) {
+                    // 如果成功获取锁，则更新head节点并唤醒后续的节点。
+                    setHeadAndPropagate(node, r);
+                    p.next = null;
+                    return;
+                }
+            }
+            // 判断线程是否应该被挂起。
+            if (shouldParkAfterFailedAcquire(p, node))
+                // 线程进入阻塞状态直到被唤醒。
+                interrupted |= parkAndCheckInterrupt();
+        }
+    } catch (Throwable t) {
+        cancelAcquire(node);
+        throw t;
+    } finally {
+        if (interrupted)
+            selfInterrupt();
+    }
+}
+
+// 更新head节点并唤醒后续的节点。
+private void setHeadAndPropagate(Node node, int propagate) {
+    Node h = head;
+    // 设置新的首节点。
+    setHead(node);
+    if (propagate > 0 || h == null || h.waitStatus < 0 ||
+        (h = head) == null || h.waitStatus < 0) {
+        Node s = node.next;
+        // 释放后续的共享模式的节点。
+        if (s == null || s.isShared())
+            doReleaseShared();
+    }
+}
+
+private void doReleaseShared() {
+    for (;;) {
+        Node h = head;
+        if (h != null && h != tail) {
+            int ws = h.waitStatus;
+            // 如果首节点的waitStatus是SIGNAL，尝试用CAS修改waitStatus。
+            // 如果更新成功，那么就唤醒后续的节点。
+            if (ws == Node.SIGNAL) {
+                if (!h.compareAndSetWaitStatus(Node.SIGNAL, 0))
+                    continue;
+                // 唤醒后续节点。
+                unparkSuccessor(h);
+            }
+            // 如果首节点的waitStatus是0，那么用CAS修改为PROPAGATE。
+            // PROPAGATE的值为-3，在setHeadAndPropagate中如果首节点的waitStatus小于0，那么就会唤醒后续节点。
+            else if (ws == 0 &&
+                        !h.compareAndSetWaitStatus(0, Node.PROPAGATE))
+                continue;
+        }
+        // 如果首节点变了，则继续循环。
+        if (h == head)
+            break;
+    }
+}
+```
+
 ### 共享模式下锁的释放
+
+调用`releaseShared()`方法释放共享锁，子类需要自己实现`tryReleaseShared()`方法。
+
+```java
+public final boolean releaseShared(int arg) {
+    if (tryReleaseShared(arg)) {
+        doReleaseShared();
+        return true;
+    }
+    return false;
+}
+```
 
 ## 参考
 
