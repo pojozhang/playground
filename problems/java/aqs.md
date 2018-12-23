@@ -269,6 +269,7 @@ private void doAcquireShared(int arg) {
                 int r = tryAcquireShared(arg);
                 if (r >= 0) {
                     // 如果成功获取锁，则更新head节点并唤醒后续的节点。
+                    // 唤醒的过程是一个递归的过程，当前线程获取锁后，会设置head为当前node，然后唤醒下一个共享模式的节点，下一个节点对应的线程从parkAndCheckInterrupt()方法中恢复后进入下一个循环，它的前驱节点就是当前的node，也正是head节点，因此又会递归的调用setHeadAndPropagate()方法，设置新的head，唤醒下一个共享模式的节点，循环往复下去，唤醒所有连续的共享节点。
                     setHeadAndPropagate(node, r);
                     p.next = null;
                     return;
@@ -296,7 +297,7 @@ private void setHeadAndPropagate(Node node, int propagate) {
     if (propagate > 0 || h == null || h.waitStatus < 0 ||
         (h = head) == null || h.waitStatus < 0) {
         Node s = node.next;
-        // 释放后续的共享模式的节点。
+        // 唤醒后续的共享模式的节点。
         if (s == null || s.isShared())
             doReleaseShared();
     }
