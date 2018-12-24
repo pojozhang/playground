@@ -4,6 +4,27 @@ JVM把内存划分成多个区域，每个区域有个各自的用途。在JDK7�
 
 ![](resources/jvm_memory_areas_1.png)
 
+当我们执行下面的代码后，各个区域存储的数据如图所示。
+
+```java
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
+import org.apache.log4j.Logger;
+
+public class HelloWorld {
+    private static Logger LOGGER = Logger.getLogger(HelloWorld.class.getName());
+
+    public void sayHello(String message) {
+        SimpleDateFormat formatter = new SimpleDateFormat("dd.MM.YYYY");
+        String today = formatter.format(new Date());
+        LOGGER.info(today + ": " + message);
+    }
+}
+```
+
+![](resources/jvm_memory_areas_2.png)
+
 ## 程序计数器
 
 程序计数器记录了当前线程执行的字节码的行号，每个线程都有自己的程序计数器，因此程序计数器是线程私有的。**这是唯一一个不会发生OutOfMemoryError异常的区域。**
@@ -31,3 +52,7 @@ Java程序中的大部分对象都是分配在Java堆上的，它是所有线程
 ## 直接内存
 
 直接内存比较特殊，它并不属于JVM内存区域一部分。直接内存伴随NIO而出现，可以使用本地方法直接在Java堆外分配内存，然后通过Java堆中的`DirectByteBuffer`对象作为这块内存的引用进行操作，这样可以避免在Java堆和本地堆中来回复制数据，提高性能。由于是在堆外分配的堆存，因此直接内存不受Java堆大小的限制，也不受`-Xmx`等参数的限制，但它受物理内存和操作系统的限制。
+
+## 参考
+
+1. [JAVA的内存模型及结构](http://ifeve.com/under-the-hood-runtime-data-areas-javas-memory-model/)
