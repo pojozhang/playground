@@ -33,6 +33,25 @@ public class HelloWorld {
 
 虚拟机在执行每个方法的时候同时会创建一个栈帧，用于存储局部变量表、操作数栈、动态链接、方法的返回地址等信息，和程序计数器一样，Java虚拟机栈也是线程私有的。该区域会发生`StackOverflowError`和`OutOfMemoryError`异常。
 
+当栈深度太深时会抛出`StackOverflowError`异常。由于每次方法调用都会创建一个栈帧，那么随着递归深度的增加，需要生成越来越多的栈帧，当达到分配给线程的栈大小上限后就会抛出栈溢出的异常，可以通过`-Xss`参数设置分配给线程的栈空间的上限；相对的，如果`-Xss`值过大，那么能够创建的线程数量可能会受到影响。
+
+```java
+static int depth;
+
+public static void main(String[] args) {
+    test();
+}
+
+static void test() {
+    depth++;
+    test();
+}
+```
+
+> 异常：java.lang.StackOverflowError。
+
+此外，如果创建的线程数量过多，就会抛出`OutOfMemoryError`异常，这时候可以调小`-Xss`参数的值或者调小Java堆的大小以腾出空间创建更多的线程。
+
 ## 本地方法栈
 
 这个区域和Java虚拟机栈的功能类似，区别是本地方法栈是用来调用本地方法的。虚拟机对这个区域没有强制规定，HotSpot虚拟机的实现直接把栈和本地方法栈合二为一。该区域也会发生`StackOverflowError`和`OutOfMemoryError`异常。
@@ -41,9 +60,27 @@ public class HelloWorld {
 
 Java程序中的大部分对象都是分配在Java堆上的，它是所有线程共享的。根据虚拟机规范，Java堆可以处于物理上不连续但是逻辑上连续的内存空间中。该区域会发生`OutOfMemoryError`异常。
 
+当我们连续申请大对象时，会抛出`OutOfMemoryError`异常。
+
+```java
+// java -Xmx20M -Xms20M Test
+public static void main(String[] args) {
+    byte[] bytes1 = new byte[4 * 1024 * 1024];
+    byte[] bytes2 = new byte[4 * 1024 * 1024];
+    byte[] bytes3 = new byte[4 * 1024 * 1024];
+    byte[] bytes4 = new byte[4 * 1024 * 1024];
+}
+```
+
+> 异常：java.lang.OutOfMemoryError: Java heap space。
+
 ## 方法区
 
 方法区用来存储已经被虚拟机加载的类的信息、常量、静态变量、即时编译器编译后的代码等数据，它是所有线程共享的。该区域会发生`OutOfMemoryError`异常。
+
+当我们加载大量类文件时就会出现`OutOfMemoryError`异常。
+
+> 异常： java.lang.OutOfMemoryError: PermGen space。
 
 ### 运行时常量池
 
