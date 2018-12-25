@@ -19,7 +19,9 @@ test {
     useJUnitPlatform()
 }
 
-def junitVersion = '5.3.2'
+ext {
+    junitVersion = '5.3.2'
+}
 
 dependencies {
     compile "cglib:cglib-full:2.0.2"
