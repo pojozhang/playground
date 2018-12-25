@@ -25,3 +25,29 @@ explain select *
 |  1 | SIMPLE      | film       | NULL       | eq_ref | PRIMARY                | PRIMARY | 2       | sakila.film_actor.film_id |    1 |   100.00 | NULL  |
 +----+-------------+------------+------------+--------+------------------------+---------+---------+---------------------------+------+----------+-------+
 ```
+
+下面我们对`EXPLAIN`命令执行结果中的每一列进行解释。
+
+## id
+
+## select_type
+
+## table
+
+## partitions
+
+## type
+
+## possible_keys
+
+## key
+
+## key_len
+
+## ref
+
+## rows
+
+## filtered
+
+## Extra
