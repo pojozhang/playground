@@ -130,6 +130,19 @@ explain select avg(c)
 
 ## type
 
+- ALL
+
+- index
+
+- range
+
+- ref
+
+- eq_ref
+
+- const, system
+
+- NULL
 
 ## possible_keys
 
@@ -137,7 +150,17 @@ explain select avg(c)
 
 ## key
 
+查询时真正用到的索引。如果索引没有在`possible_keys`列中出现，但是却出现在了`key`这一列中，那么可能用到了覆盖索引。
+
 ## key_len
+
+索引的字节数，计算方式是把索引中用到的每一列的最大字节数相加。比如下面的查询中主键`actor_id`的类型是`smallint`，该查询用到了主键索引，因此`key_len`的值就是`actor_id`列的字节数，也就是`smallint`类型的字节数2。
+
+```sql
+explain select * from actor where actor_id = 18;
+```
+
+如果是字符串，比如`char(20)`，在UTF-8编码下，每个字符最多占3个字节，因此它的字节数就是20*3。
 
 ## ref
 
@@ -147,6 +170,16 @@ explain select avg(c)
 
 ## filtered
 
-
+表示符合条件的数据的行数占总行数的百分比，比如该列值为40，则表示估计有40%的数据满足查询条件。
 
 ## Extra
+
+- Using index
+
+- Using where
+
+- Using temporary
+
+- Using filesort
+
+- Range checked for each record (index map: N)
