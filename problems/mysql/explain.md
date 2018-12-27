@@ -138,7 +138,7 @@ explain select avg(c)
 
 - index
 
-扫描索引中的全部数据。在某些情况下查询只需要扫描索引中的数据，而不需要扫描原表的数据，这样做的好处是可以减少IO操作，因为索引中的数据通常只是原表中的几列，数据量相比原表少很多。
+`index`在两种情况下会出现，一种是查询用了覆盖索引，只需要扫描索引中的数据，而不需要扫描原表的数据。索引中的数据通常只是原表中的几列，数据量相比原表少了很多，可以显著减少IO操作。当使用覆盖索引时`Extra`列会显示`Using index`。
 
 ```sql
 explain select rental_date from rental;
@@ -148,6 +148,18 @@ explain select rental_date from rental;
 +----+-------------+--------+------------+-------+---------------+-------------+---------+------+-------+----------+-------------+
 |  1 | SIMPLE      | rental | NULL       | index | NULL          | rental_date | 10      | NULL | 16008 |   100.00 | Using index |
 +----+-------------+--------+------------+-------+---------------+-------------+---------+------+-------+----------+-------------+
+```
+
+另一种情况出现在全表扫描，区别是按索引而不是按行的次序进行扫描，优点是避免了排序。
+
+```sql
+explain select * from actor order by actor_id;
+
++----+-------------+-------+------------+-------+---------------+---------+---------+------+------+----------+-------+
+| id | select_type | table | partitions | type  | possible_keys | key     | key_len | ref  | rows | filtered | Extra |
++----+-------------+-------+------------+-------+---------------+---------+---------+------+------+----------+-------+
+|  1 | SIMPLE      | actor | NULL       | index | NULL          | PRIMARY | 2       | NULL |  200 |   100.00 | NULL  |
++----+-------------+-------+------------+-------+---------------+---------+---------+------+------+----------+-------+
 ```
 
 - range
@@ -237,11 +249,41 @@ explain select * from actor where actor_id = 18;
 
 如果是字符串，比如`char(20)`，在UTF-8编码下，每个字符最多占3个字节，因此它的字节数就是20*3。
 
+对于一个包含多个列的联合索引，查询语句不一定会用到索引中所有的列，没有用到的列不会计算到`key_len`中。此外，`key_len`只会计算`where`条件中用到的索引的长度，对于`order by`和`group by`语句，即使用到了索引也不会计算到`key_len`中。
+
+计算`key_len`时需要注意，列是否允许`NULL`以及字符编码的不同等因素都会引起计算结果的变化。
+
 ## ref
+
+对于`JOIN`查询`ref`列显示的是关联字段，比如下面查询语句中`JOIN`后面的`film_actor`表的`film_id`关联了`film`表的`film_id`字段（即ref列的`sakila.film.film_id`）。
+
+```sql
+explain select *
+        from film
+               left join film_actor on film.film_id = film_actor.film_id;
+
++----+-------------+------------+------------+------+----------------+----------------+---------+---------------------+------+----------+-------+
+| id | select_type | table      | partitions | type | possible_keys  | key            | key_len | ref                 | rows | filtered | Extra |
++----+-------------+------------+------------+------+----------------+----------------+---------+---------------------+------+----------+-------+
+|  1 | SIMPLE      | film       | NULL       | ALL  | NULL           | NULL           | NULL    | NULL                | 1000 |   100.00 | NULL  |
+|  1 | SIMPLE      | film_actor | NULL       | ref  | idx_fk_film_id | idx_fk_film_id | 2       | sakila.film.film_id |    5 |   100.00 | NULL  |
+```
+
+对于`type`类型是`const`的查询，其`ref`列也为`const`。
+
+```sql
+explain select * from film where film_id = 3;
+
++----+-------------+-------+------------+-------+---------------+---------+---------+-------+------+----------+-------+
+| id | select_type | table | partitions | type  | possible_keys | key     | key_len | ref   | rows | filtered | Extra |
++----+-------------+-------+------------+-------+---------------+---------+---------+-------+------+----------+-------+
+|  1 | SIMPLE      | film  | NULL       | const | PRIMARY       | PRIMARY | 2       | const |    1 |   100.00 | NULL  |
++----+-------------+-------+------------+-------+---------------+---------+---------+-------+------+----------+-------+
+```
 
 ## rows
 
-估算的扫描行数。
+扫描行数，这是一个估算值。
 
 ## filtered
 
@@ -250,17 +292,23 @@ explain select * from actor where actor_id = 18;
 
 ## Extra
 
+该列显示了一些额外的信息，常见的有以下几项。
+
 - Using index
 
 查询使用了覆盖索引，从索引中就可以查询出所需要的数据而不需要读取原表。
 
 - Using where
 
+表示MySQL服务器在存储引擎返回结果后再次进行过滤。
+
 - Using temporary
+
+查询用到了临时表。
 
 - Using filesort
 
-- Range checked for each record (index map: N)
+表示无法利用索引对查询结果进行排序。
 
 ## 参考
 
