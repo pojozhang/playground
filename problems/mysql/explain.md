@@ -5,7 +5,7 @@
 本文测试数据来自MySQL官方的sakila库，你可以通过以下两个sql文件进行导入。
 
 - [sakila-schema.sql](resources/sakila-schema.sql)
-- [sakila-data.sql](resources/sakila-data.sql)。
+- [sakila-data.sql](resources/sakila-data.sql)
 
 我们通常在查询语句前加上`EXPLAIN`命令查看MySQL的执行计划从而对查询进行优化，下面看一个简单的例子。
 
