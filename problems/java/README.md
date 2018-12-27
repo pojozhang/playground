@@ -23,6 +23,7 @@
 ## 多线程
 
 - [线程](thread.md)
+- [线程池](thread-pool.md)
 - [写一个死锁的例子](https://github.com/pojozhang/playground/blob/master/solutions/java/src/test/java/playground/interview/DeadLockTest.java)
 - [CountDownLatch、CyclicBarrier 和 Semaphore 的区别](https://github.com/pojozhang/playground/blob/master/solutions/java/src/test/java/playground/interview/ThreadSyncTest.java)
 - [CAS](cas.md)
