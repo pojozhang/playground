@@ -19,14 +19,16 @@ test {
     useJUnitPlatform()
 }
 
-def junitVersion = '5.3.1'
+ext {
+    junitVersion = '5.3.2'
+}
 
 dependencies {
-    compile "cglib:cglib-full:2.0.2"
-    compile "guru.nidi:graphviz-java:0.5.2"
+    implementation 'cglib:cglib-full:2.0.2'
+    implementation 'guru.nidi:graphviz-java:0.5.2'
 
     testImplementation "org.junit.jupiter:junit-jupiter-api:$junitVersion"
     testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:$junitVersion"
     testCompile 'org.assertj:assertj-core:3.11.1'
-    testCompile 'org.awaitility:awaitility:3.1.3'
+    testCompile 'org.awaitility:awaitility:3.1.5'
 }

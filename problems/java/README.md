@@ -55,10 +55,15 @@
 ## JVM
 
 - [内存模型](jmm.md)
+- [JVM内存区域](jvm-memory-areas.md)
 - [解释执行还是编译执行](jit.md)
 - [类文件结构](classfile.md)
 - [类加载机制](classloader.md)
 - [垃圾回收机制](gc.md)
+
+## 工具
+
+- [JDK工具](jdk-tools.md)
 
 ## 诊断
 

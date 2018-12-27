@@ -12,4 +12,4 @@
 ## 性能优化
 
 - [索引优化](index-optimization.md)
-- EXPLAIN
+- [EXPLAIN](explain.md)
