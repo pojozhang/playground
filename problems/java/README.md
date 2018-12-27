@@ -61,6 +61,10 @@
 - [类加载机制](classloader.md)
 - [垃圾回收机制](gc.md)
 
+## 工具
+
+- [JDK工具](jdk-tools.md)
+
 ## 诊断
 
 - 定位、修复死锁
