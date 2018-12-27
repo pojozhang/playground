@@ -130,19 +130,94 @@ explain select avg(c)
 
 ## type
 
+`type`列表示表的连接类型，主要有以下几种类型，
+
 - ALL
+
+全表扫描，这是最坏的情况。
 
 - index
 
+扫描索引中的全部数据。在某些情况下查询只需要扫描索引中的数据，而不需要扫描原表的数据，这样做的好处是可以减少IO操作，因为索引中的数据通常只是原表中的几列，数据量相比原表少很多。
+
+```sql
+explain select rental_date from rental;
+
++----+-------------+--------+------------+-------+---------------+-------------+---------+------+-------+----------+-------------+
+| id | select_type | table  | partitions | type  | possible_keys | key         | key_len | ref  | rows  | filtered | Extra       |
++----+-------------+--------+------------+-------+---------------+-------------+---------+------+-------+----------+-------------+
+|  1 | SIMPLE      | rental | NULL       | index | NULL          | rental_date | 10      | NULL | 16008 |   100.00 | Using index |
++----+-------------+--------+------------+-------+---------------+-------------+---------+------+-------+----------+-------------+
+```
+
 - range
+
+索引范围扫描，常见于使用`=`，`<>`，`>`，`>=`，`IS NULL`，`BETWEEN`，`IN`，`like`等运算符的查询中。
+
+```sql
+explain select *
+        from actor
+        where last_name > 'Y';
+
++----+-------------+-------+------------+-------+---------------------+---------------------+---------+------+------+----------+-----------------------+
+| id | select_type | table | partitions | type  | possible_keys       | key                 | key_len | ref  | rows | filtered | Extra                 |
++----+-------------+-------+------------+-------+---------------------+---------------------+---------+------+------+----------+-----------------------+
+|  1 | SIMPLE      | actor | NULL       | range | idx_actor_last_name | idx_actor_last_name | 137     | NULL |    3 |   100.00 | Using index condition |
++----+-------------+-------+------------+-------+---------------------+---------------------+---------+------+------+----------+-----------------------+
+```
 
 - ref
 
+当两张表连接时，如果第二张表中的列的索引不是唯一索引或者主键，那么`type`列就是`ref`。比如下面的语句中第二张表`rental`的`staff_id`列上的索引是普通索引，不是`rental`表的主键或唯一索引，这时`type`就是`ref`。简单来说就是第一张表的某一行数据在第二张表中可能匹配到多行数据。
+
+```sql
+explain select staff.staff_id
+        from staff
+               left join rental on staff.staff_id = rental.staff_id;
+
++----+-------------+--------+------------+-------+-----------------+-----------------+---------+-----------------------+------+----------+-------------+
+| id | select_type | table  | partitions | type  | possible_keys   | key             | key_len | ref                   | rows | filtered | Extra       |
++----+-------------+--------+------------+-------+-----------------+-----------------+---------+-----------------------+------+----------+-------------+
+|  1 | SIMPLE      | staff  | NULL       | index | NULL            | idx_fk_store_id | 1       | NULL                  |    2 |   100.00 | Using index |
+|  1 | SIMPLE      | rental | NULL       | ref   | idx_fk_staff_id | idx_fk_staff_id | 1       | sakila.staff.staff_id | 8004 |   100.00 | Using index |
++----+-------------+--------+------------+-------+-----------------+-----------------+---------+-----------------------+------+----------+-------------+
+```
+
 - eq_ref
 
-- const, system
+和`ref`相反，当两张表连接时，如果第二张表中的列的索引是唯一索引或者主键，那么`type`列就是`eq_ref`。下面的语句中第二张表`store`表的`manager_staff_id`列上建立了唯一索引，因此改列的值是唯一的，所以此时`type`列是`eq_ref`。简单来说就是第一张表的某一行数据在第二张表中只能匹配到一行数据。
 
-- NULL
+```sql
+explain select *
+        from staff,
+             store
+        where staff.staff_id = store.manager_staff_id;
+
++----+-------------+-------+------------+--------+--------------------+---------+---------+-------------------------------+------+----------+-------+
+| id | select_type | table | partitions | type   | possible_keys      | key     | key_len | ref                           | rows | filtered | Extra |
++----+-------------+-------+------------+--------+--------------------+---------+---------+-------------------------------+------+----------+-------+
+|  1 | SIMPLE      | store | NULL       | ALL    | idx_unique_manager | NULL    | NULL    | NULL                          |    2 |   100.00 | NULL  |
+|  1 | SIMPLE      | staff | NULL       | eq_ref | PRIMARY            | PRIMARY | 1       | sakila.store.manager_staff_id |    1 |   100.00 | NULL  |
++----+-------------+-------+------------+--------+--------------------+---------+---------+-------------------------------+------+----------+-------+
+```
+
+- const
+
+查询的列是主键或建立了唯一索引，查询时最多只返回一行数据。
+
+```sql
+explain select * from film where film_id = 3;
+
++----+-------------+-------+------------+-------+---------------+---------+---------+-------+------+----------+-------+
+| id | select_type | table | partitions | type  | possible_keys | key     | key_len | ref   | rows | filtered | Extra |
++----+-------------+-------+------------+-------+---------------+---------+---------+-------+------+----------+-------+
+|  1 | SIMPLE      | film  | NULL       | const | PRIMARY       | PRIMARY | 2       | const |    1 |   100.00 | NULL  |
++----+-------------+-------+------------+-------+---------------+---------+---------+-------+------+----------+-------+
+```
+
+- system
+
+表中只有一行数据。
 
 ## possible_keys
 
@@ -170,11 +245,14 @@ explain select * from actor where actor_id = 18;
 
 ## filtered
 
-表示符合条件的数据的行数占总行数的百分比，比如该列值为40，则表示估计有40%的数据满足查询条件。
+表示符合条件的数据的行数占需要扫描的行数（也就是`rows`列的值）的百分比，比如该列值为40，则表示在扫描的数据行中估计有40%的数据满足查询条件。
+`filtered`只有在`type`列是`ALL`和`index`时才有效，在其它情况下`filtered`的值总是100，这是因为在其它情况下符合查询条件的数据行数通常等于扫描的行数。
 
 ## Extra
 
 - Using index
+
+查询使用了覆盖索引，从索引中就可以查询出所需要的数据而不需要读取原表。
 
 - Using where
 
@@ -183,3 +261,8 @@ explain select * from actor where actor_id = 18;
 - Using filesort
 
 - Range checked for each record (index map: N)
+
+## 参考
+
+1. [《MySQL性能优化神器Explain使用分析》](https://segmentfault.com/a/1190000008131735)
+2. [《What does eq_ref and ref types mean in MySQL explain》](https://stackoverflow.com/questions/4508055/what-does-eq-ref-and-ref-types-mean-in-mysql-explain)
