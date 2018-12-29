@@ -26,13 +26,23 @@ public ThreadPoolExecutor(int corePoolSize,
 
 - keepAliveTime
 
+线程的存活时间。当线程池中线程的空闲时间超过了存活时间，并且线程池中线程的数量超过`corePoolSize`，那么这些空闲的线程会被终止。
+
 - unit
+
+存活时间的计量单位。
 
 - workQueue
 
+工作队列。用来存储提交到线程池中的任务。
+
 - threadFactory
 
+用来创建线程的工厂。
+
 - handler
+
+当工作队列饱和时，`ThreadPoolExecutor`类会使用`handler`做进一步的处理。
 
 ## newSingleThreadExecutor()
 
@@ -65,4 +75,4 @@ public static ExecutorService newFixedThreadPool(int nThreads) {
 }
 ```
 
-### newScheduledThreadPool(int)
+## newScheduledThreadPool(int)
