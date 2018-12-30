@@ -28,8 +28,8 @@ JVM Statistics Monitoring Tool用于监视虚拟机各种运行状态的信息�
 用命令`jstat -gc 31030`查看31030进程的垃圾回收状况，我们会得到如下内容。
 
 ```bash
-S0C    S1C    S0U    S1U      EC       EU        OC         OU       MC     MU    CCSC   CCSU   YGC     YGCT    FGC    FGCT    CGC    CGCT     GCT   
- 0.0    0.0    0.0    0.0   26624.0   1024.0   235520.0     0.0      0.0    0.0    0.0    0.0        0    0.000   0      0.000   0      0.000    0.000
+S0C    S1C    S0U    S1U      EC       EU        OC        OU       MC     MU    CCSC   CCSU   YGC    YGCT   FGC    FGCT    CGC    CGCT     GCT   
+0.0    0.0    0.0    0.0   26624.0   1024.0   235520.0     0.0      0.0    0.0    0.0    0.0      0     0.000   0     0.000    0     0.000    0.000
 ```
 
 - S0C：Survivor0的容量，单位KB。
