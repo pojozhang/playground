@@ -68,7 +68,7 @@
 
 ## 诊断
 
-- 定位、修复死锁
+- [如何定位死锁](locate-dead-lock.md)
 
 ## Spring
 
