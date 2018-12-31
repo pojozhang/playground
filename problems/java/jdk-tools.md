@@ -52,8 +52,77 @@ S0C    S1C    S0U    S1U      EC       EU        OC        OU       MC     MU   
 - CGCT：Stop-The-World的总耗时。
 - GCT：GC总耗时。
 
+## jstack
+
+Stack Trace For Java工具用于生成当前时刻的线程快照，其生成的结果如下所示（截取部分结果），包括了每一个线程正在执行的方法信息。通常使用该工具查看线程长时间阻塞的原因。
+
+```bash
+"main" #1 prio=5 os_prio=31 cpu=88.25ms elapsed=36.89s tid=0x00007fe00b80b800 nid=0x2303 waiting on condition  [0x000070000c82e000]
+   java.lang.Thread.State: TIMED_WAITING (sleeping)
+        at java.lang.Thread.sleep(java.base@11/Native Method)
+        at Test.main(Test.java:12)
+
+   Locked ownable synchronizers:
+        - None
+
+"Reference Handler" #2 daemon prio=10 os_prio=31 cpu=0.14ms elapsed=36.87s tid=0x00007fe00c817000 nid=0x3703 waiting on condition  [0x000070000cf43000]
+   java.lang.Thread.State: RUNNABLE
+        at java.lang.ref.Reference.waitForReferencePendingList(java.base@11/Native Method)
+        at java.lang.ref.Reference.processPendingReferences(java.base@11/Reference.java:241)
+        at java.lang.ref.Reference$ReferenceHandler.run(java.base@11/Reference.java:213)
+
+   Locked ownable synchronizers:
+        - None
+
+"Finalizer" #3 daemon prio=8 os_prio=31 cpu=0.32ms elapsed=36.87s tid=0x00007fe00c804000 nid=0x3803 in Object.wait()  [0x000070000d046000]
+   java.lang.Thread.State: WAITING (on object monitor)
+        at java.lang.Object.wait(java.base@11/Native Method)
+        - waiting on <0x000000070ff08f80> (a java.lang.ref.ReferenceQueue$Lock)
+        at java.lang.ref.ReferenceQueue.remove(java.base@11/ReferenceQueue.java:155)
+        - waiting to re-lock in wait() <0x000000070ff08f80> (a java.lang.ref.ReferenceQueue$Lock)
+        at java.lang.ref.ReferenceQueue.remove(java.base@11/ReferenceQueue.java:176)
+        at java.lang.ref.Finalizer$FinalizerThread.run(java.base@11/Finalizer.java:170)
+
+   Locked ownable synchronizers:
+        - None
+```
+
 ## jmap
 
-## jhat
+Memory Map For Java用于显示Java堆中对象的统计信息以及生成Java堆快照。
 
-## jstack
+下面示例代码中创建了2000个`TestObject`对象放入集合中。
+
+```java
+public class Test {
+
+    public static void main(String[] args) throws InterruptedException {
+        List<Object> list = new ArrayList<>();
+        for (int i = 0; i < 2000; i++) {
+            list.add(new TestObject());
+        }
+        Thread.sleep(1000000);
+    }
+
+    static class TestObject {
+    }
+}
+```
+
+我们可以用`jmap -histo <pid>`命令查看对象的统计信息，可以得到如下的结果（截取部分结果），其中2000是对象的数量，32000是其占用的字节数。
+
+```bash
+ 10:          2000          32000  Test$TestObject
+```
+
+我们也可以用`jmap -dump:format=b,file=<filename> <pid>`命令把Java堆的快照保存到一个文件中，然后用`jhat`工具查看。
+
+当我们用`jhat <filename>`命令查看导出的dump文件时，`jhat`会在本地启动一个HTTP服务，我们可以在浏览器中进行查看。
+
+![](resources/jdk_tools_1.png)
+
+> jhat工具在JDK11中已被移除，替代方案是使用可视化工具VisualVM分析dump文件。
+
+## 可视化工具
+
+可视化工具推荐官方的[VisualVM](https://visualvm.github.io/)，它几乎包含了上述命令行工具的全部功能。
