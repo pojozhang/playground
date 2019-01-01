@@ -69,6 +69,7 @@
 ## 诊断
 
 - [如何定位死锁](locate-dead-lock.md)
+- [如何诊断服务出现明显变慢的问题](service-slow-down.md)
 
 ## Spring
 
