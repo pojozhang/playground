@@ -8,3 +8,4 @@
 - Raft协议
 - OAuth 2.0
 - 一致性哈希
+- [缓存](cache.md)
