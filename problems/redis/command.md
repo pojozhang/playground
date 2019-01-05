@@ -61,15 +61,51 @@ INCRBY key increment
 
 ### LPUSH
 
+```bash
+LPUSH key value [value ...]
+```
+
+把一个或多个值添加到有序列表`key`的表头。`LPUSH key v1 v2 v3`等价于原子性地执行`LPUSH key v1`，`LPUSH key v2`，`LPUSH key v3`三条语句。如果列表`key`不存在那么会先创建一个空列表。
+
 ### LPOP
+
+```bash
+LPOP key
+```
+
+弹出列表`key`的表头元素，如果列表不存在或列表为空，则返回`nil`。
 
 ### BLPOP
 
+```bash
+BLPOP key [key ...] seconds
+```
+
+BLPOP是LPOP的阻塞版本，它可以同时监听多个有序列表，弹出第一个非空列表的表头元素，如果监听的每个列表都不存在或列表都为空，那么该命令会一直阻塞，直到有一个列表不为空或者达到了指定的超时时间。当超时时间设置为0时表示阻塞时间没有限制。
+
 ### RPUSH
+
+```bash
+RPUSH key value [value ...]
+```
+
+把一个或多个值添加到有序列表`key`的表尾。`RPUSH key v1 v2 v3`等价于原子性地执行`RPUSH key v1`，`RPUSH key v2`，`RPUSH key v3`三条语句。如果列表`key`不存在那么会先创建一个空列表。
 
 ### RPOP
 
+```bash
+RPOP key
+```
+
+弹出列表`key`的表尾元素，如果列表不存在或列表为空，则返回`nil`。
+
 ### BRPOP
+
+```bash
+BRPOP key [key ...] seconds
+```
+
+BRPOP是RPOP的阻塞版本，它可以同时监听多个有序列表，弹出第一个非空列表的表尾元素，如果监听的每个列表都不存在或列表都为空，那么该命令会一直阻塞，直到有一个列表不为空或者达到了指定的超时时间。当超时时间设置为0时表示阻塞时间没有限制。
 
 ## 哈希表
 
