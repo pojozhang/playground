@@ -3,10 +3,10 @@
 ## 基础
 
 - [命令](command.md)
-- 内存淘汰策略
-- 持久化策略
-- 事务
-- 集群
+- [缓存淘汰策略](expiration-policy.md)
+- [事务](transaction.md)
+- [持久化策略](persistence.md)
+- [集群](cluster.md)
 
 ## 性能优化
 
