@@ -43,6 +43,7 @@
 - [LinkedList](linkedlist.md)
 - [CopyOnWriteArrayList](copy-on-write-array-list.md)
 - [HashMap](hashmap.md)
+- [LinkedHashMap](linkedhashmap.md)
 - [ConcurrentHashMap](concurrent-hashmap.md)
 - TreeMap
 - [HashSet](hashset.md)
