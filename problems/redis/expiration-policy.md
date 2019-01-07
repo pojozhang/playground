@@ -6,7 +6,7 @@ Redis的缓存淘汰策略可以分为两种，一种是开发者在代码中指
 
 开发者可以通过`EXPIRE`、`EXPIREAT`、`PEXPIRE`、`PEXPIREAT`四个命令设置键的过期时间。Redis在内部会使用一个单独的哈希表记录键和其对应的过期时间。
 
-![expires记录键的过期时间](resources/redis_1.png)
+![expires记录键的过期时间](resources/expiration_policy_1.png)
 
 Redis删除过期键的策略结合了惰性删除和定期删除两种。
 

@@ -22,7 +22,7 @@ Redis的事务具有原子性。事务中的命令要么全部执行，要么一
 
 服务器会把当前所有正在被监控的键以及客户端之间的关系存在`watched_keys`字段中。
 
-![watched_keys](resources/redis_2.png)
+![watched_keys](resources/transaction_1.png)
 
 当执行对数据库的修改后（如`SET`、`LPUSH`等命令），会遍历`watched_keys`字段，如果被修改的键存在字典中，那么就打开该键关联的所有客户端的`REDIS_DIRTY_CAS`标识，当服务器执行`EXEC`时，它会先检查客户端的`REDIS_DIRTY_CAS`标识是否打开，如果已经打开，那么就拒绝执行事务。
 
