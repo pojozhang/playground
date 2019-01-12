@@ -16,7 +16,7 @@ class LogAspectTest extends BaseSpringTest {
     private EchoService echoService;
 
     @Test
-    void shouldCallAround() throws Throwable {
+    void should_call_around() throws Throwable {
         echoService.echo("string");
 
         verify(logAspect).around(any(), any());
