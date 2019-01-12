@@ -17,7 +17,7 @@ class EchoServiceAspectTest extends BaseSpringTest {
 
     @Test
     void shouldCallBeforeAndAfterRunning() {
-        final String ECHO_VALUE = "hello";
+        final String ECHO_VALUE = "string";
 
         echoService.echo(ECHO_VALUE);
 
