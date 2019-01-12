@@ -21,6 +21,7 @@ test {
 
 ext {
     junitVersion = '5.3.2'
+    springBootVersion = '2.1.1.RELEASE'
 }
 
 dependencies {
@@ -28,10 +29,18 @@ dependencies {
             'com.google.guava:guava:27.0.1-jre',
             'cglib:cglib-full:2.0.2',
             'guru.nidi:graphviz-java:0.5.2',
+            "org.springframework.boot:spring-boot-starter-aop:$springBootVersion",
     )
 
-    testImplementation "org.junit.jupiter:junit-jupiter-api:$junitVersion"
-    testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:$junitVersion"
-    testCompile 'org.assertj:assertj-core:3.11.1'
-    testCompile 'org.awaitility:awaitility:3.1.5'
+
+    testImplementation(
+            "org.junit.jupiter:junit-jupiter-api:$junitVersion",
+            'org.assertj:assertj-core:3.11.1',
+            'org.awaitility:awaitility:3.1.5',
+            "org.springframework.boot:spring-boot-starter-test:$springBootVersion",
+    )
+
+    testRuntimeOnly(
+            "org.junit.jupiter:junit-jupiter-engine:$junitVersion",
+    )
 }
