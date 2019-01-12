@@ -3,8 +3,8 @@ package playground.spring.aop;
 import org.aspectj.lang.annotation.*;
 import org.springframework.stereotype.Component;
 
-@Component
 @Aspect
+@Component
 public class EchoServiceAspect {
 
     @Pointcut("execution(* playground.spring.service.EchoService.echo(..))")
