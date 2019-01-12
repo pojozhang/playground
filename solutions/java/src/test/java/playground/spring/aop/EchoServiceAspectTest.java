@@ -16,31 +16,27 @@ class EchoServiceAspectTest extends BaseSpringTest {
     private EchoService echoService;
 
     @Test
-    void shouldCallBeforeAndAfterRunning() {
-        final String ECHO_VALUE = "string";
-
-        echoService.echo(ECHO_VALUE);
+    void should_call_around_and_before_and_after_running_sequentially() throws Throwable {
+        echoService.echo("string");
 
         InOrder inOrder = inOrder(echoServiceAspect);
-        inOrder.verify(echoServiceAspect).before(ECHO_VALUE);
-        inOrder.verify(echoServiceAspect).afterRunning(ECHO_VALUE);
+        inOrder.verify(echoServiceAspect).around(any());
+        inOrder.verify(echoServiceAspect).before(any());
+        inOrder.verify(echoServiceAspect).afterRunning(any());
         inOrder.verify(echoServiceAspect, never()).afterThrowing(any());
     }
 
     @Test
-    void shouldCallBeforeAndAfterThrowing() {
-        final String NULL_VALUE = null;
-        final Throwable throwable = new NullPointerException();
-        when(echoService.echo(NULL_VALUE)).thenThrow(throwable);
-
+    void should_call_around_and_before_and_after_throwing_sequentially() throws Throwable {
         try {
-            echoService.echo(NULL_VALUE);
+            echoService.echo(null);
         } catch (NullPointerException ignored) {
         }
 
         InOrder inOrder = inOrder(echoServiceAspect);
-        inOrder.verify(echoServiceAspect, times(2)).before(NULL_VALUE);
-        inOrder.verify(echoServiceAspect).afterThrowing(throwable);
+        inOrder.verify(echoServiceAspect).around(any());
+        inOrder.verify(echoServiceAspect).before(any());
+        inOrder.verify(echoServiceAspect).afterThrowing(any());
         inOrder.verify(echoServiceAspect, never()).afterRunning(any());
     }
 }
