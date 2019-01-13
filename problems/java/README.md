@@ -75,6 +75,7 @@
 ## Spring
 
 - [Spring Aop](spring-aop.md)
+- [IOC](spring-ioc.md)
 - Eureka的心跳机制
 
 ## 其它框架
