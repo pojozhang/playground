@@ -81,6 +81,32 @@ void around(ProceedingJoinPoint joinPoint) throws Throwable {
 
 ### 连接点（JoinPoint）
 
+通知的执行点，包含运行时的一些信息，如方法名，方法的参数等信息，在Spring中连接点对应的抽象是`JoinPoint`接口。
+
 ### 切面（Aspect）
 
 切面是切点和通知的集合。
+
+## 原理
+
+Spring Aop中用到的注释均来自AspectJ框架。AspectJ是一个AOP框架，它支持把我们在通知中自定义的行为编译到源码中，从而实现AOP的功能，但是由于需要特定的编译器配合，靠`javac`无法实现，因此Spring Aop并没有直接使用AspectJ实现AOP。
+
+```java
+// org.springframework.aop.framework.DefaultAopProxyFactory#createAopProxy
+public AopProxy createAopProxy(AdvisedSupport config) throws AopConfigException {
+    if (config.isOptimize() || config.isProxyTargetClass() || hasNoUserSuppliedProxyInterfaces(config)) {
+        Class<?> targetClass = config.getTargetClass();
+        if (targetClass == null) {
+            throw new AopConfigException("TargetSource cannot determine target class: " +
+                    "Either an interface or a target is required for proxy creation.");
+        }
+        if (targetClass.isInterface() || Proxy.isProxyClass(targetClass)) {
+            return new JdkDynamicAopProxy(config);
+        }
+        return new ObjenesisCglibAopProxy(config);
+    }
+    else {
+        return new JdkDynamicAopProxy(config);
+    }
+}
+```
