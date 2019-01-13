@@ -23,7 +23,6 @@ public class EchoServiceAspect {
 
     @AfterThrowing(value = "echoPointcut()")
     void afterThrowing(JoinPoint joinPoint) {
-        System.out.println("sss");
     }
 
     @Around(value = "echoPointcut()")
