@@ -91,6 +91,8 @@ void around(ProceedingJoinPoint joinPoint) throws Throwable {
 
 Spring Aop中用到的注释均来自AspectJ框架。AspectJ是一个AOP框架，它支持把我们在通知中自定义的行为编译到源码中，从而实现AOP的功能，但是由于需要特定的编译器配合，靠`javac`无法实现，因此Spring Aop并没有直接使用AspectJ实现AOP。
 
+Spring Aop采用动态代理的方式实现AOP。当Spring启动后，所有被Spring托管的对象实例化之前都会检查是否有针对该对象的通知，如果有，那么我们需要创建对象的代理。
+
 ```java
 // org.springframework.aop.framework.DefaultAopProxyFactory#createAopProxy
 public AopProxy createAopProxy(AdvisedSupport config) throws AopConfigException {
@@ -110,3 +112,7 @@ public AopProxy createAopProxy(AdvisedSupport config) throws AopConfigException 
     }
 }
 ```
+
+## 参考
+
+1. [《spring源码剖析（六）AOP实现原理剖析》](https://blog.csdn.net/fighterandknight/article/details/51209822)
