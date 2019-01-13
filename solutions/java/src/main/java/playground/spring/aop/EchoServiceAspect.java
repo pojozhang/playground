@@ -25,6 +25,10 @@ public class EchoServiceAspect {
     void afterThrowing(JoinPoint joinPoint) {
     }
 
+    @After(value = "echoPointcut()")
+    void after(JoinPoint joinPoint) {
+    }
+
     @Around(value = "echoPointcut()")
     void around(ProceedingJoinPoint joinPoint) throws Throwable {
         joinPoint.proceed();
