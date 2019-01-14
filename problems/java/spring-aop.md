@@ -93,6 +93,8 @@ Spring Aop中用到的注释均来自AspectJ框架。AspectJ是一个AOP框架�
 
 Spring Aop采用动态代理的方式实现AOP。当Spring启动后，所有被Spring托管的对象实例化之前都会检查是否有针对该对象的通知，如果有，那么我们需要创建对象的代理。
 
+有两种方式创建对象的代理，一种是JDK自带的动态代理，另一种则是第三方的GCLIB库。
+
 ```java
 // org.springframework.aop.framework.DefaultAopProxyFactory#createAopProxy
 public AopProxy createAopProxy(AdvisedSupport config) throws AopConfigException {
@@ -112,6 +114,24 @@ public AopProxy createAopProxy(AdvisedSupport config) throws AopConfigException 
     }
 }
 ```
+
+由于JDK自带的动态代理需要被代理类实现接口，因此只有在注入接口时Spring才会使用JDK自带的库创建代理对象。
+
+```java
+@Autowired
+SomeInterface injectedObject; // SomeInterface是一个接口。
+```
+
+而当注入的是一个类时，则使用GCLIB创建代理对象。
+
+```java
+@Autowired
+SomeInterfaceImpl injectedObject; // SomeInterfaceImpl是SomeInterface接口的一个实现类。
+```
+
+> 在SpringBoot中可以通过设置spring.aop.proxy-target-classSpring=true强制使用CGLIB创建代理对象，默认是false，从SpringBoot2.0开始该设置项默认是true。
+
+在生成的代理对象中，只要根据之前解析出的通知生成的方法调用链依次进行调用，就达到了AOP的效果。
 
 ## 参考
 
