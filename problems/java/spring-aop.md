@@ -133,6 +133,13 @@ SomeInterfaceImpl injectedObject; // SomeInterfaceImpl是SomeInterface接口的�
 
 在生成的代理对象中，只要根据之前解析出的通知生成的方法调用链依次进行调用，就达到了AOP的效果。
 
+## 局限性
+
+Spring AOP并不能切入所有的方法，它有以下的局限性。
+
+- 对象必须由Spring托管，因此用`new`关键字创建的对象不能被AOP拦截。
+- 只有外部类调用切点中定义的方法才能触发通知，否则AOP不起作用，这是因为外部类调用方法时是通过代理对象访问的，而对象内的方法调用不经过代理，而是直接访问。
+
 ## 参考
 
 1. [《spring源码剖析（六）AOP实现原理剖析》](https://blog.csdn.net/fighterandknight/article/details/51209822)
