@@ -28,14 +28,8 @@ public class TransactionService {
         return currentTransactionStatus();
     }
 
-    @Transactional(propagation = Propagation.NESTED)
-    public TransactionStatus nested(Runnable runnable) {
-        runnable.run();
-        return currentTransactionStatus();
-    }
-
-    @Transactional(propagation = Propagation.NEVER)
-    public TransactionStatus never(Runnable runnable) {
+    @Transactional(propagation = Propagation.SUPPORTS)
+    public TransactionStatus supports(Runnable runnable) {
         runnable.run();
         return currentTransactionStatus();
     }
@@ -46,8 +40,14 @@ public class TransactionService {
         return currentTransactionStatus();
     }
 
-    @Transactional(propagation = Propagation.SUPPORTS)
-    public TransactionStatus supports(Runnable runnable) {
+    @Transactional(propagation = Propagation.NEVER)
+    public TransactionStatus never(Runnable runnable) {
+        runnable.run();
+        return currentTransactionStatus();
+    }
+
+    @Transactional(propagation = Propagation.NESTED)
+    public TransactionStatus nested(Runnable runnable) {
         runnable.run();
         return currentTransactionStatus();
     }
