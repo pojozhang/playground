@@ -19,8 +19,6 @@ class TransactionPropagationTest extends BaseSpringTest {
     private TransactionService transactionService;
     @Autowired
     private FilmRepository filmRepository;
-    @Autowired
-    private JdbcTemplate jdbcTemplate;
 
     @Test
     void PROPAGATION_REQUIRED_should_create_a_new_transaction_if_none_exists() {
@@ -125,7 +123,7 @@ class TransactionPropagationTest extends BaseSpringTest {
             select();
 
             transactionService.nested(() -> {
-                jdbcTemplate.execute("select 1;");
+                select();
 
                 assertTrue(currentTransactionStatus().hasSavepoint());
             });
