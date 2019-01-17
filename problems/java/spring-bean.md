@@ -2,11 +2,11 @@
 
 ## 作用域
 
-- singleton
+- **singleton**
 
 单例模式，只存在一个实例。这是默认的作用域，我们使用`@Bean`、`@Component`等注解声明的Bean都只有一个实例。
 
-- prototype
+- **prototype**
 
 每次从IOC容器中取Bean时都会返回一个新的实例。
 
@@ -40,7 +40,7 @@ private PrototypeBean prototypeBean;
 @Scope(value = ConfigurableBeanFactory.SCOPE_PROTOTYPE, proxyMode = ScopedProxyMode.TARGET_CLASS)
 ```
 
-- request
+- **request**
 
 对每一个Http请求创建一个新的对象。和原型作用域一样，当我们用注入的方式获取Bean时需要在`@Scope`作用域上指定代理模式，否则作用域不会生效。
 
@@ -48,7 +48,7 @@ private PrototypeBean prototypeBean;
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
 ```
 
-- session
+- **session**
 
 对每一个会话创建一个新的对象。使用时同样需要在`@Scope`作用域上指定代理模式，否则作用域不会生效。
 
