@@ -43,13 +43,6 @@ dependencies {
     runtimeOnly(
             'com.h2database:h2:1.4.196',
     )
-    
-    implementation(
-            'com.google.guava:guava:27.0.1-jre',
-            'cglib:cglib-full:2.0.2',
-            'guru.nidi:graphviz-java:0.5.2',
-            "org.springframework.boot:spring-boot-starter-aop:$springBootVersion",
-    )
 
     testImplementation(
             "org.junit.jupiter:junit-jupiter-api:$junitVersion",
