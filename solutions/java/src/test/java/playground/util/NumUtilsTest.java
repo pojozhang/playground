@@ -1,8 +1,7 @@
-package utils;
+package playground.util;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import playground.util.NumUtils;
 
 class NumUtilsTest {
 
