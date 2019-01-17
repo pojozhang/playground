@@ -74,6 +74,7 @@
 
 ## Spring
 
+- [Spring Bean](spring-bean.md)
 - [Spring Aop](spring-aop.md)
 - [IOC](spring-ioc.md)
 - [事务](spring-transaction.md)
