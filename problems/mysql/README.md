@@ -9,7 +9,6 @@
 - [哈希索引](hash-index.md)
 - [为什么索引使用B+树](b-tree.md)
 - [MVCC](mvcc.md)
-- [日志](log.md)
 - [事务](transaction.md)
 
 ## 性能优化
