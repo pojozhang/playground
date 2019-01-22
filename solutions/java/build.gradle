@@ -6,6 +6,7 @@ buildscript {
 
 plugins {
     id 'java'
+    id 'com.github.ben-manes.versions' version '0.20.0'
 }
 
 repositories {
@@ -35,13 +36,13 @@ dependencies {
     implementation(
             'com.google.guava:guava:27.0.1-jre',
             'cglib:cglib-full:2.0.2',
-            'guru.nidi:graphviz-java:0.5.2',
+            'guru.nidi:graphviz-java:0.8.0',
             "org.springframework.boot:spring-boot-starter-aop:$springBootVersion",
             "org.springframework.boot:spring-boot-starter-data-jpa:$springBootVersion",
     )
 
     runtimeOnly(
-            'com.h2database:h2:1.4.196',
+            'com.h2database:h2:1.4.197',
     )
 
     testImplementation(
@@ -54,4 +55,14 @@ dependencies {
     testRuntimeOnly(
             "org.junit.jupiter:junit-jupiter-engine:$junitVersion",
     )
+}
+
+dependencyUpdates.resolutionStrategy {
+    componentSelection { rules ->
+        rules.all { ComponentSelection selection ->
+            ['alpha', 'beta', 'rc', 'cr', 'm', 'preview'].any { qualifier ->
+                selection.candidate.version ==~ /(?i).*[.-]${qualifier}[.\d-]*/
+            }
+        }
+    }
 }
