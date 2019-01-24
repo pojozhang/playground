@@ -1,17 +1,18 @@
 buildscript {
     repositories {
-        mavenCentral()
+        jcenter()
     }
 }
 
 plugins {
     id 'java'
     id 'com.github.ben-manes.versions' version '0.20.0'
-    id 'com.avast.gradle.docker-compose' version '0.8.13'
 }
 
+apply from:'docker/docker.gradle'
+
 repositories {
-    mavenCentral()
+    jcenter()
 }
 
 sourceCompatibility = JavaVersion.VERSION_1_9
@@ -66,18 +67,5 @@ dependencyUpdates.resolutionStrategy {
                 selection.candidate.version ==~ /(?i).*[.-]${qualifier}[.\d-]*/
             }
         }
-    }
-}
-
-dockerCompose {
-    useComposeFiles = []
-}
-
-def middlewares = ['rabbitmq']
-
-middlewares.each { middleware ->
-
-    tasks.create(name: "start${middleware.capitalize()}", group: 'docker', dependsOn: ['composeUp']) {
-        dockerCompose.useComposeFiles += "docker/docker-compose-${middleware}.yml"
     }
 }
