@@ -7,6 +7,7 @@ buildscript {
 plugins {
     id 'java'
     id 'com.github.ben-manes.versions' version '0.20.0'
+    id 'com.avast.gradle.docker-compose' version '0.8.13'
 }
 
 repositories {
@@ -37,6 +38,7 @@ dependencies {
             'com.google.guava:guava:27.0.1-jre',
             'cglib:cglib-full:2.0.2',
             'guru.nidi:graphviz-java:0.8.0',
+            'com.rabbitmq:amqp-client:5.5.3',
             "org.springframework.boot:spring-boot-starter-aop:$springBootVersion",
             "org.springframework.boot:spring-boot-starter-data-jpa:$springBootVersion",
     )
@@ -64,5 +66,18 @@ dependencyUpdates.resolutionStrategy {
                 selection.candidate.version ==~ /(?i).*[.-]${qualifier}[.\d-]*/
             }
         }
+    }
+}
+
+dockerCompose {
+    useComposeFiles = []
+}
+
+def middlewares = ['rabbitmq']
+
+middlewares.each { middleware ->
+
+    tasks.create(name: "start${middleware.capitalize()}", group: 'docker', dependsOn: ['composeUp']) {
+        dockerCompose.useComposeFiles += "docker/docker-compose-${middleware}.yml"
     }
 }
