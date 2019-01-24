@@ -24,3 +24,15 @@ services.each { service ->
         dockerCompose.useComposeFiles += "${buildscript.sourceFile.parent}${File.separator}docker-compose-${service}.yml"
     }
 }
+
+task startAll(group: 'docker', dependsOn: ['composeUp']) {
+    services.each { service ->
+        dockerCompose.useComposeFiles += "${buildscript.sourceFile.parent}${File.separator}docker-compose-${service}.yml"
+    }
+}
+
+task stopAll(group: 'docker', dependsOn: ['composeDown']) {
+    services.each { service ->
+        dockerCompose.useComposeFiles += "${buildscript.sourceFile.parent}${File.separator}docker-compose-${service}.yml"
+    }
+}
