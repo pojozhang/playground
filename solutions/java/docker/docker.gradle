@@ -15,7 +15,6 @@ def services = [
 ]
 
 services.each { service ->
-
     tasks.create(name: "start${service.capitalize()}", group: 'docker', dependsOn: ['composeUp']) {
         dockerCompose.useComposeFiles += "${buildscript.sourceFile.parent}${File.separator}docker-compose-${service}.yml"
     }
