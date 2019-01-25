@@ -73,7 +73,5 @@ dependencyUpdates.resolutionStrategy {
     }
 }
 
-if (System.getProperty("env") != 'travis') {
-    test.dependsOn(startAll)
-    test.finalizedBy(stopAll)
-}
+test.dependsOn(startAll)
+test.finalizedBy(stopAll)
