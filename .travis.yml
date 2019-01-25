@@ -1,11 +1,11 @@
 services:
   - rabbitmq
 
-env:
-  global:
-    - RABBITMQ_DEFAULT_USER=test
-    - RABBITMQ_DEFAULT_PASS=test
-    - RABBITMQ_DEFAULT_VHOST=playground
+before_script:
+  - rabbitmqctl add_user test test
+  - rabbitmqctl set_user_tags test administrator
+  - rabbitmqctl add_vhost playground
+  - rabbitmqctl set_permissions -p /playground test ".*" ".*" ".*"
 
 matrix:
   include:
