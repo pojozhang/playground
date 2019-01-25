@@ -1,6 +1,3 @@
-services:
-  - docker
-
 matrix:
   include:
     - language: java
@@ -16,6 +13,8 @@ matrix:
         - cd solutions/java
       script:
         - ./gradlew clean build
+      services:
+        - docker
     - language: go
       go: 1.11.x
       go_import_path: playground
