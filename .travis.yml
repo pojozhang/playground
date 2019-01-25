@@ -1,11 +1,5 @@
 services:
-  - rabbitmq
-
-before_script:
-  - rabbitmqctl add_user test test
-  - rabbitmqctl set_user_tags test administrator
-  - rabbitmqctl add_vhost playground
-  - rabbitmqctl set_permissions -p /playground test ".*" ".*" ".*"
+  - docker
 
 matrix:
   include:
@@ -21,7 +15,7 @@ matrix:
       before_script:
         - cd solutions/java
       script:
-        - ./gradlew clean build -Denv=travis
+        - ./gradlew clean build
     - language: go
       go: 1.11.x
       go_import_path: playground
