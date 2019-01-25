@@ -9,7 +9,7 @@ plugins {
     id 'com.github.ben-manes.versions' version '0.20.0'
 }
 
-apply from:'docker/docker.gradle'
+apply from: 'docker/docker.gradle'
 
 repositories {
     jcenter()
@@ -68,4 +68,9 @@ dependencyUpdates.resolutionStrategy {
             }
         }
     }
+}
+
+if (System.getProperty("env") != 'travis') {
+    test.dependsOn(startAll)
+    test.finalizedBy(stopAll)
 }
