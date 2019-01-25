@@ -12,7 +12,7 @@ matrix:
       before_script:
         - cd solutions/java
       script:
-        - ./gradlew clean build
+        - ./gradlew clean build -Denv=travis
     - language: go
       go: 1.11.x
       go_import_path: playground
