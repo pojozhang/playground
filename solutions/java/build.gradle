@@ -1,15 +1,18 @@
 buildscript {
     repositories {
-        mavenCentral()
+        jcenter()
     }
 }
 
 plugins {
     id 'java'
+    id 'com.github.ben-manes.versions' version '0.20.0'
 }
 
+apply from: 'docker/docker.gradle'
+
 repositories {
-    mavenCentral()
+    jcenter()
 }
 
 sourceCompatibility = JavaVersion.VERSION_1_9
@@ -22,7 +25,7 @@ test {
 ext {
     lombokVersion = '1.18.4'
     junitVersion = '5.3.2'
-    springBootVersion = '2.1.1.RELEASE'
+    springBootVersion = '2.1.2.RELEASE'
 }
 
 dependencies {
@@ -35,19 +38,20 @@ dependencies {
     implementation(
             'com.google.guava:guava:27.0.1-jre',
             'cglib:cglib-full:2.0.2',
-            'guru.nidi:graphviz-java:0.5.2',
+            'guru.nidi:graphviz-java:0.8.0',
+            'com.rabbitmq:amqp-client:5.6.0',
             "org.springframework.boot:spring-boot-starter-aop:$springBootVersion",
             "org.springframework.boot:spring-boot-starter-data-jpa:$springBootVersion",
     )
 
     runtimeOnly(
-            'com.h2database:h2:1.4.196',
+            'com.h2database:h2:1.4.197',
     )
 
     testImplementation(
             "org.junit.jupiter:junit-jupiter-api:$junitVersion",
             'org.assertj:assertj-core:3.11.1',
-            'org.awaitility:awaitility:3.1.5',
+            'org.awaitility:awaitility:3.1.6',
             "org.springframework.boot:spring-boot-starter-test:$springBootVersion",
     )
 
@@ -55,3 +59,19 @@ dependencies {
             "org.junit.jupiter:junit-jupiter-engine:$junitVersion",
     )
 }
+
+dependencyUpdates.resolutionStrategy {
+    componentSelection { rules ->
+        rules.all { ComponentSelection selection ->
+            boolean rejected = ['alpha', 'beta', 'rc', 'cr', 'm', 'preview'].any { qualifier ->
+                selection.candidate.version ==~ /(?i).*[.-]${qualifier}[.\d-]*/
+            }
+            if (rejected) {
+                selection.reject('Release candidate')
+            }
+        }
+    }
+}
+
+test.dependsOn(startAll)
+test.finalizedBy(stopAll)

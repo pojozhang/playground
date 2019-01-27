@@ -1,0 +1,37 @@
+buildscript {
+    repositories {
+        jcenter()
+    }
+
+    dependencies {
+        classpath 'com.avast.gradle:gradle-docker-compose-plugin:0.8.13'
+    }
+}
+
+apply plugin: com.avast.gradle.dockercompose.DockerComposePlugin
+
+def services = [
+        'rabbitmq',
+]
+
+services.each { service ->
+    tasks.create(name: "start${service.capitalize()}", group: 'docker', dependsOn: ['composeUp']) {
+        dockerCompose.useComposeFiles += "${buildscript.sourceFile.parent}${File.separator}docker-compose-${service}.yml"
+    }
+
+    tasks.create(name: "stop${service.capitalize()}", group: 'docker', dependsOn: ['composeDown']) {
+        dockerCompose.useComposeFiles += "${buildscript.sourceFile.parent}${File.separator}docker-compose-${service}.yml"
+    }
+}
+
+task startAll(group: 'docker', dependsOn: ['composeUp']) {
+    services.each { service ->
+        dockerCompose.useComposeFiles += "${buildscript.sourceFile.parent}${File.separator}docker-compose-${service}.yml"
+    }
+}
+
+task stopAll(group: 'docker', dependsOn: ['composeDown']) {
+    services.each { service ->
+        dockerCompose.useComposeFiles += "${buildscript.sourceFile.parent}${File.separator}docker-compose-${service}.yml"
+    }
+}
