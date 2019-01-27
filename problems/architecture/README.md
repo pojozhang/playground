@@ -10,3 +10,4 @@
 - 一致性哈希
 - [缓存](cache.md)
 - [限流](current-limiting.md)
+- [分布式锁](distributed-lock.md)
