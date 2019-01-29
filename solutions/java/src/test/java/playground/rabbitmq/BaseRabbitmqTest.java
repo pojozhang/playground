@@ -32,6 +32,7 @@ abstract class BaseRabbitmqTest {
 
     @BeforeAll
     void init() throws IOException, TimeoutException, URISyntaxException {
+        System.out.println("init rabbitmq");
         initHttpClient();
         initConnections();
         initExchanges();
@@ -62,6 +63,7 @@ abstract class BaseRabbitmqTest {
 
     @AfterAll
     void cleanUp() throws IOException, TimeoutException {
+        System.out.println("cleanUp rabbitmq");
         if (channel != null) {
             channel.close();
         }
