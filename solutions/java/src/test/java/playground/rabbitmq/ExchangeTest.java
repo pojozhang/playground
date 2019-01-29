@@ -13,7 +13,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 class ExchangeTest extends BaseRabbitmqTest {
 
     @Test
-    void a_message_goes_to_the_queues_whose_binding_key_exactly_matches_the_routing_key_when_using_direct_exchange() throws IOException, InterruptedException, ExecutionException, TimeoutException {
+    void a_message_goes_to_the_queues_whose_binding_key_exactly_matches_the_routing_key_when_using_direct_exchange() throws IOException, InterruptedException {
         final String targetQueue = "queue-1";
         final String targetRoutingKey = "routing-key-1";
         final String anotherQueue = "queue-2";
@@ -40,7 +40,7 @@ class ExchangeTest extends BaseRabbitmqTest {
     }
 
     @Test
-    void a_message_sent_with_a_particular_routing_key_will_be_delivered_to_all_the_queues_that_are_bound_with_a_matching_binding_key_when_using_topic_exchange() throws IOException, InterruptedException, ExecutionException, TimeoutException {
+    void a_message_sent_with_a_particular_routing_key_will_be_delivered_to_all_the_queues_that_are_bound_with_a_matching_binding_key_when_using_topic_exchange() throws IOException, InterruptedException {
         final String firstQueue = "queue-1";
         final String secondQueue = "queue-2";
         final String thirdQueue = "queue-3";
