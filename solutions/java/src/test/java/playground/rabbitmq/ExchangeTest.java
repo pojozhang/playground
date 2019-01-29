@@ -3,7 +3,6 @@ package playground.rabbitmq;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
@@ -28,7 +27,7 @@ class ExchangeTest extends BaseRabbitmqTest {
     }
 
     @Test
-    void a_fanout_exchange_broadcasts_all_the_messages_it_receives_to_all_the_queues_it_knows() throws IOException, InterruptedException, ExecutionException, TimeoutException {
+    void a_fanout_exchange_broadcasts_all_the_messages_it_receives_to_all_the_queues_it_knows() throws IOException, InterruptedException, TimeoutException {
         final String firstQueue = "queue-1";
         final String secondQueue = "queue-2";
         final String emptyRoutingKey = "";
