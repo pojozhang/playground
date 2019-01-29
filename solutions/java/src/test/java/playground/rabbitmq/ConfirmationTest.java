@@ -2,25 +2,29 @@ package playground.rabbitmq;
 
 import com.rabbitmq.client.Delivery;
 import org.awaitility.Duration;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import static org.awaitility.Awaitility.await;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class ConfirmationTest extends BaseRabbitmqTest {
 
     private static final String QUEUE = "queue-1";
 
-    @Test
-    void ack() throws IOException, InterruptedException {
+    @BeforeEach
+    void setUp() throws IOException {
         declareQueueAndBind(DIRECT_EXCHANGE, QUEUE, QUEUE);
         publish(DIRECT_EXCHANGE, QUEUE, "payload");
-        assertEquals(0, unacknowledgedMessages(QUEUE));
+        startConsume(QUEUE);
+    }
 
-        Delivery delivery = consume(QUEUE, 5, TimeUnit.SECONDS);
+    @Test
+    void ack() throws IOException, InterruptedException, TimeoutException {
+        Delivery delivery = receive(QUEUE, 5, TimeUnit.SECONDS);
 
         await().pollInterval(Duration.ONE_SECOND)
                 .atMost(Duration.ONE_MINUTE)
@@ -34,28 +38,37 @@ class ConfirmationTest extends BaseRabbitmqTest {
     }
 
     @Test
-    void nack() throws IOException, InterruptedException {
-        declareQueueAndBind(DIRECT_EXCHANGE, QUEUE, QUEUE);
-        publish(DIRECT_EXCHANGE, QUEUE, "payload");
-        assertEquals(0, unacknowledgedMessages(QUEUE));
+    void nack() throws IOException, InterruptedException, TimeoutException {
+        Delivery firstDelivery = receive(QUEUE, 5, TimeUnit.SECONDS);
 
-        Delivery firstDelivery = consume(QUEUE, 5, TimeUnit.SECONDS);
-//        await().pollInterval(Duration.ONE_SECOND)
-//                .atMost(Duration.ONE_MINUTE)
-//                .until(() -> unacknowledgedMessages(QUEUE) == 1);
+        await().pollInterval(Duration.ONE_SECOND)
+                .atMost(Duration.ONE_MINUTE)
+                .until(() -> unacknowledgedMessages(QUEUE) == 1);
+
+        nack(firstDelivery, true);
+        Delivery secondDelivery = receive(QUEUE, 5, TimeUnit.SECONDS);
+        nack(secondDelivery, false);
+
+        await().pollInterval(Duration.ONE_SECOND)
+                .atMost(Duration.ONE_MINUTE)
+                .until(() -> unacknowledgedMessages(QUEUE) == 0);
+    }
+
+    @Test
+    void reject() throws IOException, InterruptedException, TimeoutException {
+        Delivery firstDelivery = receive(QUEUE, 5, TimeUnit.SECONDS);
+
+        await().pollInterval(Duration.ONE_SECOND)
+                .atMost(Duration.ONE_MINUTE)
+                .until(() -> unacknowledgedMessages(QUEUE) == 1);
 
         reject(firstDelivery, true);
-//        channel.basicRecover();
-//        await().pollInterval(Duration.ONE_SECOND)
-//                .atMost(Duration.ONE_MINUTE)
-//                .until(() -> unacknowledgedMessages(QUEUE) == 1);
+        Delivery secondDelivery = receive(QUEUE, 5, TimeUnit.SECONDS);
+        reject(secondDelivery, false);
 
-        Thread.sleep(1000000);
-//        Delivery secondDelivery = consume(QUEUE, false, 5, TimeUnit.SECONDS);
-//        nack(secondDelivery, false);
-//        await().pollInterval(Duration.ONE_SECOND)
-//                .atMost(Duration.ONE_MINUTE)
-//                .until(() -> unacknowledgedMessages(QUEUE) == 0);
+        await().pollInterval(Duration.ONE_SECOND)
+                .atMost(Duration.ONE_MINUTE)
+                .until(() -> unacknowledgedMessages(QUEUE) == 0);
     }
 
     private long unacknowledgedMessages(String queue) {

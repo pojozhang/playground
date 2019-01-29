@@ -48,10 +48,13 @@ abstract class BaseRabbitmqTest {
         connectionFactory.setVirtualHost(VIRTUAL_HOST);
         connection = connectionFactory.newConnection();
         channel = connection.createChannel();
-        channel.basicQos(1, true);
     }
 
     private void initExchanges() throws IOException {
+        channel.exchangeDelete(DIRECT_EXCHANGE);
+        channel.exchangeDelete(FANOUT_EXCHANGE);
+        channel.exchangeDelete(TOPIC_EXCHANGE);
+
         channel.exchangeDeclare(DIRECT_EXCHANGE, BuiltinExchangeType.DIRECT);
         channel.exchangeDeclare(FANOUT_EXCHANGE, BuiltinExchangeType.FANOUT);
         channel.exchangeDeclare(TOPIC_EXCHANGE, BuiltinExchangeType.TOPIC);
@@ -88,28 +91,40 @@ abstract class BaseRabbitmqTest {
         channel.queueBind(queue, exchange, routingKey);
     }
 
+    void startConsume(String... queues) throws IOException {
+        for (String queue : queues) {
+            if (consumerQueues.containsKey(queue)) {
+                continue;
+            }
+            consumerQueues.put(queue, new LinkedBlockingQueue<>());
+            channel.basicConsume(queue, false,
+                    (consumerTag, message) -> consumerQueues.get(queue).add(message),
+                    consumerTag -> {
+                    });
+        }
+    }
+
     void declareQueue(String queue, boolean durable, boolean exclusive, boolean autoDelete,
                       Map<String, Object> arguments) throws IOException {
         channel.queueDeclare(queue, durable, exclusive, autoDelete, arguments);
-        consumerQueues.putIfAbsent(queue, new LinkedBlockingQueue<>());
-        channel.basicConsume(queue, false,
-                (consumerTag, message) -> consumerQueues.get(queue).add(message),
-                consumerTag -> {
-                });
         declaredQueues.add(queue);
     }
 
-    String publishAndConsume(String exchange, String routingKey, String payload, String queue, long timeout, TimeUnit unit) throws IOException, InterruptedException {
+    String publishAndReceive(String exchange, String routingKey, String payload, String queue, long timeout, TimeUnit unit) throws IOException, InterruptedException, TimeoutException {
         publish(exchange, routingKey, payload);
-        return getMessage(consume(queue, timeout, unit));
+        return getMessage(receive(queue, timeout, unit));
     }
 
     void publish(String exchange, String routingKey, String payload) throws IOException {
         channel.basicPublish(exchange, routingKey, MessageProperties.TEXT_PLAIN, payload.getBytes(StandardCharsets.UTF_8));
     }
 
-    Delivery consume(String queue, long timeout, TimeUnit unit) throws InterruptedException {
-        return consumerQueues.get(queue).poll(timeout, unit);
+    Delivery receive(String queue, long timeout, TimeUnit unit) throws InterruptedException, TimeoutException {
+        Delivery delivery = consumerQueues.get(queue).poll(timeout, unit);
+        if (delivery != null) {
+            return delivery;
+        }
+        throw new TimeoutException();
     }
 
     void ack(Delivery delivery) throws IOException {
