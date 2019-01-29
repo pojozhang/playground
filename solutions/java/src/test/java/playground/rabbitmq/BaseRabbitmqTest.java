@@ -1,18 +1,19 @@
 package playground.rabbitmq;
 
-import com.rabbitmq.client.BuiltinExchangeType;
-import com.rabbitmq.client.Channel;
-import com.rabbitmq.client.Connection;
-import com.rabbitmq.client.ConnectionFactory;
+import com.rabbitmq.client.*;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.TestInstance;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
@@ -72,9 +73,25 @@ abstract class BaseRabbitmqTest {
         });
     }
 
+    void declareQueueAndBind(String exchange, String queue, String routingKey) throws IOException {
+        declareQueue(queue, false, false, false, null);
+        channel.queueBind(queue, exchange, routingKey);
+    }
+
     void declareQueue(String queue, boolean durable, boolean exclusive, boolean autoDelete,
                       Map<String, Object> arguments) throws IOException {
         channel.queueDeclare(queue, durable, exclusive, autoDelete, arguments);
         declaredQueues.add(queue);
+    }
+
+    String publishAndConsume(String exchange, String routingKey, String payload, String queue, long timeout, TimeUnit unit) throws IOException, InterruptedException, ExecutionException, TimeoutException {
+        channel.basicPublish(exchange, routingKey, MessageProperties.TEXT_PLAIN, payload.getBytes(StandardCharsets.UTF_8));
+
+        CompletableFuture<String> future = new CompletableFuture<>();
+        channel.basicConsume(queue, true,
+                (consumerTag, message) -> future.complete(new String(message.getBody(), StandardCharsets.UTF_8)),
+                consumerTag -> {
+                });
+        return future.get(timeout, unit);
     }
 }

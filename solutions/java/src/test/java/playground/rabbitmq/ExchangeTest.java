@@ -1,11 +1,8 @@
 package playground.rabbitmq;
 
-import com.rabbitmq.client.MessageProperties;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -56,21 +53,5 @@ class ExchangeTest extends BaseRabbitmqTest {
         assertEquals(payload, publishAndConsume(TOPIC_EXCHANGE, routingKey, payload, firstQueue, 5, TimeUnit.SECONDS));
         assertEquals(payload, publishAndConsume(TOPIC_EXCHANGE, routingKey, payload, secondQueue, 5, TimeUnit.SECONDS));
         assertThrows(TimeoutException.class, () -> publishAndConsume(TOPIC_EXCHANGE, routingKey, payload, thirdQueue, 5, TimeUnit.SECONDS));
-    }
-
-    private void declareQueueAndBind(String exchange, String queue, String routingKey) throws IOException {
-        super.declareQueue(queue, false, false, false, null);
-        channel.queueBind(queue, exchange, routingKey);
-    }
-
-    private String publishAndConsume(String exchange, String routingKey, String payload, String queue, long timeout, TimeUnit unit) throws IOException, InterruptedException, ExecutionException, TimeoutException {
-        channel.basicPublish(exchange, routingKey, MessageProperties.TEXT_PLAIN, payload.getBytes(StandardCharsets.UTF_8));
-
-        CompletableFuture<String> future = new CompletableFuture<>();
-        channel.basicConsume(queue, false,
-                (consumerTag, message) -> future.complete(new String(message.getBody(), StandardCharsets.UTF_8)),
-                consumerTag -> {
-                });
-        return future.get(timeout, unit);
     }
 }
