@@ -25,8 +25,8 @@ class ExchangeTest extends BaseRabbitmqTest {
         declareQueueAndBind(DIRECT_EXCHANGE, targetQueue, targetRoutingKey);
         declareQueueAndBind(DIRECT_EXCHANGE, anotherQueue, anotherRoutingKey);
 
-        assertEquals(payload, sendAndReceive(DIRECT_EXCHANGE, targetRoutingKey, payload, targetQueue, 5, TimeUnit.SECONDS));
-        assertThrows(TimeoutException.class, () -> sendAndReceive(DIRECT_EXCHANGE, targetRoutingKey, payload, anotherQueue, 5, TimeUnit.SECONDS));
+        assertEquals(payload, publishAndConsume(DIRECT_EXCHANGE, targetRoutingKey, payload, targetQueue, 5, TimeUnit.SECONDS));
+        assertThrows(TimeoutException.class, () -> publishAndConsume(DIRECT_EXCHANGE, targetRoutingKey, payload, anotherQueue, 5, TimeUnit.SECONDS));
     }
 
     @Test
@@ -38,8 +38,8 @@ class ExchangeTest extends BaseRabbitmqTest {
         declareQueueAndBind(FANOUT_EXCHANGE, firstQueue, emptyRoutingKey);
         declareQueueAndBind(FANOUT_EXCHANGE, secondQueue, emptyRoutingKey);
 
-        assertEquals(payload, sendAndReceive(FANOUT_EXCHANGE, emptyRoutingKey, payload, firstQueue, 5, TimeUnit.SECONDS));
-        assertEquals(payload, sendAndReceive(FANOUT_EXCHANGE, emptyRoutingKey, payload, secondQueue, 5, TimeUnit.SECONDS));
+        assertEquals(payload, publishAndConsume(FANOUT_EXCHANGE, emptyRoutingKey, payload, firstQueue, 5, TimeUnit.SECONDS));
+        assertEquals(payload, publishAndConsume(FANOUT_EXCHANGE, emptyRoutingKey, payload, secondQueue, 5, TimeUnit.SECONDS));
     }
 
     @Test
@@ -53,9 +53,9 @@ class ExchangeTest extends BaseRabbitmqTest {
         declareQueueAndBind(TOPIC_EXCHANGE, secondQueue, "orders.#");
         declareQueueAndBind(TOPIC_EXCHANGE, thirdQueue, "nothing.match");
 
-        assertEquals(payload, sendAndReceive(TOPIC_EXCHANGE, routingKey, payload, firstQueue, 5, TimeUnit.SECONDS));
-        assertEquals(payload, sendAndReceive(TOPIC_EXCHANGE, routingKey, payload, secondQueue, 5, TimeUnit.SECONDS));
-        assertThrows(TimeoutException.class, () -> sendAndReceive(TOPIC_EXCHANGE, routingKey, payload, thirdQueue, 5, TimeUnit.SECONDS));
+        assertEquals(payload, publishAndConsume(TOPIC_EXCHANGE, routingKey, payload, firstQueue, 5, TimeUnit.SECONDS));
+        assertEquals(payload, publishAndConsume(TOPIC_EXCHANGE, routingKey, payload, secondQueue, 5, TimeUnit.SECONDS));
+        assertThrows(TimeoutException.class, () -> publishAndConsume(TOPIC_EXCHANGE, routingKey, payload, thirdQueue, 5, TimeUnit.SECONDS));
     }
 
     private void declareQueueAndBind(String exchange, String queue, String routingKey) throws IOException {
@@ -63,7 +63,7 @@ class ExchangeTest extends BaseRabbitmqTest {
         channel.queueBind(queue, exchange, routingKey);
     }
 
-    private String sendAndReceive(String exchange, String routingKey, String payload, String queue, long timeout, TimeUnit unit) throws IOException, InterruptedException, ExecutionException, TimeoutException {
+    private String publishAndConsume(String exchange, String routingKey, String payload, String queue, long timeout, TimeUnit unit) throws IOException, InterruptedException, ExecutionException, TimeoutException {
         channel.basicPublish(exchange, routingKey, MessageProperties.TEXT_PLAIN, payload.getBytes(StandardCharsets.UTF_8));
 
         CompletableFuture<String> future = new CompletableFuture<>();
