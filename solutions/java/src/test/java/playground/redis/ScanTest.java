@@ -1,6 +1,6 @@
 package playground.redis;
 
-import io.lettuce.core.MapScanCursor;
+import io.lettuce.core.KeyScanCursor;
 import io.lettuce.core.ScanArgs;
 import org.junit.jupiter.api.Test;
 
@@ -10,26 +10,27 @@ class ScanTest extends BaseRedisTest {
 
     @Test
     void scan() {
-        final String bigKey = "big-key";
-        generateBigKey(bigKey, 500);
+        final int count = 500;
+        generateKeys("key", count);
+        assertEquals(count, syncCommand.keys("key**").size());
 
-        MapScanCursor<String, String> cursor = null;
+        KeyScanCursor<String> cursor = null;
         ScanArgs scanArgs = ScanArgs.Builder.limit(50);
         do {
             if (cursor == null) {
-                cursor = syncCommand.hscan(bigKey, scanArgs);
+                cursor = syncCommand.scan(scanArgs);
             } else {
-                cursor = syncCommand.hscan(bigKey, cursor, scanArgs);
+                cursor = syncCommand.scan(cursor, scanArgs);
             }
-            syncCommand.hdel(bigKey, cursor.getMap().keySet().toArray(new String[0]));
+            syncCommand.del(cursor.getKeys().toArray(new String[0]));
         } while (!cursor.isFinished());
 
-        assertEquals(0, syncCommand.hgetall(bigKey).size());
+        assertEquals(0, syncCommand.keys("key**").size());
     }
 
-    private void generateBigKey(String key, int count) {
+    private void generateKeys(String prefix, int count) {
         for (int i = 0; i < count; i++) {
-            syncCommand.hset(key, "key" + i, "value");
+            syncCommand.set(prefix + i, "value");
         }
     }
 }
