@@ -48,6 +48,7 @@ abstract class BaseRabbitmqTest {
         connectionFactory.setVirtualHost(VIRTUAL_HOST);
         connection = connectionFactory.newConnection();
         channel = connection.createChannel();
+        channel.confirmSelect();
     }
 
     private void initExchanges() throws IOException {
@@ -133,6 +134,10 @@ abstract class BaseRabbitmqTest {
 
     void reject(Delivery delivery, boolean requeue) throws IOException {
         channel.basicReject(delivery.getEnvelope().getDeliveryTag(), requeue);
+    }
+
+    void waitForConfirms(long timeout, TimeUnit unit) throws TimeoutException, InterruptedException {
+        channel.waitForConfirms(unit.toMillis(timeout));
     }
 
     String getMessage(Delivery delivery) {

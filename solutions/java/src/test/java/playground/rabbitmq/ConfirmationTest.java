@@ -14,11 +14,12 @@ import static org.awaitility.Awaitility.await;
 class ConfirmationTest extends BaseRabbitmqTest {
 
     private static final String QUEUE = "queue-1";
+    private static final String PAYLOAD = "payload";
 
     @BeforeEach
     void setUp() throws IOException {
         declareQueueAndBind(DIRECT_EXCHANGE, QUEUE, QUEUE);
-        publish(DIRECT_EXCHANGE, QUEUE, "payload");
+        publish(DIRECT_EXCHANGE, QUEUE, PAYLOAD);
         startConsume(QUEUE);
     }
 
@@ -69,6 +70,13 @@ class ConfirmationTest extends BaseRabbitmqTest {
         await().pollInterval(Duration.ONE_SECOND)
                 .atMost(Duration.ONE_MINUTE)
                 .until(() -> unacknowledgedMessages(QUEUE) == 0);
+    }
+
+    @Test
+    void publish_confirm() throws TimeoutException, InterruptedException, IOException {
+        publish(DIRECT_EXCHANGE, QUEUE, PAYLOAD);
+
+        waitForConfirms(10, TimeUnit.SECONDS);
     }
 
     private long unacknowledgedMessages(String queue) {
