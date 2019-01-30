@@ -8,10 +8,6 @@
 - [持久化策略](persistence.md)
 - [集群](cluster.md)
 
-## 性能优化
-
-- 删除BigKey
-
 ## 安全
 
 - [禁用FLUSHALL/FLUSHDB/KEYS命令](disable-flushall-flushdb-keys.md)
