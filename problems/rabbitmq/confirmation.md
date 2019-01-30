@@ -1,5 +1,7 @@
 # 消息确认机制
 
+> 可以在[这里](https://github.com/pojozhang/playground/blob/master/solutions/java/src/test/java/playground/rabbitmq/ConfirmationTest.java)查看与本文相关的示例代码。
+
 当RabbitMQ把消息投递给一个消费者后，消费者需要对接收到的消息给予一个反馈，告诉RabbitMQ该消息是否正确处理，如果没有正确处理是否需要重新放回队列或者直接丢弃。一旦消费者确认了消息已被正确处理或者无法处理直接丢弃，那么RabbitMQ就会把该消息从队列中移除。
 
 确认消息有以下3种。
@@ -22,7 +24,7 @@ RabbitMQ支持自动确认和手动确认两种模式。在自动确认模式下
 
 ## 发送确认
 
-> 可以在[这里](https://github.com/pojozhang/playground/blob/master/solutions/java/src/test/java/playground/rabbitmq/ConfirmationTest.java)查看示例代码。
+如果开启了Confirm模式，那么当生产者向RabbitMQ投递一条消息后，RabbitMQ会在消息投递到相应的队列后给予一个`ack`消息作为反馈；如果消息是持久化的，那么当消息被持久化到磁盘后会返回给生产者`ack`消息作为确认；如果消息的Routing Key找不到任何队列与之匹配，也会返回一个`ack`消息；如果RabbitMQ内部出现了异常，比如无法持久化消息，那么就会返回`nack`消息，在这种情况下生产者可以进行重新投递。
 
 ## 参考
 
