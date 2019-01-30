@@ -76,6 +76,3 @@ dependencyUpdates.resolutionStrategy {
         }
     }
 }
-
-test.dependsOn(startAll)
-test.finalizedBy(stopAll)

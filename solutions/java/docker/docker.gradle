@@ -32,13 +32,13 @@ services.each { service ->
     }
 }
 
-task startAll(group: 'docker') {
+task startAllServices(group: 'docker') {
     services.each { service ->
         dependsOn += "start${service.capitalize()}"
     }
 }
 
-task stopAll(group: 'docker') {
+task stopAllServices(group: 'docker') {
     services.each { service ->
         dependsOn += "stop${service.capitalize()}"
     }
