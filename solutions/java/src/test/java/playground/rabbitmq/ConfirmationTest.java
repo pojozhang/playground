@@ -10,6 +10,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import static org.awaitility.Awaitility.await;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class ConfirmationTest extends BaseRabbitmqTest {
 
@@ -78,7 +79,7 @@ class ConfirmationTest extends BaseRabbitmqTest {
     void publish_confirm() throws TimeoutException, InterruptedException, IOException {
         publish(DIRECT_EXCHANGE, QUEUE, PAYLOAD);
 
-        waitForConfirms(10, TimeUnit.SECONDS);
+        assertTrue(waitForConfirms(10, TimeUnit.SECONDS));
     }
 
     private long unacknowledgedMessages(String queue) {

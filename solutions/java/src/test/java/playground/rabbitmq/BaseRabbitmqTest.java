@@ -136,8 +136,8 @@ abstract class BaseRabbitmqTest {
         channel.basicReject(delivery.getEnvelope().getDeliveryTag(), requeue);
     }
 
-    void waitForConfirms(long timeout, TimeUnit unit) throws TimeoutException, InterruptedException {
-        channel.waitForConfirms(unit.toMillis(timeout));
+    boolean waitForConfirms(long timeout, TimeUnit unit) throws TimeoutException, InterruptedException {
+        return channel.waitForConfirms(unit.toMillis(timeout));
     }
 
     String getMessage(Delivery delivery) {
