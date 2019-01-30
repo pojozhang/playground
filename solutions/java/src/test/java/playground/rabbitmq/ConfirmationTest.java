@@ -19,12 +19,12 @@ class ConfirmationTest extends BaseRabbitmqTest {
     @BeforeEach
     void setUp() throws IOException {
         declareQueueAndBind(DIRECT_EXCHANGE, QUEUE, QUEUE);
-        publish(DIRECT_EXCHANGE, QUEUE, PAYLOAD);
         startConsume(QUEUE);
     }
 
     @Test
     void ack() throws IOException, InterruptedException, TimeoutException {
+        publish(DIRECT_EXCHANGE, QUEUE, PAYLOAD);
         Delivery delivery = receive(QUEUE, 5, TimeUnit.SECONDS);
 
         await().pollInterval(Duration.ONE_SECOND)
@@ -40,6 +40,7 @@ class ConfirmationTest extends BaseRabbitmqTest {
 
     @Test
     void nack() throws IOException, InterruptedException, TimeoutException {
+        publish(DIRECT_EXCHANGE, QUEUE, PAYLOAD);
         Delivery firstDelivery = receive(QUEUE, 5, TimeUnit.SECONDS);
 
         await().pollInterval(Duration.ONE_SECOND)
@@ -57,6 +58,7 @@ class ConfirmationTest extends BaseRabbitmqTest {
 
     @Test
     void reject() throws IOException, InterruptedException, TimeoutException {
+        publish(DIRECT_EXCHANGE, QUEUE, PAYLOAD);
         Delivery firstDelivery = receive(QUEUE, 5, TimeUnit.SECONDS);
 
         await().pollInterval(Duration.ONE_SECOND)
