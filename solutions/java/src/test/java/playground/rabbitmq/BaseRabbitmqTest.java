@@ -58,12 +58,12 @@ abstract class BaseRabbitmqTest {
     }
 
     @AfterAll
-    void cleanUp() throws IOException, TimeoutException {
+    void cleanUp() throws IOException {
         if (channel != null) {
-            channel.close();
+            channel.abort();
         }
         if (connection != null) {
-            connection.close();
+            connection.abort();
         }
     }
 
