@@ -104,6 +104,7 @@
 - [x] [快速排序](quick-sort.md)
 - [x] [堆排序](heap-sort.md)
 - [x] [归并排序](merge-sort.md)
+- [x] [多路归并排序](multi-way-merge-sort.md)
 - [x] [基数排序](radix-sort.md)
 - [x] [桶排序](bucket-sort.md)
 - [x] [冒泡排序](bubble-sort.md)
