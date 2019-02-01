@@ -10,28 +10,36 @@ buildscript {
 
 apply plugin: com.avast.gradle.dockercompose.DockerComposePlugin
 
-def services = [
-        'rabbitmq',
-]
+def services = []
+
+fileTree(buildscript.sourceFile.parent).matching { include 'docker-compose-**.yml' }.visit {
+    services += it.name.substring(it.name.lastIndexOf('-') + 1, it.name.lastIndexOf('.'))
+}
 
 services.each { service ->
-    tasks.create(name: "start${service.capitalize()}", group: 'docker', dependsOn: ['composeUp']) {
-        dockerCompose.useComposeFiles += "${buildscript.sourceFile.parent}${File.separator}docker-compose-${service}.yml"
+    tasks.create(name: "start${service.capitalize()}", group: 'docker') {
+        doFirst {
+            dockerCompose.useComposeFiles += "${buildscript.sourceFile.parent}${File.separator}docker-compose-${service}.yml"
+        }
+        finalizedBy composeUp
     }
 
-    tasks.create(name: "stop${service.capitalize()}", group: 'docker', dependsOn: ['composeDown']) {
-        dockerCompose.useComposeFiles += "${buildscript.sourceFile.parent}${File.separator}docker-compose-${service}.yml"
+    tasks.create(name: "stop${service.capitalize()}", group: 'docker') {
+        doFirst {
+            dockerCompose.useComposeFiles += "${buildscript.sourceFile.parent}${File.separator}docker-compose-${service}.yml"
+        }
+        finalizedBy composeDown
     }
 }
 
-task startAll(group: 'docker', dependsOn: ['composeUp']) {
+task startAllServices(group: 'docker') {
     services.each { service ->
-        dockerCompose.useComposeFiles += "${buildscript.sourceFile.parent}${File.separator}docker-compose-${service}.yml"
+        dependsOn += "start${service.capitalize()}"
     }
 }
 
-task stopAll(group: 'docker', dependsOn: ['composeDown']) {
+task stopAllServices(group: 'docker') {
     services.each { service ->
-        dockerCompose.useComposeFiles += "${buildscript.sourceFile.parent}${File.separator}docker-compose-${service}.yml"
+        dependsOn += "stop${service.capitalize()}"
     }
 }

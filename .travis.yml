@@ -12,7 +12,7 @@ matrix:
       before_script:
         - cd solutions/java
       script:
-        - ./gradlew clean build
+        - ./gradlew clean startAllServices build stopAllServices
       services:
         - docker
     - language: go
