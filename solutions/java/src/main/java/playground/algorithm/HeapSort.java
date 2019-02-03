@@ -1,6 +1,6 @@
 package playground.algorithm;
 
-import playground.util.*;
+import playground.util.Utils;
 
 public class HeapSort {
 
@@ -14,7 +14,7 @@ public class HeapSort {
     }
 
     private void buildMaxHeap(int[] nums) {
-        for (int i = (nums.length - 1) / 2; i >= 0; i--) {
+        for (int i = (nums.length / 2) - 1; i >= 0; i--) {
             maxHeapify(nums, i, nums.length);
         }
     }
