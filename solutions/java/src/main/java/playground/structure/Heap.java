@@ -20,6 +20,7 @@ public class Heap<T> {
         this.elements = new ArrayList<>();
     }
 
+    @SuppressWarnings("unchecked")
     public void addAll(T... entries) {
         for (T entry : entries) {
             add(entry);
