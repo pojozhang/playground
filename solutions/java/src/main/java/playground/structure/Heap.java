@@ -36,12 +36,8 @@ public class Heap<T> {
         }
     }
 
-    @SuppressWarnings("unchecked")
-    private int compare(T first, T second) {
-        if (comparator != null) {
-            return comparator.compare(first, second);
-        }
-        return ((Comparable) first).compareTo(second);
+    public int size() {
+        return this.elements.size();
     }
 
     @SuppressWarnings("unchecked")
@@ -80,7 +76,11 @@ public class Heap<T> {
         }
     }
 
-    public int size() {
-        return this.elements.size();
+    @SuppressWarnings("unchecked")
+    private int compare(T first, T second) {
+        if (comparator != null) {
+            return comparator.compare(first, second);
+        }
+        return ((Comparable) first).compareTo(second);
     }
 }
