@@ -26,7 +26,7 @@ abstract class BaseRabbitmqTest {
 
     private Connection connection;
     private Map<String, BlockingQueue<Delivery>> consumerQueues = new ConcurrentHashMap<>();
-    Set<String> declaredQueues = new HashSet<>();
+    private Set<String> declaredQueues = new HashSet<>();
     Channel channel;
     Client client;
 
@@ -81,6 +81,8 @@ abstract class BaseRabbitmqTest {
                 e.printStackTrace();
             }
         });
+        consumerQueues.clear();
+        declaredQueues.clear();
     }
 
     void declareQueueAndBind(String exchange, String queue, String routingKey) throws IOException {
