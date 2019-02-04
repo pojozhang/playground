@@ -12,7 +12,7 @@ for (int i = (array.length / 2) - 1; i >= 0; i--) {
 
 堆化（即`heapify()`方法）是一个递归的过程，这是因为在初始建堆时数据都是乱的，当把父节点和子节点交换后可能破坏堆的定义，需要再次调整，可以看下面这个例子。
 
-![](resources/heap_1.png)
+![](resources/heap_1.jpeg)
 
 ## 应用场景
 
