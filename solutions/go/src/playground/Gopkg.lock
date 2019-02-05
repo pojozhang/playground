@@ -8,6 +8,18 @@
   version = "v1.1.0"
 
 [[projects]]
+  name = "github.com/hpcloud/tail"
+  packages = [
+    ".",
+    "ratelimiter",
+    "util",
+    "watch",
+    "winfile"
+  ]
+  revision = "a30252cb686a21eb2d0b98132633053ec2f7f1e5"
+  version = "v1.0.0"
+
+[[projects]]
   name = "github.com/onsi/ginkgo"
   packages = [
     ".",
@@ -29,8 +41,8 @@
     "reporters/stenographer/support/go-isatty",
     "types"
   ]
-  revision = "fa5fabab2a1bfbd924faf4c067d07ae414e2aedf"
-  version = "v1.5.0"
+  revision = "2e1be8f7d90e9d3e3e58b0ce470f2f14d075406f"
+  version = "v1.7.0"
 
 [[projects]]
   name = "github.com/onsi/gomega"
@@ -48,8 +60,8 @@
     "matchers/support/goraph/util",
     "types"
   ]
-  revision = "62bff4df71bdbc266561a0caee19f0594b17c240"
-  version = "v1.4.0"
+  revision = "65fb64232476ad9046e57c26cd0bff3d3a8dc6cd"
+  version = "v1.4.3"
 
 [[projects]]
   name = "github.com/pmezard/go-difflib"
@@ -60,8 +72,8 @@
 [[projects]]
   name = "github.com/stretchr/testify"
   packages = ["assert"]
-  revision = "12b6f73e6084dad08a7c6e575284b177ecafbc71"
-  version = "v1.2.1"
+  revision = "ffdc059bfe9ce6a4e144ba849dbedead332c6053"
+  version = "v1.3.0"
 
 [[projects]]
   branch = "master"
@@ -104,6 +116,19 @@
   version = "v0.3.0"
 
 [[projects]]
+  name = "gopkg.in/fsnotify.v1"
+  packages = ["."]
+  revision = "c2828203cd70a50dcccfb2761f8b1f8ceef9a8e9"
+  source = "gopkg.in/fsnotify/fsnotify.v1"
+  version = "v1.4.7"
+
+[[projects]]
+  branch = "v1"
+  name = "gopkg.in/tomb.v1"
+  packages = ["."]
+  revision = "dd632973f1e7218eb1089048e0798ec9ae7dceb8"
+
+[[projects]]
   name = "gopkg.in/yaml.v2"
   packages = ["."]
   revision = "5420a8b6744d3b0345ab293f6fcba19c978f1183"
@@ -112,6 +137,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "d25c4f2a282e523773b9f833dd0364949a6f722462e170d6166bab3be1337953"
+  inputs-digest = "202acfbb54ffae77e98f76859b54c4db57ee0b4bda0b558b4b8b8b1a5ee207fa"
   solver-name = "gps-cdcl"
   solver-version = 1

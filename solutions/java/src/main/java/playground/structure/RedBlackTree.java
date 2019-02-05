@@ -23,6 +23,7 @@ package playground.structure;
  *
  *
  */
+@SuppressWarnings("unchecked")
 public class RedBlackTree<K extends Comparable<K>, V>  {
 
     private static final boolean RED = false;

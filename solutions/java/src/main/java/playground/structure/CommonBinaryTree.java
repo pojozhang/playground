@@ -2,6 +2,7 @@ package playground.structure;
 
 import playground.util.GraphvizUtils;
 
+@SuppressWarnings("unchecked")
 abstract class CommonBinaryTree<T extends Comparable<T>> implements Tree<T> {
 
     boolean contains(T i, BinaryNode<T> root) {

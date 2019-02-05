@@ -22,6 +22,7 @@ import java.util.Arrays;
  *   - (这是建立在一个 数组首位是不存放数据的数组中，如果数组首位也存放元素，则左节点为2 * i + 1 , 右节点为 2 * i+2 )
  * - 反向推倒，任意一个节点的父节点在 i / 2 位置上
  */
+@SuppressWarnings("unchecked")
 public class BinaryHeap<T extends Comparable<T>> {
 
 
