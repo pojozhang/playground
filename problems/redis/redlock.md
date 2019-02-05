@@ -32,4 +32,4 @@ end
 
 ## 参考
 
-1. [Distributed locks with Redis](https://redis.io/topics/distlock)
+1. [《Distributed locks with Redis》](https://redis.io/topics/distlock)
