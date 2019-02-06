@@ -2,7 +2,6 @@ package playground.rabbitmq;
 
 import com.rabbitmq.client.*;
 import com.rabbitmq.http.client.Client;
-import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.TestInstance;
@@ -55,16 +54,6 @@ abstract class BaseRabbitmqTest {
         channel.exchangeDeclare(DIRECT_EXCHANGE, BuiltinExchangeType.DIRECT);
         channel.exchangeDeclare(FANOUT_EXCHANGE, BuiltinExchangeType.FANOUT);
         channel.exchangeDeclare(TOPIC_EXCHANGE, BuiltinExchangeType.TOPIC);
-    }
-
-    @AfterAll
-    void cleanUp() throws IOException {
-        if (channel != null) {
-            channel.abort();
-        }
-        if (connection != null) {
-            connection.abort();
-        }
     }
 
     @AfterEach
