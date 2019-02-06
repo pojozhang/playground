@@ -51,6 +51,10 @@ abstract class BaseRabbitmqTest {
     }
 
     private void initExchanges() throws IOException {
+        channel.exchangeDelete(DIRECT_EXCHANGE);
+        channel.exchangeDelete(FANOUT_EXCHANGE);
+        channel.exchangeDelete(TOPIC_EXCHANGE);
+
         channel.exchangeDeclare(DIRECT_EXCHANGE, BuiltinExchangeType.DIRECT);
         channel.exchangeDeclare(FANOUT_EXCHANGE, BuiltinExchangeType.FANOUT);
         channel.exchangeDeclare(TOPIC_EXCHANGE, BuiltinExchangeType.TOPIC);
