@@ -14,8 +14,7 @@ matrix:
       script:
         - ./gradlew clean startAllServices build stopAllServices
       after_script:
-        - pwd
-        - sh .travis-java.sh
+        - sh .travis.sh
       services:
         - docker
     - language: go
@@ -34,6 +33,3 @@ matrix:
       before_script:
         - cd solutions/python
       script: pytest
-      after_script:
-        - ll
-        - sh .travis-java.sh
