@@ -34,3 +34,6 @@ matrix:
       before_script:
         - cd solutions/python
       script: pytest
+      after_script:
+        - ll
+        - sh .travis-java.sh
