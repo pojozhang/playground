@@ -13,6 +13,8 @@ matrix:
         - cd solutions/java
       script:
         - ./gradlew clean startAllServices build stopAllServices
+      after_script:
+        - sh .travis-java.sh
       services:
         - docker
     - language: go
