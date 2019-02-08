@@ -14,6 +14,7 @@ matrix:
       script:
         - ./gradlew clean startAllServices build stopAllServices
       before_deploy:
+        - pwd
         - mkdir -p solutions/java/build/travis/java
         - cp -r solutions/java/build/reports solutions/java/build/travis/java
       deploy:
