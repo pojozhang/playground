@@ -52,6 +52,34 @@ Read View有3个关键的属性。
 
 **MVCC只适用于Repeatable Read和Read Committed这两个隔离级别**，它们的区别是：在Repeatable Read隔离级别下当执行第一个SELECT语句时才会创建Read View，而在Read Committed隔离级别下每次执行SELECT语句都会重新创建Read View。在这一点上Read Committed会消耗更多的资源。
 
+## 当前读
+
+需要注意的是，只有普通的查询语句才遵循以上规则，当我们在事务中对数据进行更新时才会采用“当前读”的规则，看下面的例子。
+
+我们首先创建一张表，并往里插入一条数据。
+
+```sql
+CREATE TABLE `test` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `value` int(11) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+)
+
+INSERT INTO test (value) VALUES (1);
+
++----+-------+
+| id | value |
++----+-------+
+|  1 |     1 |
++----+-------+
+```
+
+我们开两个会话分别进行以下的操作。
+
+![](resources/mvcc_3.jpg)
+
+可以看到在T2时刻Session B把`value`的值更新为2并提交了事务，随后Session A查询出的`value`的值依然是事务开始时的1，但是随后Session A也更新`value`的值，此时T6时刻却发现`value`的值是3而不是2，也就是说Session A读到了Session B提交的值，那是不是就违背了可重复度的规则呢？实际上更新数据采用了“当前读”的规则，更新操作基于记录的最新版本，而不是事务开始时的版本，此外，如果使用`SELECT FOR UPDATE`语句也会采用“当前读”的规则。
+
 ## 参考
 
 1. [《MySQL-InnoDB-MVCC多版本并发控制》](https://segmentfault.com/a/1190000012650596)
