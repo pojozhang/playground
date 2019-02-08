@@ -7,19 +7,22 @@ matrix:
     - rm -fr $HOME/.gradle/caches/*/plugin-resolution/
     cache:
       directories:
-      - "$HOME/.gradle/caches/"
-      - "$HOME/.gradle/wrapper/"
+      - $HOME/.gradle/caches/
+      - $HOME/.gradle/wrapper/
     before_script:
     - cd solutions/java
     script:
-    - "./gradlew clean startAllServices build stopAllServices"
+    - ./gradlew clean startAllServices build stopAllServices
+    after_script:
+    - mkdir -p build/travis/java
+    - cp -r build/reports build/travis/java
     deploy:
       provider: pages
       skip-cleanup: true
       github-token: $GITHUB_TOKEN
       keep-history: true
       repo: pojozhang/playground-report
-      local-dir: solutions/java/build/reports
+      local-dir: solutions/java/build/travis
       verbose: true
       on:
         branch: master
@@ -29,11 +32,11 @@ matrix:
     go: 1.11.x
     go_import_path: playground
     install:
-    - export GOPATH="${TRAVIS_BUILD_DIR}/solutions/go/"
+    - export GOPATH=${TRAVIS_BUILD_DIR}/solutions/go/
     before_script:
     - cd solutions/go/src/playground
     - go get -u github.com/golang/dep/cmd/dep
-    - "$GOPATH/bin/dep ensure"
+    - $GOPATH/bin/dep ensure
     script:
     - go test ./... -v
   - language: python
