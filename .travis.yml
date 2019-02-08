@@ -19,7 +19,7 @@ matrix:
       github-token: $GITHUB_TOKEN
       keep-history: true
       repo: pojozhang/playground-report
-      local-dir: build/reports
+      local-dir: solutions/java/build/reports
       verbose: true
       on:
         branch: master
