@@ -1,6 +1,6 @@
 ![](logo.jpg)
 
-[![Build Status](https://travis-ci.org/pojozhang/playground.svg?branch=master)](https://travis-ci.org/pojozhang/playground) ![](https://img.shields.io/badge/test-report-blue.svg?link=https://pojozhang.github.io/playground-report) ![](https://img.shields.io/github/last-commit/pojozhang/playground.svg) ![GitHub language count](https://img.shields.io/github/languages/count/pojozhang/playground.svg) ![GitHub contributors](https://img.shields.io/github/contributors/pojozhang/playground.svg) ![GitHub commit activity the past week, 4 weeks, year](https://img.shields.io/github/commit-activity/w/pojozhang/playground.svg) ![GitHub repo size in bytes](https://img.shields.io/github/repo-size/pojozhang/playground.svg)
+[![Build Status](https://travis-ci.org/pojozhang/playground.svg?branch=master)](https://travis-ci.org/pojozhang/playground) [![444](https://img.shields.io/badge/test-report-blue.svg)](https://pojozhang.github.io/playground-report) ![](https://img.shields.io/github/last-commit/pojozhang/playground.svg) ![GitHub language count](https://img.shields.io/github/languages/count/pojozhang/playground.svg) ![GitHub contributors](https://img.shields.io/github/contributors/pojozhang/playground.svg) ![GitHub commit activity the past week, 4 weeks, year](https://img.shields.io/github/commit-activity/w/pojozhang/playground.svg) ![GitHub repo size in bytes](https://img.shields.io/github/repo-size/pojozhang/playground.svg)
 
 - [数据结构](problems/structure/README.md)
 - [算法](problems/algorithm/README.md)
