@@ -13,20 +13,8 @@ matrix:
         - cd solutions/java
       script:
         - ./gradlew clean startAllServices build stopAllServices
-      before_deploy:
-        - pwd
-        - mkdir -p solutions/java/build/travis/java
-        - cp -r solutions/java/build/reports solutions/java/build/travis/java
-      deploy:
-        provider: pages
-        skip-cleanup: true
-        github-token: $GITHUB_TOKEN
-        keep-history: true
-        repo: pojozhang/playground-report
-        local-dir: solutions/java/build/travis
-        verbose: true
-        on:
-          branch: master
+      after_script:
+        - sh .travis.sh
       services:
         - docker
     - language: go
