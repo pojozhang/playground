@@ -8,7 +8,7 @@
 - [聚簇索引](clustered-index.md)
 - [哈希索引](hash-index.md)
 - [前缀索引](prefix-index.md)
-- [Gap锁](gap-lock.md)
+- [间隙锁](gap-lock.md)
 - [为什么索引使用B+树](b-tree.md)
 - [MVCC](mvcc.md)
 - [事务](transaction.md)
