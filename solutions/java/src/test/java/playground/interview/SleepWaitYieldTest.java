@@ -4,6 +4,7 @@ import static org.awaitility.Awaitility.await;
 
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
+
 import org.awaitility.Duration;
 import org.junit.jupiter.api.Test;
 
@@ -42,8 +43,8 @@ class SleepWaitYieldTest {
         threadB.start();
 
         await().atLeast(Duration.ONE_SECOND)
-            .atMost(Duration.TEN_SECONDS)
-            .until(() -> latch.getCount() == 0);
+                .atMost(Duration.TEN_SECONDS)
+                .until(() -> latch.getCount() == 0);
     }
 
     /*
@@ -64,7 +65,7 @@ class SleepWaitYieldTest {
         thread.start();
 
         await().atMost(Duration.FIVE_SECONDS)
-            .until(() -> thread.getState() == Thread.State.TIMED_WAITING);
+                .until(() -> thread.getState() == Thread.State.TIMED_WAITING);
     }
 
     /*
@@ -100,5 +101,37 @@ class SleepWaitYieldTest {
                 break;
             }
         }
+    }
+
+    /*
+     * wait()方法会释放对象上的锁。
+     * wait()、notify()、notifyAll()方法都必须写在同步块中，否则运行时抛出java.lang.IllegalMonitorStateException异常。
+     */
+    @Test
+    void wait_notify() throws InterruptedException {
+        Object lock = new Object();
+
+        Thread waitThread = new Thread(() -> {
+            synchronized (lock) {
+                try {
+                    lock.wait();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+        waitThread.start();
+
+        Thread.sleep(2000);
+
+        Thread notifyThread = new Thread(() -> {
+            synchronized (lock) {
+                lock.notify();
+            }
+        });
+        notifyThread.start();
+
+        waitThread.join(5000);
+        notifyThread.join(5000);
     }
 }
