@@ -11,6 +11,7 @@ import org.elasticsearch.action.bulk.BulkRequest;
 import org.elasticsearch.action.index.IndexRequest;
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
+import org.elasticsearch.action.support.WriteRequest;
 import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestClient;
 import org.elasticsearch.client.RestClientBuilder;
@@ -38,22 +39,20 @@ import static org.elasticsearch.index.query.functionscore.ScoreFunctionBuilders.
 
 public class ArticleRecommendation implements Closeable {
 
-    private static final String ARTICLE_INDEX = "article";
-    private RestHighLevelClient client;
+    private final String index;
+    private final RestHighLevelClient client;
 
-    public ArticleRecommendation() {
+    public ArticleRecommendation(String index) {
         RestClientBuilder restClientBuilder = RestClient.builder(new HttpHost("localhost", 9200, "http"));
         this.client = new RestHighLevelClient(restClientBuilder);
+        this.index = index;
     }
 
     public void createArticles(List<Article> articles) throws IOException {
         BulkRequest request = new BulkRequest();
-        articles.forEach(article -> request.add(article.buildIndexRequest()));
+        request.setRefreshPolicy(WriteRequest.RefreshPolicy.IMMEDIATE);
+        articles.forEach(article -> request.add(article.buildIndexRequest(this.index)));
         this.client.bulk(request, RequestOptions.DEFAULT);
-    }
-
-    public void createArticle(Article article) throws IOException {
-        this.client.index(article.buildIndexRequest(), RequestOptions.DEFAULT);
     }
 
     public Page<Article> recommend(String[] tags, Date date, Pageable pageable) throws IOException {
@@ -61,7 +60,7 @@ public class ArticleRecommendation implements Closeable {
         request.setTags(tags);
         request.setCreateTime(date);
 
-        SearchResponse response = this.client.search(request.buildRecommendationRequest(pageable), RequestOptions.DEFAULT);
+        SearchResponse response = this.client.search(request.buildRecommendationRequest(this.index, pageable), RequestOptions.DEFAULT);
         SearchHits searchHits = response.getHits();
         return new PageImpl<>(
                 Arrays.stream(searchHits.getHits())
@@ -71,9 +70,9 @@ public class ArticleRecommendation implements Closeable {
 
     public void clean() throws IOException {
         GetIndexRequest request = new GetIndexRequest();
-        request.indices(ARTICLE_INDEX);
+        request.indices(index);
         if (this.client.indices().exists(request, RequestOptions.DEFAULT)) {
-            this.client.indices().delete(new DeleteIndexRequest(ARTICLE_INDEX), RequestOptions.DEFAULT);
+            this.client.indices().delete(new DeleteIndexRequest(index), RequestOptions.DEFAULT);
         }
     }
 
@@ -93,17 +92,17 @@ public class ArticleRecommendation implements Closeable {
         private String[] tags;
         private Date createTime;
 
-        private IndexRequest buildIndexRequest() {
+        private IndexRequest buildIndexRequest(String index) {
             Map<String, Object> source = new HashMap<>();
             source.put("title", title);
             source.put("content", content);
             source.put("tags", tags);
             source.put("createTime", createTime);
-            return new IndexRequest(ARTICLE_INDEX, ARTICLE_INDEX, id).source(source);
+            return new IndexRequest(index, index, id).source(source);
         }
 
-        private SearchRequest buildRecommendationRequest(Pageable pageable) {
-            SearchRequest searchRequest = new SearchRequest(ARTICLE_INDEX);
+        private SearchRequest buildRecommendationRequest(String index, Pageable pageable) {
+            SearchRequest searchRequest = new SearchRequest(index);
             SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
             BoolQueryBuilder boolQueryBuilder = boolQuery().must(matchAllQuery())
                     .should(rangeQuery("createTime").gte(this.createTime).boost(1000))
