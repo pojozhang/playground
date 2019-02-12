@@ -3,7 +3,7 @@ git config --global user.name "Travis CI"
 
 git clone https://$GITHUB_TOKEN@github.com/pojozhang/playground-report
 mkdir -p playground-report/java/
-cp -r build/reports playground-report/java/reports
+cp -r build/reports playground-report/java
 cd playground-report
 git add *
 git commit --message "Travis build: $TRAVIS_BUILD_NUMBER"
