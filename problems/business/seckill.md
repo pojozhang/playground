@@ -42,4 +42,4 @@ UPDATE item SET inventory = inventory - 1 WHERE id = 1 AND inventory >= 1;
 
 ### 数据一致性
 
-由于下单和减库存操作通常是归属于订单和库存两个服务，因此这里存在一个分布式事务数据一致性的问题，比如减库存操作成功但是订单创建失败，可以参考[TCC](https://github.com/pojozhang/playground/blob/master/problems/architecture/try-confirm-cancel.md)一文解决此类问题。
+由于下单和减库存操作通常是归属于订单和库存两个服务，因此这里存在一个分布式事务数据一致性的问题，比如减库存操作成功但是订单创建失败，可以参考[TCC](https://github.com/pojozhang/playground/blob/master/problems/distribution-system/try-confirm-cancel.md)一文解决此类问题。

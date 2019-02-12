@@ -1,4 +1,4 @@
-# 架构
+# 分布式系统
 
 - [CAP理论](cap.md)
 - [BASE理论](base.md)
