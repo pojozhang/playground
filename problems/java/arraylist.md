@@ -1,6 +1,6 @@
 # ArrayList
 
-![版本](https://img.shields.io/badge/java-10-red.svg)
+![版本](https://img.shields.io/badge/java-10-blue.svg)
 
 `ArrayList`是最常用的集合类之一，它实现了`RandomAccess`、`Cloneable`、`Serializable`接口，说明它具备随机访问、可复制、可序列化的功能，通过IDE我们可以看到该类的层次结构如下图所示：
 

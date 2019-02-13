@@ -1,6 +1,6 @@
 # ConcurrentHashMap
 
-![版本](https://img.shields.io/badge/java-10-red.svg)
+![版本](https://img.shields.io/badge/java-10-blue.svg)
 
 `ConcurrentHashMap`具有`HashMap`同样的功能，但它是线程安全的，其层次结构如下。
 

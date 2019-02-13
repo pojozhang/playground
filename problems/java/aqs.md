@@ -1,6 +1,6 @@
 # AQS
 
-![版本](https://img.shields.io/badge/java-11-red.svg)
+![版本](https://img.shields.io/badge/java-11-blue.svg)
 
 `AQS`是队列同步器`AbstractQueuedSynchronizer`类的缩写，它本身是一个抽象类，提供了一种框架来实现锁（如`ReentrantLock`、`ReentrantReadWriteLock`）和同步器（如`Semaphore`、`CountDownLatch`）。
 

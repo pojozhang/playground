@@ -1,6 +1,6 @@
 # 锁
 
-![版本](https://img.shields.io/badge/java-11-red.svg)
+![版本](https://img.shields.io/badge/java-11-blue.svg)
 
 JDK中锁的实现基于[AQS](aqs.md)框架，因此在看本文前需要对AQS有一定的了解。
 

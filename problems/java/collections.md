@@ -1,6 +1,6 @@
 # Collections
 
-![版本](https://img.shields.io/badge/java-10-red.svg)
+![版本](https://img.shields.io/badge/java-10-blue.svg)
 
 ## nCopies(int, T)
 

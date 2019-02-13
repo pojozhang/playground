@@ -1,6 +1,6 @@
 # LinkedList
 
-![版本](https://img.shields.io/badge/java-10-red.svg)
+![版本](https://img.shields.io/badge/java-10-blue.svg)
 
 `LinkedList`是一个底层使用双向链表实现的列表，它实现了`List`和`Deque`接口说明它既可以作为一个列表使用，又可以作为双端队列使用。`List`和`Deque`的区别是前者可以通过索引定位到元素，后者可以同时在集合首尾增加或删除元素，从而实现先进先出的队列或是后进先出的栈。它没有实现`RandomAccess`接口，这表示它不支持随机访问，只支持顺序访问，这是它和`ArrayList`最大的区别。
 

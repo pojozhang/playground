@@ -1,6 +1,6 @@
 # HashSet
 
-![版本](https://img.shields.io/badge/java-10-red.svg)
+![版本](https://img.shields.io/badge/java-10-blue.svg)
 
 `HashMap`是一种常见的`Set`接口的实现，不包含重复的元素，其层次结构如下。
 

@@ -1,6 +1,6 @@
 # 动态代理
 
-![版本](https://img.shields.io/badge/java-10-red.svg)
+![版本](https://img.shields.io/badge/java-10-blue.svg)
 
 下面是一个简单的动态代理的例子。
 
