@@ -23,11 +23,11 @@ public class SerializationTest {
         assertNull(pair.value);
     }
 
-    public static class Pair implements Serializable {
+    private static class Pair implements Serializable {
 
         private static final long serialVersionUID = -6789819854401951780L;
 
-        public Pair(String key, String value) {
+        private Pair(String key, String value) {
             this.key = key;
             this.value = value;
         }
