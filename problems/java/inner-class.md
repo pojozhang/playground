@@ -19,7 +19,7 @@ public static void main(String[] args) {
 }
 ```
 
-在一个内部类对象中`this`指的是内部类对象本身，如果要访问外部类对象，需要加上外部类的类名，如`OuterClass.this`。内部类对象可以访问所有外部类对象中的字段（包括private字段）。
+在一个内部类对象中`this`指的是内部类对象本身，如果要访问外部类对象，需要加上外部类的类名，如`OuterClass.this`。内部类对象可以访问所有外部类对象中的字段（包括`private`字段）。
 
 ```java
 class OuterClass {
@@ -62,11 +62,63 @@ class OuterClass {
 }
 ```
 
-内部类和字段一样也可以被`private`,`protected`,`public`等修饰（或者默认）且含义相同。
+内部类的访问权限和字段一样也可以是`public`、`private`、`protected`以及默认的包访问权限。
 
-内部类 **不允许** 有静态变量或静态方法。
+在下面的例子中，我们有一个`protected`访问权限的内部类`InnerClass`，如果我们需要在另一个包中创建该类的对象，首先要让外部类（`AnotherOuterClass`）继承`InnerClass`的外部类`OuterClass`，需要注意的是，如果一个内部类是`protected`的访问权限，那么它的默认构造器也是`protected`权限，因此，当`AnotherOuterClass`继承`OuterClass`后，虽然`AnotherOuterClass`可以看到`InnerClass`，但是无法进行创建`InnerClass`的对象，所以一个解决方案是在`AnotherOuterClass`中创建一个内部类`AnotherInnerClass`继承`InnerClass`。
 
-内部类 **允许** 多层嵌套。
+```java
+// package playground.a
+public class OuterClass {
+
+    protected class InnerClass {
+    }
+}
+
+public class AnotherOuterClass extends OuterClass {
+
+    class AnotherInnerClass extends InnerClass {
+    }
+
+    public static void main(String[] args) {
+        new AnotherOuterClass().new AnotherInnerClass();
+    }
+}
+```
+
+另一个更简单的解决方案是在`InnerClass`中增加一个`public`的构造器。
+
+```java
+// package playground.a
+public class OuterClass {
+
+    protected class InnerClass {
+
+        public InnerClass() {
+        }
+    }
+}
+
+// package playground.b
+public class AnotherOuterClass extends OuterClass {
+
+    public static void main(String[] args) {
+        new AnotherOuterClass().new InnerClass();
+    }
+}
+```
+
+内部类**不允许**静态变量、静态方法、接口或枚举，下面的代码无法通过编译。
+
+```java
+public class OuterClass {
+    class InnerClass {
+        interface Interface {
+        }
+    }
+}
+```
+
+内部类**允许**多层嵌套。
 
 ```java
 class OuterClass {
@@ -144,7 +196,7 @@ class OuterClass {
 
 ## 匿名类
 
-匿名类就是没有名字的类，下面是一个实现了`Runnable`接口的匿名类。匿名类中 **不允许** 静态方法或静态字段。
+匿名类就是没有名字的类，下面是一个实现了`Runnable`接口的匿名类。匿名类中**不允许**静态方法或静态字段。
 
 ```java
 new Runnable() {
