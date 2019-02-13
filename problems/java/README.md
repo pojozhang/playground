@@ -17,7 +17,7 @@
 - [多态](polymorphism.md)
 - [内部类](inner-class.md)
 - [字符串](string.md)
-- [类型](class.md)
+- [反射](reflection.md)
 - [泛型](generics.md)
 
 ## 多线程
