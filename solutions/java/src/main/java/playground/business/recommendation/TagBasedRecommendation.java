@@ -40,18 +40,19 @@ import static org.elasticsearch.index.query.functionscore.ScoreFunctionBuilders.
 
 public class TagBasedRecommendation {
 
-    private final static String FIELD_TAGS = "tags";
+    private static final String FIELD_TAGS = "tags";
     private final RestHighLevelClient client;
     private final Map<String, Class<? extends TaggedItem>> indexItemMapping;
     private final Map<Class<? extends TaggedItem>, String> itemIndexMapping;
 
-    public TagBasedRecommendation(Map<String, Class<? extends TaggedItem>> mapping) {
+    TagBasedRecommendation(Map<String, Class<? extends TaggedItem>> mapping) {
         RestClientBuilder restClientBuilder = RestClient.builder(new HttpHost("localhost", 9200, "http"));
         this.client = new RestHighLevelClient(restClientBuilder);
         this.indexItemMapping = mapping;
         this.itemIndexMapping = mapping.entrySet().stream().collect(Collectors.toMap(Map.Entry::getValue, Map.Entry::getKey));
     }
 
+    @SuppressWarnings("unchecked")
     public <T extends TaggedItem> Page<T> list(Class<T> itemClass, String[] tags, Date decay, Pageable pageable) throws IOException {
         return (Page<T>) this.list(List.of(itemClass), tags, decay, pageable);
     }
@@ -120,7 +121,7 @@ public class TagBasedRecommendation {
         this.client.bulk(request, RequestOptions.DEFAULT);
     }
 
-    protected IndexRequest buildIndexRequest(TaggedItem item) {
+    private IndexRequest buildIndexRequest(TaggedItem item) {
         String index = itemIndexMapping.get(item.getClass());
         Map<String, Object> source = item.source();
         source.put("id", item.getId());
@@ -129,7 +130,7 @@ public class TagBasedRecommendation {
         return new IndexRequest(index, index, item.getId()).source(source);
     }
 
-    public void clean() throws IOException {
+    void clean() throws IOException {
         for (String index : itemIndexMapping.values()) {
             GetIndexRequest request = new GetIndexRequest();
             request.indices(index);
@@ -139,7 +140,7 @@ public class TagBasedRecommendation {
         }
     }
 
-    public void close() throws IOException {
+    void close() throws IOException {
         if (this.client != null) {
             this.client.close();
         }
