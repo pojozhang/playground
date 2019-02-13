@@ -19,6 +19,7 @@
 - [字符串](string.md)
 - [反射](reflection.md)
 - [泛型](generics.md)
+- [序列化](serialization.md)
 
 ## 多线程
 
