@@ -198,7 +198,6 @@ CAS操作需要先进行对比，然后进行交换，但是如果一个值从A�
 ![](resources/cas_8.png)
 
 Java中可以使用`java.util.concurrent.atomic.AtomicStampedReference`类解决。
-**对于一般的场景，CAS是CPU执行的原子操作，因此通常不必担心会遇到A-B-A的问题。**
 
 ### CPU负载问题
 
