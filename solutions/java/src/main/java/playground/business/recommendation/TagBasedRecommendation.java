@@ -61,8 +61,7 @@ public class TagBasedRecommendation {
         SearchResponse response = this.client.search(buildRecommendationRequest(indices(itemClasses), tags, decay, pageable), RequestOptions.DEFAULT);
         SearchHits searchHits = response.getHits();
         return new PageImpl<>(
-                Arrays.stream(searchHits.getHits())
-                        .map(this::parse).collect(Collectors.toList()),
+                Arrays.stream(searchHits.getHits()).map(this::parse).collect(Collectors.toList()),
                 pageable, searchHits.getTotalHits());
     }
 
@@ -75,21 +74,17 @@ public class TagBasedRecommendation {
     }
 
     private SearchRequest buildRecommendationRequest(String[] indices, String[] tags, Date decay, Pageable pageable) {
-        SearchRequest searchRequest = new SearchRequest(indices);
-        SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
+        SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder().from((int) pageable.getOffset())
+                .size(pageable.getPageSize());
+
         BoolQueryBuilder boolQueryBuilder = boolQuery().must(matchAllQuery())
                 .should(rangeQuery("createTime").gte(decay).boost(1000))
                 .minimumShouldMatch(0);
 
-        if (ArrayUtils.isEmpty(tags)) {
-            searchSourceBuilder.query(QueryBuilders.functionScoreQuery(boolQueryBuilder));
-        } else {
-            searchSourceBuilder.query(QueryBuilders.functionScoreQuery(boolQueryBuilder, tagFilterFunctionBuilder(tags))
-                    .scoreMode(MULTIPLY).boostMode(SUM));
-        }
-        searchSourceBuilder.from((int) pageable.getOffset()).size(pageable.getPageSize());
-        searchRequest.source(searchSourceBuilder);
-        return searchRequest;
+        searchSourceBuilder.query(QueryBuilders.functionScoreQuery(boolQueryBuilder, tagFilterFunctionBuilder(tags))
+                .scoreMode(MULTIPLY).boostMode(SUM));
+
+        return new SearchRequest(indices).source(searchSourceBuilder);
     }
 
     private FunctionScoreQueryBuilder.FilterFunctionBuilder[] tagFilterFunctionBuilder(String[] tags) {
