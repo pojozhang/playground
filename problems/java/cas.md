@@ -123,7 +123,7 @@ UNSAFE_ENTRY(jboolean, Unsafe_CompareAndSetInt(JNIEnv *env, jobject unsafe, jobj
 } UNSAFE_END
 ```
 
-主要是通过`Atomic::cmpxchg`这个方法来进行比较和交换，然而这个方法在不同硬件平台下有不同的实现，比如Windows、Solaris在x86上的实现、Linux在ARM上的实现等。
+主要是通过`Atomic::cmpxchg`这个方法来进行比较和交换，该方法在不同硬件平台下有不同的实现，比如在Windows x86、Solaris x86、Linux ARM等平台上都有不同的实现。
 
 这里我们只看下Linux在x86架构上的实现，你可以在[这里](https://github.com/unofficial-openjdk/openjdk/blob/jdk9/jdk9/hotspot/src/os_cpu/linux_x86/vm/atomic_linux_x86.hpp)找到源码。
 
@@ -183,7 +183,7 @@ asm ( assembler template
 
 现代处理器通过缓存一致性协议来实现同样的功能，比如X86使用基于`MESI`协议改进后的`MESIF`协议。其主要思路是每个核心都知道其它核心的缓存状态，当多个核心同时执行`cmpxchgl`指令时，它们都会试图去修改同一内存地址在各自缓存中的副本，这时它们都会向环形总线（Ring Bus）发送消息，让其它核心这部分的缓存失效。环形总线会进行仲裁，决定是哪个核心可以使其它核心的缓存失效，没有被选中的那个核心会让自己的缓存失效，并且读取被选中的核心修改后的值。
 
-![](resources/cas_6.jpeg)
+![](resources/cas_6.jpg)
 
 ## 存在的问题
 
