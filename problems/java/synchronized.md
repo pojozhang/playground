@@ -123,7 +123,7 @@ Mark Word是JVM实现轻量级锁的关键，包含哈希码、GC分代年龄等
 
 ![Mark Word](resources/synchronized_2.png)
 
-在了解了Mark Word后，让我们回到轻量级锁的实现上。当一个线程进入同步块后，如果锁对象处于未锁定状态，JVM会在当前线程的栈帧中建立一个称为Lock Record的空间用来存储锁对象当前的Mark Word的拷贝（该副本被称为Displaced Mark Word）。
+在了解了Mark Word后，让我们回到轻量级锁的实现上。当一个线程进入同步块后，如果锁对象处于未锁定状态，JVM会在当前线程的栈帧中建立一个称为Lock Record的空间用来存储锁对象当前的Mark Word的拷贝，该副本被称为Displaced Mark Word。
 
 ![](resources/synchronized_3.png)
 
