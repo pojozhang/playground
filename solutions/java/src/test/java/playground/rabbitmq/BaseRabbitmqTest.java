@@ -65,7 +65,6 @@ abstract class BaseRabbitmqTest {
         declaredQueues.forEach(queue -> {
             try {
                 channel.queueDelete(queue);
-                consumerQueues.remove(queue);
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -86,7 +85,12 @@ abstract class BaseRabbitmqTest {
             }
             consumerQueues.put(queue, new LinkedBlockingQueue<>());
             channel.basicConsume(queue, false,
-                    (consumerTag, message) -> consumerQueues.get(queue).add(message),
+                    (consumerTag, message) -> {
+                        BlockingQueue<Delivery> deliveryQueue = consumerQueues.get(queue);
+                        if (deliveryQueue != null) {
+                            deliveryQueue.add(message);
+                        }
+                    },
                     consumerTag -> {
                     });
         }
