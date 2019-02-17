@@ -31,7 +31,7 @@
 - [synchronized](synchronized.md)
 - [AQS](aqs.md)
 - [锁](lock.md)
-- [wait()、notify() 和 notifyAll()](wait-notify-notifyAll.md)
+- [wait()、notify()和notifyAll()](wait-notify-notifyAll.md)
 - ForkJoinPool
 
 ## 集合
