@@ -1,6 +1,6 @@
 # 字符串
 
-本文中的示例代码可以在[这里](https://github.com/pojozhang/playground/blob/master/solutions/java/src/test/java/playground/interview/StringTest.java)查看。
+> 本文中的示例代码可以在[这里](https://github.com/pojozhang/playground/blob/master/solutions/java/src/test/java/playground/interview/StringTest.java)查看。
 
 ## 字符串的连接
 

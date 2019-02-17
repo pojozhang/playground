@@ -1,6 +1,6 @@
 # wait()、notify()和notifyAll()
 
-本文中的示例代码可以在[这里](https://github.com/pojozhang/playground/blob/master/solutions/java/src/test/java/playground/interview/WaitNotifyTest.java)查看。
+> 本文中的示例代码可以在[这里](https://github.com/pojozhang/playground/blob/master/solutions/java/src/test/java/playground/interview/WaitNotifyTest.java)查看。
 
 Java中使用`Object`类中的`wait()`、`notify()`和`notifyAll()`方法进行线程间通信，这三个方法都必须在同步块中执行。
 
