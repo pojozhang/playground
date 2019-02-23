@@ -79,7 +79,7 @@ public ConcurrentHashMap(int initialCapacity,
     // 检查参数合法性。
     if (!(loadFactor > 0.0f) || initialCapacity < 0 || concurrencyLevel <= 0)
         throw new IllegalArgumentException();
-    // 这段代码的目的也是设置sizeCtl字段的值。
+    // 设置sizeCtl字段的值。
     if (initialCapacity < concurrencyLevel)
         initialCapacity = concurrencyLevel;
     long size = (long)(1.0 + (long)initialCapacity / loadFactor);
@@ -374,7 +374,7 @@ static final int resizeStamp(int n) {
 }
 ```
 
-在理解该方法的功能之前，我们先举一个例子。假设n=16时，其二进制表示是`0000000000000000 0000000000010000`,`Integer.numberOfLeadingZeros(n)`方法的作用是获取参数`n`的二进制表示中从最左边开始连续的0的个数，因此这里`Integer.numberOfLeadingZeros(16)`的值是27，其二进制表示是`0000000000000000 0000000000011011`。`1 << (RESIZE_STAMP_BITS - 1)`的值是32768，其二进制表示是`0000000000000000 1000000000000000`，`27 | 32768`的值的二进制表示是`0000000000000000 1000000000011011`。那么这个看似毫无意义的二进制有什么用呢？我们回过头来看`addCount()`方法中的一段代码。
+在理解该方法的功能之前，我们先举一个例子。假设n=16时，其二进制表示是`0000000000000000 0000000000010000`，`Integer.numberOfLeadingZeros(n)`方法的作用是获取参数`n`的二进制表示中从最左边开始连续的0的个数，因此这里`Integer.numberOfLeadingZeros(16)`的值是27，其二进制表示是`0000000000000000 0000000000011011`。`1 << (RESIZE_STAMP_BITS - 1)`的值是32768，其二进制表示是`0000000000000000 1000000000000000`，`27 | 32768`的值的二进制表示是`0000000000000000 1000000000011011`。那么这个看似毫无意义的二进制有什么用呢？我们回过头来看`addCount()`方法中的一段代码。
 
 ```java
 // RESIZE_STAMP_SHIFT是值为16的常量。
