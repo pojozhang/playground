@@ -1,0 +1,8 @@
+version: 1
+update_configs:
+  - package_manager: "java:gradle"
+    directory: "/solutions/java"
+    update_schedule: "daily"
+  - package_manager: "go:dep"
+    directory: "/solutions/go/src/playground"
+    update_schedule: "daily"
