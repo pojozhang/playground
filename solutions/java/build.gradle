@@ -40,7 +40,7 @@ dependencies {
             'com.google.guava:guava:27.0.1-jre',
             'com.alibaba:fastjson:1.2.56',
             'cglib:cglib-full:2.0.2',
-            'guru.nidi:graphviz-java:0.8.2',
+            'guru.nidi:graphviz-java:0.8.3',
             'com.rabbitmq:amqp-client:5.6.0',
             'com.rabbitmq:http-client:3.1.1.RELEASE',
             'org.apache.httpcomponents:httpclient:4.5.7',
@@ -52,13 +52,13 @@ dependencies {
     )
 
     runtimeOnly(
-            'com.h2database:h2:1.4.197',
+            'com.h2database:h2:1.4.198',
     )
 
     testImplementation(
-            "org.junit.jupiter:junit-jupiter-api:$junitVersion",
             'org.assertj:assertj-core:3.12.0',
             'org.awaitility:awaitility:3.1.6',
+            "org.junit.jupiter:junit-jupiter-api:$junitVersion",
             "org.springframework.boot:spring-boot-starter-test:$springBootVersion",
     )
 
