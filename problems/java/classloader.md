@@ -107,7 +107,7 @@ public int getM();
 1. 解析第1个`index`指向的`CONSTANT_Class_info`类型的常量。虚拟机会把`CONSTANT_Class_info`类型常量表示的全限定名交给类加载器加载目标类，这一过程中可能需要加载基类和接口，因此这是一个递归的过程。如果目标类是数组类型，虚拟机还会进行额外的处理。
 2. 虚拟机会在上一步解析完成的类中搜索简单名称和描述符斗鱼目标字段匹配的字段，如果存在就返回这个字段的直接引用。
 3. 否则，虚拟机会从目标类的接口中进行查找，按照继承关系，从下往上递归搜索，如果存在就返回这个字段的直接引用。
-4. 否则，虚拟机会从目标累的基类中进行查找，按照继承关系，从下往上递归搜索，直到`java.lang.Object`，如果存在就返回这个字段的直接引用。
+4. 否则，虚拟机会从目标类的基类中进行查找，按照继承关系，从下往上递归搜索，直到`java.lang.Object`，如果存在就返回这个字段的直接引用。
 5. 如果找不到匹配的字段，就抛出`java.lang.NoSuchFieldError`异常。
 6. 如果找到了匹配的字段，就会检查是否具备对该字段的访问权限，如果不符合则抛出`java.lang.IllegalAccessError`异常。
 
@@ -334,9 +334,9 @@ protected Class<?> loadClass(String name, boolean resolve)
         return c;
     }
 }
+```
 
 双亲委派模型的好处是可以避免一个类被重复加载，比如`java.lang.Object`类，任何类加载器想要加载它最终都会委托给启动类加载器，因此只会加载一次。
-```
 
 ## 加载类的方式
 
@@ -350,7 +350,7 @@ protected Class<?> loadClass(String name, boolean resolve)
 
 对于任意一个类来说，它的类加载器和它本身共同确定它在虚拟机中的唯一性。也就是说如果两个类都在同一个类加载器下，来自同一个类文件，那么它们就是相同的，否则，在不同类加载器下，即使来自同一个类文件，它们也是两个不同的类。我们可以把类加载器看成类文件的命名空间，不同命名空间中类相互是没有关系的。
 
-下面来看一个例子。首先我们创建一个空的类`ClassLoaderTest`，用`javac`进行编译后得到`ClassLoaderTest.class`文件。
+下面来看一个例子，首先我们创建一个空的类`ClassLoaderTest`，用`javac`进行编译后得到`ClassLoaderTest.class`文件。
 
 ```java
 public class ClassLoaderTest {
