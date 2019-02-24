@@ -79,7 +79,7 @@
 - [Spring Aop](spring-aop.md)
 - [IOC](spring-ioc.md)
 - [事务](spring-transaction.md)
-- Eureka的心跳机制
+- Eureka
 
 ## 其它框架
 
