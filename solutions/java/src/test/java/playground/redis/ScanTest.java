@@ -2,6 +2,7 @@ package playground.redis;
 
 import io.lettuce.core.KeyScanCursor;
 import io.lettuce.core.ScanArgs;
+import org.apache.commons.lang3.ArrayUtils;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -22,7 +23,10 @@ class ScanTest extends BaseRedisTest {
             } else {
                 cursor = syncCommand.scan(cursor, scanArgs);
             }
-            syncCommand.del(cursor.getKeys().toArray(new String[0]));
+            String[] keys = cursor.getKeys().toArray(new String[0]);
+            if (ArrayUtils.isNotEmpty(keys)) {
+                syncCommand.del();
+            }
         } while (!cursor.isFinished());
 
         assertEquals(0, syncCommand.keys("key**").size());
