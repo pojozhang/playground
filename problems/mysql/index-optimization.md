@@ -326,13 +326,32 @@ explain select rental_id
 3. 查询的列不在索引中。比如以下查询的`staff_id`列不在索引中。
 
 ```sql
-explain select staff_id from rental where rental_date > '2005-05-25' order by rental_date;
+explain select staff_id
+        from rental
+        where rental_date > '2005-05-25'
+        order by rental_date;
 
 +----+-------------+--------+------------+------+---------------+------+---------+------+-------+----------+-----------------------------+
 | id | select_type | table  | partitions | type | possible_keys | key  | key_len | ref  | rows  | filtered | Extra                       |
 +----+-------------+--------+------------+------+---------------+------+---------+------+-------+----------+-----------------------------+
 |  1 | SIMPLE      | rental | NULL       | ALL  | rental_date   | NULL | NULL    | NULL | 16008 |    50.00 | Using where; Using filesort |
 +----+-------------+--------+------------+------+---------------+------+---------+------+-------+----------+-----------------------------+
+```
+
+同样的语句加上`limit`就可以利用索引。
+
+```sql
+explain select staff_id
+        from rental
+        where rental_date > '2005-05-25'
+        order by rental_date
+        limit 10;
+
++----+-------------+--------+------------+-------+---------------+-------------+---------+------+------+----------+-----------------------+
+| id | select_type | table  | partitions | type  | possible_keys | key         | key_len | ref  | rows | filtered | Extra                 |
++----+-------------+--------+------------+-------+---------------+-------------+---------+------+------+----------+-----------------------+
+|  1 | SIMPLE      | rental | NULL       | range | rental_date   | rental_date | 5       | NULL | 8002 |   100.00 | Using index condition |
++----+-------------+--------+------------+-------+---------------+-------------+---------+------+------+----------+-----------------------+
 ```
 
 4. 排序的列不在索引中。列`staff_id`不在索引中。
