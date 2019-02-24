@@ -25,7 +25,7 @@ class ScanTest extends BaseRedisTest {
             }
             String[] keys = cursor.getKeys().toArray(new String[0]);
             if (ArrayUtils.isNotEmpty(keys)) {
-                syncCommand.del();
+                syncCommand.del(keys);
             }
         } while (!cursor.isFinished());
 
