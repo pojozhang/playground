@@ -265,7 +265,7 @@ MOVED <slot> <ip>:<port>
 
 ### 例子
 
-#### 例子-快速搭建集群
+#### 快速搭建集群
 
 Linux上可以使用docker快速搭建一个有三个master节点的集群。
 
@@ -282,7 +282,7 @@ docker run --name redis3 --net=host -itd redis redis-server --port 6381 --cluste
 docker run --rm --net=host -it zvelo/redis-trib create  127.0.0.1:6379 127.0.0.1:6380 127.0.0.1:6381
 ```
 
-#### 例子-重新分片
+#### 重新分片
 
 ```bash
 # 新增1个redis节点
