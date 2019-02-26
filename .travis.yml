@@ -18,7 +18,7 @@ matrix:
       services:
         - docker
     - language: go
-      go: 1.11.x
+      go: 1.12.x
       go_import_path: playground
       install:
         - export GOPATH=${TRAVIS_BUILD_DIR}/solutions/go/
