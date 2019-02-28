@@ -56,7 +56,7 @@ dependencies {
     )
 
     testImplementation(
-            'org.assertj:assertj-core:3.12.0',
+            'org.assertj:assertj-core:3.12.1',
             'org.awaitility:awaitility:3.1.6',
             "org.junit.jupiter:junit-jupiter-api:$junitVersion",
             "org.springframework.boot:spring-boot-starter-test:$springBootVersion",
