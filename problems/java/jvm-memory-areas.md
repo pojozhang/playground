@@ -90,6 +90,10 @@ public static void main(String[] args) {
 
 直接内存比较特殊，它并不属于JVM内存区域一部分。直接内存伴随NIO而出现，可以使用本地方法直接在Java堆外分配内存，然后通过Java堆中的`DirectByteBuffer`对象作为这块内存的引用进行操作，这样可以避免在Java堆和本地堆中来回复制数据，提高性能。由于是在堆外分配的堆存，因此直接内存不受Java堆大小的限制，也不受`-Xmx`等参数的限制，但它受物理内存和操作系统的限制。
 
+## 参数
+
+- -XX:NewRatio，新生代和老年代的比例，默认-XX:NewRatio=2，表示新生代:老年代=1:2。
+
 ## 参考
 
 1. [JAVA的内存模型及结构](http://ifeve.com/under-the-hood-runtime-data-areas-javas-memory-model/)
