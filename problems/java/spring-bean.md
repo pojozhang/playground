@@ -56,6 +56,12 @@ private PrototypeBean prototypeBean;
 @Scope(value = WebApplicationContext.SCOPE_SESSION, proxyMode = ScopedProxyMode.TARGET_CLASS)
 ```
 
+## 初始化时机
+
+当Bean的作用域是`singleton`时，在Spring容器启动后就会对Bean进行初始化，即使该Bean并没有被注入到代码中的其它地方；如果Bean是懒加载的（`@Lazy`），当第一次获取Bean时才会进行初始化，也就说它至少需要被注入到代码的一个地方。
+
+当作用域是`prototype`时，每次调用Bean的方法时都会创建新的对象并初始化。
+
 ## 参考
 
 1. [《Injecting Prototype Beans into a Singleton Instance in Spring》](https://www.baeldung.com/spring-inject-prototype-bean-into-singleton)
