@@ -32,6 +32,7 @@
 - [AQS](aqs.md)
 - [锁](lock.md)
 - [wait()、notify()和notifyAll()](wait-notify-notifyAll.md)
+- [ThreadLocal](threadlocal.md)
 - ForkJoinPool
 
 ## 集合
