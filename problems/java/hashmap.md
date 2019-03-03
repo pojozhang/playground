@@ -521,6 +521,76 @@ public static void main(String[] args) {
 }
 ```
 
+## 死循环问题
+
+在用JDK6版本的HashMap时，如果有多个线程并发访问可能会导致死循环的问题。
+
+假设有一个HashMap，数组的容量为4，当前有3个键值对，已达到扩容的阈值，因此我们需要对它进行扩容。假设三个元素都在一个桶内，如下图所示。
+
+![](resources/hashmap_jdk6_1.jpg)
+
+以下是OpenJDK6中HashMap在扩容时进行键值对迁移的[源码](https://github.com/unofficial-openjdk/openjdk/blob/jdk6/jdk6/jdk/src/share/classes/java/util/HashMap.java)。
+
+```java
+void transfer(Entry[] newTable) {
+    Entry[] src = table;                                // (1)
+    int newCapacity = newTable.length;                  // (2)
+    for (int j = 0; j < src.length; j++) {              // (3)
+        Entry<K,V> e = src[j];                          // (4)
+        if (e != null) {                                // (5)
+            src[j] = null;                              // (6)
+            do {                                        // (7)
+                Entry<K,V> next = e.next;               // (8)
+                int i = indexFor(e.hash, newCapacity);  // (9)
+                e.next = newTable[i];                   // (10)
+                newTable[i] = e;                        // (11)
+                e = next;                               // (12)
+            } while (e != null);                        // (13)
+        }
+    }
+}
+```
+
+在单线程下，上面的代码会将图中的三个键值对进行迁移，假设迁移后三个键值对依然在同一个桶中，如下图所示。
+
+![](resources/hashmap_jdk6_2.jpg)
+
+那么在多线程下会发生什么呢？我们逐步进行分析。
+
+假设有两个线程分别对HashMap中的元素进行迁移，线程1在执行到第(8)行代码时失去CPU时间，此时线程2加入，并完成迁移，但在把新的数组替换原数组之前丢失了CPU时间，此时这两个线程的状态如下所示。
+
+![](resources/hashmap_jdk6_3.jpg)
+
+此时线程1重新拿到了CPU时间，从第(9)行代码开始继续执行。
+
+```java
+e.next = newTable[i];
+```
+
+这里的`newTable`是局部变量，两个线程私有的，因此线程1中的`newTable[i]`为`null`，而`e`指向节点A，因此`e.next`等价于把节点A的`next`设置为`null`。第(11)行语句将`newTable[i]`指向节点A，此时两个线程的状态如下所示。
+
+![](resources/hashmap_jdk6_4.jpg)
+
+进入下一轮循环后，变量`e`和`next`发生了变化。
+
+![](resources/hashmap_jdk6_5.jpg)
+
+经过这一轮后线程1中的`newTable[i]`指向节点B。
+
+![](resources/hashmap_jdk6_6.jpg)
+
+继续下一轮循环，变量`e`和`next`再次发生了变化。
+
+![](resources/hashmap_jdk6_7.jpg)
+
+此时，重点来了，第10行代码`e.next = newTable[i];`将节点A的`next`指向了`newTable[i]`处的节点，也就是节点B。
+
+![](resources/hashmap_jdk6_8.jpg)
+
+最后`next`的值赋给变量`e`，此时`next`是`null`，因此`e`是`null`，循环结束。
+
+可以看到在上面的例子中，节点A和节点B互相引用，形成了一个环，此时当我们调用`get()`方法取值时，如果键正好在节点A所在的链表中，那么对链表进行遍历搜索时就会造成死循环。
+
 ## 参考
 
 1. [《JDK1.8--HashMap》](https://www.jianshu.com/p/3287cd3cec4b)
