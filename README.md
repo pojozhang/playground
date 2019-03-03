@@ -6,6 +6,7 @@
 - [算法](problems/algorithm/README.md)
 - [设计模式](problems/design-pattern/README.md)
 - [代码练习](problems/coding-dojo/README.md)
+- [架构](problems/architecture/README.md)
 - [业务场景](problems/business/README.md)
 - [分布式系统](problems/distribution-system/README.md)
 - [网络](problems/net/README.md)
