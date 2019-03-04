@@ -21,6 +21,86 @@ public AnnotationConfigServletWebServerApplicationContext() {
 
 `AnnotatedBeanDefinitionReader`和`ClassPathBeanDefinitionScanner`最终会解析出Bean的配置信息，并封装成`BeanDefinition`对象注册到应用上下文中，最后通过反射创建对象，实现IOC。
 
+## 循环依赖
+
+当两个Bean互相依赖并使用构造方法注入时，就会发生循环依赖的问题。
+
+```java
+@Service
+public class ServiceA {
+
+    public ServiceA(ServiceB serviceB) {
+    }
+}
+
+@Service
+public class ServiceB {
+
+    public ServiceB(ServiceA serviceA) {
+    }
+}
+```
+
+有以下几种方法可以解决循环依赖的问题。
+
+1. 把其中一个Bean设置为懒加载。
+
+```java
+@Service
+public class ServiceA {
+
+    public ServiceA(@Lazy ServiceB serviceB) {
+    }
+}
+
+@Service
+public class ServiceB {
+
+    public ServiceB(ServiceA serviceA) {
+    }
+}
+```
+
+2. 使用Setter注入而不用构造方法注入。
+
+```java
+@Service
+public class ServiceA {
+
+    private ServiceB serviceB;
+
+    @Autowired
+    public void setServiceB(ServiceB serviceB) {
+        this.serviceB = serviceB;
+    }
+}
+
+@Service
+public class ServiceB {
+
+    public ServiceB(ServiceA serviceA) {
+    }
+}
+```
+
+3. 字段注入。
+
+```java
+@Service
+public class ServiceA {
+
+    @Autowired
+    private ServiceB serviceB;
+}
+
+@Service
+public class ServiceB {
+
+    @Autowired
+    private ServiceA serviceA;
+}
+```
+
 ## 参考
 
 1. [《Spring IOC 容器源码分析》](https://javadoop.com/post/spring-ioc)
