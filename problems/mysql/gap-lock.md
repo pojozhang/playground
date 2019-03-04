@@ -62,3 +62,68 @@ SET TRANSACTION ISOLATION LEVEL READ COMMITTED
 ```
 
 需要注意的是，**在可重复读的隔离级别下，只有“当前读”才会存在幻读的问题，比如`SELECT FOR UPDATE`或`UPDATE`语句，而普通查询`SELECT`语句是快照读，因此不存在幻读问题。**
+
+## 例子
+
+我们创建一张新的测试表，往里插入几条数据，使它变成下面的样子。
+
+```sql
+CREATE TABLE `user` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `age` int(11) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `user_age_index` (`age`)
+)
+
+INSERT INTO user (id, age) VALUES (1, 5);
+INSERT INTO user (id, age) VALUES (2, 10);
+INSERT INTO user (id, age) VALUES (3, 15);
+INSERT INTO user (id, age) VALUES (4, 20);
+
++----+------+
+| id | age  |
++----+------+
+|  1 |    5 |
+|  2 |   10 |
+|  3 |   15 |
+|  4 |   20 |
++----+------+
+```
+
+此时`age`列的索引如下图所示。
+
+![](resources/gap_lock_3.jpg)
+
+我们创建一个会话执行以下语句。
+
+```sql
+update user set age = 15 where age = 15;
+```
+
+因为间隙锁的存在，`age`列在`(10, 20]`范围的索引会被锁住。
+
+![](resources/gap_lock_4.jpg)
+
+这时，另一个会话尝试插入一个`age`为16的值就会被阻塞。
+
+```sql
+insert into user (age) values (16);
+```
+
+![](resources/gap_lock_5.jpg)
+
+如果另一个会话尝试把`age`为20的行更新为10也会被阻塞，这是因为假设更新成功，那么更新后的索引如下所示，被更新的节点在间隙锁的范围内，因此无法更新。
+
+```sql
+update user set age = 10 where age = 20;
+```
+
+![](resources/gap_lock_6.jpg)
+
+但是如果尝试更新`age`为5的行就可以更新成功，更新后的索引如下图所示，可以看到被更新的节点不在间隙锁范围内。
+
+```sql
+update user set age = 10 where age = 5;
+```
+
+![](resources/gap_lock_7.jpg)
