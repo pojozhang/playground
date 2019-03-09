@@ -16,7 +16,6 @@
 - [对象的初始化](initialization.md)
 - [多态](polymorphism.md)
 - [内部类](inner-class.md)
-- [字符串](string.md)
 - [反射](reflection.md)
 - [泛型](generics.md)
 - [序列化](serialization.md)
