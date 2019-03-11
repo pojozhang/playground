@@ -19,6 +19,7 @@
 - [反射](reflection.md)
 - [泛型](generics.md)
 - [序列化](serialization.md)
+- [枚举](enum.md)
 
 ## 多线程
 
