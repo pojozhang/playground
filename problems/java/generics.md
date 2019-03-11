@@ -1,5 +1,27 @@
 # 泛型
 
+## 协变
+
+Java的数组是协变的，比如下面的代码。
+
+```java
+SuperClass[] array = new SubClass[10];
+```
+
+其中`SubClass`是`SuperClass`的子类。
+
+泛型是不支持协变的，比如以下代码无法通过编译。
+
+```java
+ArrayList<SuperClass> list = new ArrayList<SubClass>();
+```
+
+这时候就需要用到上边界限定通配符。
+
+```java
+ArrayList<? extends SuperClass> list = new ArrayList<SubClass>();
+```
+
 ## 上边界限定通配符
 
 我们把`<? extends T>`的形式称为上边界限定通配符，它指的是有一个类是`T`或其子类，我们可以记为`S`，`S`是`T`或者`T`的子类，但是我们不知道它具体是哪一个类。
@@ -182,5 +204,16 @@ interface Generics<E extends Exception> {
 void f(){
     try {}
     catch (E e){}
+}
+```
+
+## 类型擦除
+
+泛型信息只存在代码编译阶段，编译完成后相关的泛型信息会被擦除。比如下面的代码中，`Integer`的信息被擦除了，导致程序打印结果是“true”。
+
+```java
+public static void main(String[] args) {
+    List<Integer> list = new ArrayList<>();
+    System.out.println(list.getClass() == ArrayList.class); //此处打印true。
 }
 ```
