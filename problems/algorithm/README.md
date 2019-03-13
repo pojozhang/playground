@@ -67,7 +67,7 @@
 
 ## 链表
 
-- [x] [反转链表](everse-linked-list.md)
+- [x] [反转链表](reverse-linked-list.md)
 - [x] [环形链表 II](linked-list-cycle-ii.md)
 - [x] [环形链表](linked-list-cycle.md)
 - [x] [删除链表的倒数第N个节点](remove-nth-node-from-end-of-list.md)
