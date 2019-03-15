@@ -43,7 +43,7 @@
 - [ArrayList](arraylist.md)
 - [Vector](vector.md)
 - [LinkedList](linkedlist.md)
-- [CopyOnWriteArrayList](copy-on-write-array-list.md)
+- [CopyOnWriteArrayList](copy-on-write-arraylist.md)
 - [HashMap](hashmap.md)
 - [LinkedHashMap](linkedhashmap.md)
 - [ConcurrentHashMap](concurrent-hashmap.md)
