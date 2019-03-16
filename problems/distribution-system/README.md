@@ -10,3 +10,4 @@
 - [缓存](cache.md)
 - [限流](current-limiting.md)
 - [分布式锁](distributed-lock.md)
+- [分布式ID生成器](distributed-id-generator.md)
