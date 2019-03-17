@@ -1,6 +1,6 @@
 # MySQL
 
-## 概念
+## 基础
 
 - [整数类型的显示宽度](display-width-of-integer.md)
 - [DATE、DATETIME和TIMESTAMP的区别](date-datetime-timestamp.md)
@@ -17,3 +17,7 @@
 
 - [索引优化](index-optimization.md)
 - [EXPLAIN](explain.md)
+
+## 高可用
+
+- [平滑扩容方案](smooth-capacity-expansion.md)
