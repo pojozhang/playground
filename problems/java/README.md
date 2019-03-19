@@ -2,7 +2,7 @@
 
 ## 基础
 
-- [重载](override.md)
+- [方法重写](override.md)
 - [clone()](clone.md)
 - [Comparable和Comparator](comparable-comparator.md)
 - [浅复制和深复制](shallow-copy-deep-copy.md)
