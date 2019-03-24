@@ -205,6 +205,37 @@ void test() {
 
 `synchronized`的有序性和`volatile`的有序性的理解有所区别，`volatile`的有序性是指禁止指令重排序，而`synchronized`的有序性和`as-if-serial`语义有关，它的意思是无论如何重排序，单线程程序的执行结果都不能被改变，由于`synchronized`代码块一次只能被一个线程所访问，实际上就是单线程的，因此可以保证有序性。`synchronized`**没有**禁止指令重排序的作用。
 
+## 源码分析
+
+下面我们基于OpenJDK8的[源码](https://github.com/unofficial-openjdk/openjdk/tree/jdk8u/jdk8u)对`synchronized`关键字的原理进行分析。
+
+从上文中我们已经知道`synchronized`代码块对应的字节码中会加入`monitorenter`和`monitorexit`指令，我们可以在[这里](https://github.com/unofficial-openjdk/openjdk/blob/jdk8u/jdk8u/hotspot/src/share/vm/interpreter/interpreterRuntime.cpp)找到`monitorenter`命令的入口，当解释器执行该命令时会执行`InterpreterRuntime::monitorenter`方法。
+
+```cpp
+IRT_ENTRY_NO_ASYNC(void, InterpreterRuntime::monitorenter(JavaThread* thread, BasicObjectLock* elem))
+#ifdef ASSERT
+  thread->last_frame().interpreter_frame_verify_monitor(elem);
+#endif
+  if (PrintBiasedLockingStatistics) {
+    Atomic::inc(BiasedLocking::slow_path_entry_count_addr());
+  }
+  Handle h_obj(thread, elem->obj());
+  assert(Universe::heap()->is_in_reserved_or_null(h_obj()),
+         "must be NULL or an object");
+  if (UseBiasedLocking) {
+    // Retry fast entry if bias is revoked to avoid unnecessary inflation
+    ObjectSynchronizer::fast_enter(h_obj, elem->lock(), true, CHECK);
+  } else {
+    ObjectSynchronizer::slow_enter(h_obj, elem->lock(), CHECK);
+  }
+  assert(Universe::heap()->is_in_reserved_or_null(elem->obj()),
+         "must be NULL or an object");
+#ifdef ASSERT
+  thread->last_frame().interpreter_frame_verify_monitor(elem);
+#endif
+IRT_END
+```
+
 ## 参考
 
 1. [《浅谈偏向锁、轻量级锁、重量级锁》](https://juejin.im/post/5a5c09d051882573282164ae)
