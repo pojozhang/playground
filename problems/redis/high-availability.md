@@ -1,4 +1,4 @@
-# 集群
+# 高可用
 
 ## 复制模式（Replication）
 
@@ -26,15 +26,15 @@
 
 新版本的实现中，主从服务器分别维护一份复制偏移量，记录当前复制的进度。当主服务器向从服务器发送N个字节的数据时就把自己的偏移量加上N，当从服务器接收到N个字节的数据时就把自己的偏移量也加上N，如果主从服务器数据处于一致，那么它们的偏移量也是一致的。
 
-![复制偏移量](resources/cluster_1.png)
+![复制偏移量](resources/high_availability_1.png)
 
 如果从服务器出现了连接断开的状况，那么复制偏移量就会和主服务器不一致：
 
-![复制偏移量](resources/cluster_2.png)
+![复制偏移量](resources/high_availability_2.png)
 
 为了解决从服务器意外断开连接后能够快速恢复到跟主服务器一致的状态（之所以说快速是因为旧版本的实现效率太低，断开后需要全量同步），Redis使用了复制积压缓冲区来记录最近执行的写命令，以便在从服务器恢复连接后能通过缓冲区把丢失的写命令找回并发送到从服务器。该缓冲区是一个固定长度的先进先出队列，默认大小是1MB，当缓冲区大小不够时会将位于队首的元素抛弃，队列保存了一部分最近传播的写命令，每个字节的偏移量都会记录在内，其构造如图所示：
 
-![复制积压缓冲区](resources/cluster_3.png)
+![复制积压缓冲区](resources/high_availability_3.png)
 
 当从服务器断线重连后会发送自己的复制偏移量给主服务器，如果偏移量+1存在主服务器缓冲区中，那么主服务器会把这部分数据发送给从服务器；反之会执行完整重同步。
 
@@ -50,7 +50,7 @@
 上文介绍的复制功能可以把master的读压力分散到其它slave上，但是当master发生故障后，需要手动把一台slave提升为master，客户端也很有可能需要修改连接地址如果你没有服务发现这样的基础设施的话，因为你不知道是哪一台slave被提升为master。
 Redis提供了sentinel（哨兵）来解决以上问题。它会监控所有的Redis节点，并提供故障转移机智，是一种高可用解决方案。
 
-![sentinel系统](resources/cluster_4.png)
+![sentinel系统](resources/high_availability_4.png)
 
 ### 初始化Sentinel
 
@@ -89,7 +89,7 @@ sentinel本质是一个特殊的Redis服务器，因此初始化过程可以看�
 
 初始化后sentinel会和每一个被监视的master创建两个连接，一个用于收发命令，一个用于订阅master的`__sentinel__:hello`频道。
 
-![连接master](resources/cluster_5.png)
+![连接master](resources/high_availability_5.png)
 
 连接建立后，sentinel会以10秒一次的频率向master发送`INFO`命令，通过返回值可以得到master的运行ID、角色（master/slave）以及所有slave（可以看作是服务发现）。
 
@@ -110,7 +110,7 @@ PUBLISH __sentinel__:hello "<sentinel_ip>,<sentinel_port>,<sentinel_runid>,<sent
 
 每一个sentinel既是`__sentinel__:hello`频道的发布者，同时也是订阅者。这种设计的作用是，当一个服务器被多个sentinel监控时，任意一个sentinel发送的消息都会被其它sentinel接收到。当其它sentinel接收到消息后就会发现新的sentinel，通过这种方式，每个sentinel都知道它监控的某个master还在被哪些sentinel监控。sentinel会和其它sentinel建立1个连接，最终，同一个master的所有sentinel互连。
 
-![sentinel互连](resources/cluster_6.png)
+![sentinel互连](resources/high_availability_6.png)
 
 ### 判断下线
 
@@ -128,7 +128,7 @@ PUBLISH __sentinel__:hello "<sentinel_ip>,<sentinel_port>,<sentinel_runid>,<sent
 
 我们假设有3个sentinel组成哨兵系统，为了选出leader，3个sentinel再次向其它两个sentinel发送命令，要求对方把自己设为leader。如果接收到命令的sentinel还没有设置过leader的话就会把接收到的sentinel设置为leader并回复消息。收到回复的sentinel就可以知道有多少sentinel选举自己当leader，如果获得了半数以上（大于等于sentinel数量/2+1）的投票，那么就算选举成功。如果在给定时间内选举失败，那么会在一段时间后重新选举直到选出leader为止。
 
-![leader选举](resources/cluster_7.png)
+![leader选举](resources/high_availability_7.png)
 
 > Leader选举算法请参考Raft算法。
 
@@ -222,7 +222,7 @@ MOVED <slot> <ip>:<port>
 
 集群模式下的键值对以及过期时间的存储和普通模式下的一样。除此之外集群模式下的节点会用一个跳跃表存储槽和键的关系，用于对某些槽的键进行批量操作。跳跃表里的分值就是槽号，值就是键。下面是一个例子：
 
-![槽和键](resources/cluster_8.png)
+![槽和键](resources/high_availability_8.png)
 
 ### 重新分片
 
@@ -262,6 +262,23 @@ MOVED <slot> <ip>:<port>
 4. leader节点执行`SLAVEOF no one`命令成为新的主节点，然后撤销所有对已下线主节点的slot，并把这些slot指派给自己。
 5. 新的主节点向集群广播一条`PONG`消息，让其它节点意识它已经成为了主节点，并接管了下线节点处理的slot。下线主节点的其它从节点会改为复制新的主节点。
 6. 下线的主节点重新上线后会成为新主节点的从节点。
+
+### 客户端处理流程
+
+假设客户端执行`GET key`命令，它将会执行以下几个步骤。
+
+1. 客户端在初始化时会配置一些节点的信息，这些节点被称为种子节点。
+
+```java
+RedisURI node1 = RedisURI.create("node1", 6379);
+RedisURI node2 = RedisURI.create("node2", 6379);
+RedisClusterClient clusterClient = RedisClusterClient.create(Arrays.asList(node1, node2));
+```
+
+2. 客户端会计算键`key`所在的槽，假设键`key`属于槽1000。
+3. 如果客户端已经缓存了槽1000所在的节点的信息，那么客户端就可以直接向该节点发起请求，否则需要向种子节点询问当前集群槽的分布状态。
+4. 客户端向槽1000所在的节点发送请求。
+5. 对可能存在的`MOVED`以及`ASK`错误进行进一步处理。
 
 ### 例子
 

@@ -6,7 +6,7 @@
 - [缓存淘汰策略](expiration-policy.md)
 - [事务](transaction.md)
 - [持久化策略](persistence.md)
-- [集群](cluster.md)
+- [高可用](high-availability.md)
 
 ## 安全
 
