@@ -311,9 +311,9 @@ RSet的作用是避免在可达性分析时进行全堆扫描，比如Region1中
 - Xmx：最大堆大小。
 - Xmn：年轻代大小。
 
-## 各版本JDK默认垃圾收集器
+## 默认垃圾收集器
 
-|   版本   |        新生代        |     老年代    |
+|   JDK   |        新生代        |     老年代    |
 | :-----: | :-----------------: | :----------: |
 |    6    | Parallel Scavenge   | Parallel Old |
 |    7    | Parallel Scavenge   | Parallel Old |
