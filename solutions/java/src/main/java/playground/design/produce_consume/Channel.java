@@ -1,7 +1,8 @@
 package playground.design.produce_consume;
 
+import java.util.Collections;
 import java.util.LinkedList;
-import java.util.Queue;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
@@ -9,7 +10,7 @@ import java.util.concurrent.locks.ReentrantLock;
 
 public class Channel<T> {
 
-    private Queue<T> queue;
+    private List<T> list;
     private int capacity;
     private AtomicInteger count;
     private Lock putLock;
@@ -19,7 +20,7 @@ public class Channel<T> {
 
     public Channel(int capacity) {
         this.capacity = capacity;
-        this.queue = new LinkedList<>();
+        this.list = Collections.synchronizedList(new LinkedList<>());
         this.count = new AtomicInteger();
         this.putLock = new ReentrantLock();
         this.takeLock = new ReentrantLock();
@@ -33,7 +34,7 @@ public class Channel<T> {
             while (count.get() == capacity) {
                 notFull.await();
             }
-            queue.add(item);
+            list.add(item);
             count.getAndIncrement();
         } finally {
             putLock.unlock();
@@ -57,7 +58,7 @@ public class Channel<T> {
             while (count.get() == 0) {
                 notEmpty.await();
             }
-            item = queue.poll();
+            item = list.remove(0);
             count.getAndDecrement();
         } finally {
             takeLock.unlock();
