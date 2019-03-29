@@ -1,10 +1,8 @@
 package playground.business.recommendation;
 
 import com.alibaba.fastjson.JSON;
-import org.apache.commons.lang3.ArrayUtils;
 import org.apache.http.HttpHost;
 import org.elasticsearch.action.admin.indices.delete.DeleteIndexRequest;
-import org.elasticsearch.action.admin.indices.get.GetIndexRequest;
 import org.elasticsearch.action.bulk.BulkRequest;
 import org.elasticsearch.action.index.IndexRequest;
 import org.elasticsearch.action.search.SearchRequest;
@@ -14,6 +12,7 @@ import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestClient;
 import org.elasticsearch.client.RestClientBuilder;
 import org.elasticsearch.client.RestHighLevelClient;
+import org.elasticsearch.client.indices.GetIndexRequest;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.index.query.functionscore.FunctionScoreQueryBuilder;
@@ -34,7 +33,6 @@ import java.util.stream.Collectors;
 import static org.elasticsearch.common.lucene.search.function.CombineFunction.SUM;
 import static org.elasticsearch.common.lucene.search.function.FunctionScoreQuery.ScoreMode.MULTIPLY;
 import static org.elasticsearch.index.query.QueryBuilders.*;
-import static org.elasticsearch.index.query.QueryBuilders.matchQuery;
 import static org.elasticsearch.index.query.functionscore.ScoreFunctionBuilders.randomFunction;
 import static org.elasticsearch.index.query.functionscore.ScoreFunctionBuilders.weightFactorFunction;
 
@@ -127,8 +125,7 @@ public class TagBasedRecommendation {
 
     void clean() throws IOException {
         for (String index : itemIndexMapping.values()) {
-            GetIndexRequest request = new GetIndexRequest();
-            request.indices(index);
+            GetIndexRequest request = new GetIndexRequest(index);
             if (this.client.indices().exists(request, RequestOptions.DEFAULT)) {
                 this.client.indices().delete(new DeleteIndexRequest(index), RequestOptions.DEFAULT);
             }
