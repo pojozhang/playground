@@ -21,6 +21,10 @@
 - [序列化](serialization.md)
 - [枚举](enum.md)
 
+## 进阶
+
+- [编译和调试JDK](compile-and-debug-jdk.md)
+
 ## 多线程
 
 - [线程](thread.md)
