@@ -38,7 +38,7 @@ dependencies {
     implementation(
             'org.apache.commons:commons-lang3:3.8.1',
             'com.google.guava:guava:27.1-jre',
-            'com.alibaba:fastjson:1.2.56',
+            'com.alibaba:fastjson:1.2.57',
             'cglib:cglib-full:2.0.2',
             'guru.nidi:graphviz-java:0.8.3',
             'com.rabbitmq:amqp-client:5.7.0',
