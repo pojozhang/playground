@@ -60,7 +60,7 @@ public class TagBasedRecommendation {
         SearchHits searchHits = response.getHits();
         return new PageImpl<>(
                 Arrays.stream(searchHits.getHits()).map(this::parse).collect(Collectors.toList()),
-                pageable, searchHits.getTotalHits());
+                pageable, searchHits.getTotalHits().value);
     }
 
     private String[] indices(List<Class<? extends TaggedItem>> itemClasses) {
@@ -120,7 +120,7 @@ public class TagBasedRecommendation {
         source.put("id", item.getId());
         source.put("createTime", item.getCreateTime());
         source.put(FIELD_TAGS, item.tags());
-        return new IndexRequest(index, index, item.getId()).source(source);
+        return new IndexRequest(index).id(item.getId()).source(source);
     }
 
     void clean() throws IOException {
