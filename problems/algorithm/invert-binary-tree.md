@@ -28,4 +28,5 @@
 
 ## 实现
 
+- [Java](https://github.com/pojozhang/playground/blob/master/solutions/java/src/main/java/playground/algorithm/InvertBinaryTree.java)
 - [Go](https://github.com/pojozhang/playground/blob/master/solutions/go/src/playground/algorithm/invert_binary_tree.go)
