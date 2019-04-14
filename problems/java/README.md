@@ -9,7 +9,7 @@
 - [sleep()、wait()和yield()](https://github.com/pojozhang/playground/blob/master/solutions/java/src/test/java/playground/interview/SleepWaitYieldTest.java)
 - [动态代理](dynamic-proxy.md)
 - [位运算](https://github.com/pojozhang/playground/blob/master/solutions/java/src/test/java/playground/interview/BitwiseTest.java)
-- [四种引用类型](reference.md)
+- [引用类型](reference.md)
 - [异常](exception.md)
 - [finalize和Cleaner](finalize-cleaner.md)
 - [String](string.md)
