@@ -27,16 +27,16 @@
 
 ## 多线程
 
+- [synchronized](synchronized.md)
 - [线程](thread.md)
-- [线程池](thread-pool.md)
 - [写一个死锁的例子](https://github.com/pojozhang/playground/blob/master/solutions/java/src/test/java/playground/interview/DeadLockTest.java)
 - [CountDownLatch、CyclicBarrier 和 Semaphore 的区别](https://github.com/pojozhang/playground/blob/master/solutions/java/src/test/java/playground/interview/ThreadSyncTest.java)
 - [CAS](cas.md)
-- [synchronized](synchronized.md)
 - [AQS](aqs.md)
 - [锁](lock.md)
 - [wait()、notify()和notifyAll()](wait-notify-notifyAll.md)
 - [ThreadLocal](threadlocal.md)
+- [ThreadPoolExecutor](thread-pool-executor.md)
 - [ScheduledThreadPoolExecutor](scheduled-thread-pool-executor.md)
 - ForkJoinPool
 - [CountDownLatch](count-down-latch.md)
@@ -80,6 +80,7 @@
 - [内存泄漏](memory-leak.md)
 - [如何定位死锁](locate-dead-lock.md)
 - [如何诊断服务出现明显变慢的问题](service-slow-down.md)
+- [CPU利用率100%](cpu-100.md)
 
 ## Spring
 
