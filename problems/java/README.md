@@ -43,7 +43,7 @@
 
 ## 集合
 
-- Collection和Map
+- [Collection和Map](collection-and-map.md)
 - [Arrays](arrays.md)
 - [Collections](collections.md)
 - [ArrayList](arraylist.md)
