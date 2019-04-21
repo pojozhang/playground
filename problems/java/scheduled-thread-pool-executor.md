@@ -13,8 +13,8 @@
 ```java
 public ScheduledThreadPoolExecutor(int corePoolSize) {
     super(corePoolSize, Integer.MAX_VALUE,
-            DEFAULT_KEEPALIVE_MILLIS, MILLISECONDS,
-            new DelayedWorkQueue());
+          DEFAULT_KEEPALIVE_MILLIS, MILLISECONDS,
+          new DelayedWorkQueue());
 }
 ```
 
@@ -71,73 +71,25 @@ boolean canRunInCurrentRunState(RunnableScheduledFuture<?> task) {
 }
 
 void ensurePrestart() {
+    // 获取当前工作线程的数量。
     int wc = workerCountOf(ctl.get());
+    // 增加工作线程。
     if (wc < corePoolSize)
         addWorker(null, true);
     else if (wc == 0)
         addWorker(null, false);
 }
-
-private boolean addWorker(Runnable firstTask, boolean core) {
-    retry:
-    for (int c = ctl.get();;) {
-        // Check if queue empty only if necessary.
-        if (runStateAtLeast(c, SHUTDOWN)
-            && (runStateAtLeast(c, STOP)
-                || firstTask != null
-                || workQueue.isEmpty()))
-            return false;
-
-        for (;;) {
-            if (workerCountOf(c)
-                >= ((core ? corePoolSize : maximumPoolSize) & COUNT_MASK))
-                return false;
-            if (compareAndIncrementWorkerCount(c))
-                break retry;
-            c = ctl.get();  // Re-read ctl
-            if (runStateAtLeast(c, SHUTDOWN))
-                continue retry;
-            // else CAS failed due to workerCount change; retry inner loop
-        }
-    }
-
-    boolean workerStarted = false;
-    boolean workerAdded = false;
-    Worker w = null;
-    try {
-        w = new Worker(firstTask);
-        final Thread t = w.thread;
-        if (t != null) {
-            final ReentrantLock mainLock = this.mainLock;
-            mainLock.lock();
-            try {
-                int c = ctl.get();
-
-                if (isRunning(c) ||
-                    (runStateLessThan(c, STOP) && firstTask == null)) {
-                    if (t.isAlive()) // precheck that t is startable
-                        throw new IllegalThreadStateException();
-                    workers.add(w);
-                    int s = workers.size();
-                    if (s > largestPoolSize)
-                        largestPoolSize = s;
-                    workerAdded = true;
-                }
-            } finally {
-                mainLock.unlock();
-            }
-            if (workerAdded) {
-                t.start();
-                workerStarted = true;
-            }
-        }
-    } finally {
-        if (! workerStarted)
-            addWorkerFailed(w);
-    }
-    return workerStarted;
-}
 ```
+
+`addWorker()`方法主要作用是创建`Worker`对象，每个对象关联一个线程，不断从工作队列中取出任务并执行，详细解析可以查看[《ThreadPoolExecutor》](https://github.com/pojozhang/playground/blob/master/problems/java/thread-pool-executor.md#submitrunnable)一文，不再赘述。
+
+## DelayedWorkQueue
+
+当`Worker`对象被创建后，就会不断的从工作队列中取出任务执行，下面我们看下工作队列`DelayedWorkQueue`的实现。
+
+`DelayedWorkQueue`是`ScheduledThreadPoolExecutor`的一个静态内部类，其结构如下。
+
+![](resources/scheduled-thread-pool-executor-2.png)
 
 ## 参考
 
