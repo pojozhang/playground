@@ -21,3 +21,5 @@ kthLargest.add(4);   // returns 8
 你可以假设 `nums` 的长度≥ `k-1` 且`k` ≥ 1。
 
 ## 实现
+
+- [Java](https://github.com/pojozhang/playground/blob/master/solutions/java/src/main/java/playground/algorithm/KthLargest.java)

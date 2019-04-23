@@ -78,7 +78,7 @@
 ## 堆
 
 - [x] [合并K个排序链表](merge-k-sorted-lists.md)
-- [ ] [数据流中的第K大元素](kth-largest-element-in-a-stream.md)
+- [x] [数据流中的第K大元素](kth-largest-element-in-a-stream.md)
 
 ## 递归
 
