@@ -531,7 +531,7 @@ private final void transfer(Node<K,V>[] tab, Node<K,V>[] nextTab) {
                     Node<K,V> ln, hn;
                     // 哈希值大于0表示是链表。
                     if (fh >= 0) {
-                        // 根据fh & table.length算法把链表中的节点进行分组，由于table的长度是2的幂次，因此fh & table.length只可能是0或1。
+                        // 根据fh & table.length算法把链表中的节点进行分组，由于table的长度是2的幂次，因此fh & table.length值可能是0或n本身。
                         int runBit = fh & n;
                         Node<K,V> lastRun = f;
                         // 遍历链表。
