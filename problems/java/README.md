@@ -86,6 +86,7 @@
 
 - [Spring Bean](spring-bean.md)
 - [Spring Aop](spring-aop.md)
+- [Spring JPA](spring-jpa.md)
 - [IOC](spring-ioc.md)
 - [事务](spring-transaction.md)
 - Eureka
