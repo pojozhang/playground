@@ -139,10 +139,13 @@ private RunnableScheduledFuture<?>[] queue = new RunnableScheduledFuture<?>[INIT
 ```java
 private void siftUp(int k, RunnableScheduledFuture<?> key) {
     while (k > 0) {
+        // 二叉堆父节点的索引。
         int parent = (k - 1) >>> 1;
+        // 父节点。
         RunnableScheduledFuture<?> e = queue[parent];
         if (key.compareTo(e) >= 0)
             break;
+        // 如果key小于父节点，那么交换这两个节点。从这里看出构建的是小顶堆。
         queue[k] = e;
         setIndex(e, k);
         k = parent;
@@ -154,9 +157,75 @@ private void siftUp(int k, RunnableScheduledFuture<?> key) {
 
 这里参数`key`的实际类型是`ScheduledFutureTask`，它是`ScheduledThreadPoolExecutor`的一个内部类，它的结构如下。
 
+![](resources/scheduled-thread-pool-executor-3.png)
 
+调整元素顺序时用到的`compareTo()`方法如下所示。
 
-调整时用到的`compareTo()`方法在
+```java
+// java.util.concurrent.ScheduledThreadPoolExecutor.ScheduledFutureTask#compareTo
+public int compareTo(Delayed other) {
+    if (other == this)
+        return 0;
+    if (other instanceof ScheduledFutureTask) {
+        ScheduledFutureTask<?> x = (ScheduledFutureTask<?>)other;
+        long diff = time - x.time;
+        // 比较时间。
+        if (diff < 0)
+            return -1;
+        else if (diff > 0)
+            return 1;
+        // 时间相等则比较序号。
+        else if (sequenceNumber < x.sequenceNumber)
+            return -1;
+        else
+            return 1;
+    }
+    long diff = getDelay(NANOSECONDS) - other.getDelay(NANOSECONDS);
+    return (diff < 0) ? -1 : (diff > 0) ? 1 : 0;
+}
+```
+
+首先比较两个任务的执行时间，如果执行时间相等再比较任务序号的大小，所以位于二叉堆堆顶的任务就是最先执行或者序号最小的任务。
+
+### take()
+
+`take()`方法用于从队列中取出一个任务，如果队列为空，那么当前线程会被阻塞。
+
+```java
+public RunnableScheduledFuture<?> take() throws InterruptedException {
+    final ReentrantLock lock = this.lock;
+    lock.lockInterruptibly();
+    try {
+        for (;;) {
+            RunnableScheduledFuture<?> first = queue[0];
+            if (first == null)
+                available.await();
+            else {
+                long delay = first.getDelay(NANOSECONDS);
+                if (delay <= 0L)
+                    return finishPoll(first);
+                first = null; // don't retain ref while waiting
+                if (leader != null)
+                    available.await();
+                else {
+                    Thread thisThread = Thread.currentThread();
+                    leader = thisThread;
+                    try {
+                        available.awaitNanos(delay);
+                    } finally {
+                        if (leader == thisThread)
+                            leader = null;
+                    }
+                }
+            }
+        }
+    } finally {
+        if (leader == null && queue[0] != null)
+            available.signal();
+        lock.unlock();
+    }
+}
+```
 
 ## 参考
 
