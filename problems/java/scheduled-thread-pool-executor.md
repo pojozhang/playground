@@ -198,13 +198,16 @@ public RunnableScheduledFuture<?> take() throws InterruptedException {
     try {
         for (;;) {
             RunnableScheduledFuture<?> first = queue[0];
+            // 如果队列为空，则等待offer()方法中发出的信号。
             if (first == null)
                 available.await();
             else {
+                // 任务设定的执行时间与当前时间的差值。
                 long delay = first.getDelay(NANOSECONDS);
+                // 如果时差小于等于0，那么就从队列中取出任务。
                 if (delay <= 0L)
                     return finishPoll(first);
-                first = null; // don't retain ref while waiting
+                first = null;
                 if (leader != null)
                     available.await();
                 else {
@@ -225,8 +228,46 @@ public RunnableScheduledFuture<?> take() throws InterruptedException {
         lock.unlock();
     }
 }
+
+private RunnableScheduledFuture<?> finishPoll(RunnableScheduledFuture<?> f) {
+    // 更新队列中元素的数量。
+    int s = --size;
+    // 获取队列的最后一个任务。
+    RunnableScheduledFuture<?> x = queue[s];
+    queue[s] = null;
+    // 如果队列不为空，那么调整二叉堆。
+    if (s != 0)
+        siftDown(0, x);
+    setIndex(f, -1);
+    return f;
+}
+
+// 该方法的效果是把key放到队列中k的位置，并从该位置向下调整二叉堆。
+private void siftDown(int k, RunnableScheduledFuture<?> key) {
+    int half = size >>> 1;
+    while (k < half) {
+        // 左子节点。
+        int child = (k << 1) + 1;
+        RunnableScheduledFuture<?> c = queue[child];
+        // 右子节点。
+        int right = child + 1;
+        // 如果右子节点存在并且左子节点大于右子节点，那么把变量c指向右子节点，即变量c指向左右子节点中较小的那个。
+        if (right < size && c.compareTo(queue[right]) > 0)
+            c = queue[child = right];
+        // 如果key小于等于c，说明key小于等于左右两个子节点，不需要再向下进行调整，跳出循环。
+        if (key.compareTo(c) <= 0)
+            break;
+        // 否则继续进行调整。
+        queue[k] = c;
+        setIndex(c, k);
+        k = child;
+    }
+    queue[k] = key;
+    setIndex(key, k);
+}
 ```
 
 ## 参考
 
 1. [《并发编程 —— ScheduledThreadPoolExecutor》](https://juejin.im/post/5ae75604f265da0ba56753cd)
+2. [《深入理解Java线程池：ScheduledThreadPoolExecutor》](https://www.jianshu.com/p/925dba9f5969)
