@@ -37,7 +37,7 @@ dependencies {
 
     implementation(
             'org.apache.commons:commons-lang3:3.9',
-            'com.google.guava:guava:27.1-jre',
+            'com.google.guava:guava:28.0-jre',
             'com.alibaba:fastjson:1.2.58',
             'cglib:cglib-full:2.0.2',
             'guru.nidi:graphviz-java:0.8.8',
