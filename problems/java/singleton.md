@@ -119,6 +119,34 @@ public enum Singleton {
 - 优点：线程安全，实现简单，可以防止通过反射和序列化创建多个实例。
 - 缺点：不具备普通类的某些特性，比如继承。
 
+对于前文中非枚举的单例模式，我们可以增加以下代码来阻止进行反序列化时产生多个对象。
+
+```java
+private Object readResolve() throws Exception {
+    return INSTANCE;
+}
+```
+
+增加以上代码后的完整示例如下所示。
+
+```java
+public class Singleton implements Serializable {
+
+    private static final Singleton INSTANCE = new Singleton();
+
+    private Singleton() {
+    }
+
+    public static Singleton getInstance() {
+        return INSTANCE;
+    }
+
+    private Object readResolve() throws Exception {
+        return INSTANCE;
+    }
+}
+```
+
 ## 内部枚举模式
 
 ```java
