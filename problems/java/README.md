@@ -90,8 +90,10 @@
 - [IOC](spring-ioc.md)
 - [事务](spring-transaction.md)
 - Eureka
+- Ribbon
 
 ## 其它框架
 
 - [Cglib](cglib.md)
 - [Guava](guava.md)
+- [HikariCP](hikaricp.md)
