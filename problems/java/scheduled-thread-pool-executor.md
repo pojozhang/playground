@@ -93,7 +93,7 @@ void ensurePrestart() {
 
 ### offer(Runnable)
 
-`offer()`方法用于把一个`Runnable`对象插入到队列的末尾。
+`offer()`方法用于把一个`Runnable`对象插入到队列中。
 
 ```java
 public boolean offer(Runnable x) {
@@ -113,9 +113,10 @@ public boolean offer(Runnable x) {
             queue[0] = e;
             setIndex(e, 0);
         } else {
-            // 调整二叉堆。
+            // 插入元素并调整二叉堆。
             siftUp(i, e);
         }
+        // 如果队列中的第一个元素就是插入的元素，向消费线程发送信号。
         if (queue[0] == e) {
             leader = null;
             available.signal();
@@ -185,7 +186,7 @@ public int compareTo(Delayed other) {
 }
 ```
 
-首先比较两个任务的执行时间，如果执行时间相等再比较任务序号的大小，所以位于二叉堆堆顶的任务就是最先执行或者序号最小的任务。
+首先比较两个任务的执行时间，如果执行时间相等再比较任务序号的大小，所以**位于二叉堆堆顶的任务就是最先执行或者序号最小的任务**。
 
 ### take()
 
@@ -208,12 +209,15 @@ public RunnableScheduledFuture<?> take() throws InterruptedException {
                 if (delay <= 0L)
                     return finishPoll(first);
                 first = null;
+                // 如果leader线程存在，那么当前线程进行阻塞。
                 if (leader != null)
                     available.await();
                 else {
+                    // 否则把leader设置为当前线程。
                     Thread thisThread = Thread.currentThread();
                     leader = thisThread;
                     try {
+                        // 等待指定的时间。
                         available.awaitNanos(delay);
                     } finally {
                         if (leader == thisThread)
@@ -242,7 +246,7 @@ private RunnableScheduledFuture<?> finishPoll(RunnableScheduledFuture<?> f) {
     return f;
 }
 
-// 该方法的效果是把key放到队列中k的位置，并从该位置向下调整二叉堆。
+// 该方法的效果是把key放到数组中索引为k的位置，并从该位置向下调整二叉堆。
 private void siftDown(int k, RunnableScheduledFuture<?> key) {
     int half = size >>> 1;
     while (k < half) {
@@ -264,6 +268,117 @@ private void siftDown(int k, RunnableScheduledFuture<?> key) {
     }
     queue[k] = key;
     setIndex(key, k);
+}
+```
+
+### Leader线程
+
+`take()`和`offer()`中有一个比较特别的`leader`字段，它的目的是保证只有一个线程会等待定时任务的执行，也就是`take()`方法中以下的语句只有一个线程会执行。
+
+```java
+available.awaitNanos(delay);
+```
+
+与此同时，其它方法都会执行`available.await()`进入阻塞。这样设计的目的是减少不必要的定时等待。
+
+## scheduleAtFixedRate(Runnable, long, long, TimeUnit)
+
+该方法用来执行周期性的任务，其实现和`schedule()`方法最大的区别是创建`ScheduledFutureTask`对象时设置了它的`period`字段表示任务的执行周期。
+
+```java
+public ScheduledFuture<?> scheduleAtFixedRate(Runnable command,
+                                              long initialDelay,
+                                              long period,
+                                              TimeUnit unit) {
+    if (command == null || unit == null)
+        throw new NullPointerException();
+    if (period <= 0L)
+        throw new IllegalArgumentException();
+    ScheduledFutureTask<Void> sft =
+        new ScheduledFutureTask<Void>(command,
+                                        null,
+                                        triggerTime(initialDelay, unit),
+                                        unit.toNanos(period),
+                                        sequencer.getAndIncrement());
+    RunnableScheduledFuture<Void> t = decorateTask(command, sft);
+    sft.outerTask = t;
+    delayedExecute(t);
+    return t;
+}
+```
+
+下面是`ScheduledFutureTask`类的`run()`方法，线程池从工作队列中取出任务后就会调用该方法。
+
+```java
+// java.util.concurrent.ScheduledThreadPoolExecutor.ScheduledFutureTask#run
+public void run() {
+    // 检查线程池状态。
+    if (!canRunInCurrentRunState(this))
+        cancel(false);
+    // 如果不是周期性任务，调用基类的run()方法。
+    else if (!isPeriodic())
+        super.run();
+    else if (super.runAndReset()) {
+        // 如果是周期性任务，需要设置下一次的执行时间并重新放回工作队列。
+        setNextRunTime();
+        reExecutePeriodic(outerTask);
+    }
+}
+
+// java.util.concurrent.ScheduledThreadPoolExecutor#reExecutePeriodic
+void reExecutePeriodic(RunnableScheduledFuture<?> task) {
+    if (canRunInCurrentRunState(task)) {
+        // 放回工作队列
+        super.getQueue().add(task);
+        if (canRunInCurrentRunState(task) || !remove(task)) {
+            ensurePrestart();
+            return;
+        }
+    }
+    task.cancel(false);
+}
+```
+
+## scheduleWithFixedDelay(Runnable, long, long, TimeUnit)
+
+该方法也是用来执行周期性的任务，它和`scheduleAtFixedRate()`的区别是`scheduleWithFixedDelay()`下次执行任务的时间是以上一次任务执行结束的时间为基准计算的，比如从10:00开始执行一个任务，任务执行本身耗时1分钟，任务执行间隔1分钟，那么下次任务执行时间就是10:02，而`scheduleAtFixedRate()`则是固定的间隔，比如从10:00开始执行一个任务，任务执行间隔1分钟，那么下次任务执行时间就是10:01，任务本身的耗时并不会影响它的执行周期。
+
+`scheduleWithFixedDelay()`的实现原理也和`scheduleAtFixedRate()`类似，区别是在创建`ScheduledFutureTask`对象时，其`period`字段是负值，注意下面代码中的`-unit.toNanos(delay)`。
+
+```java
+public ScheduledFuture<?> scheduleWithFixedDelay(Runnable command,
+                                                 long initialDelay,
+                                                 long delay,
+                                                 TimeUnit unit) {
+    if (command == null || unit == null)
+        throw new NullPointerException();
+    if (delay <= 0L)
+        throw new IllegalArgumentException();
+    ScheduledFutureTask<Void> sft =
+        new ScheduledFutureTask<Void>(command,
+                                      null,
+                                      triggerTime(initialDelay, unit),
+                                      -unit.toNanos(delay),
+                                      sequencer.getAndIncrement());
+    RunnableScheduledFuture<Void> t = decorateTask(command, sft);
+    sft.outerTask = t;
+    delayedExecute(t);
+    return t;
+}
+```
+
+当给周期性任务设置下一次的执行时间时，对`scheduleAtFixedRate()`方法而言就是在任务的当前执行时间上再加上任务执行周期，对于`scheduleWithFixedDelay()`方法则是当前时间加上任务执行周期。
+
+```java
+private void setNextRunTime() {
+    long p = period;
+    if (p > 0)
+        // scheduleAtFixedRate()的分支。
+        time += p;
+    else
+        // scheduleWithFixedDelay()的分支，注意：这里p小于0。
+        // 得到的结果是当前时间加上任务执行周期。
+        time = triggerTime(-p);
 }
 ```
 
