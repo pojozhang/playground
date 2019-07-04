@@ -41,7 +41,7 @@ dependencies {
             'com.alibaba:fastjson:1.2.58',
             'cglib:cglib-full:2.0.2',
             'guru.nidi:graphviz-java:0.8.8',
-            'com.rabbitmq:amqp-client:5.7.1',
+            'com.rabbitmq:amqp-client:5.7.2',
             'com.rabbitmq:http-client:3.2.0.RELEASE',
             'org.apache.httpcomponents:httpclient:4.5.9',
             'io.lettuce:lettuce-core:5.1.7.RELEASE',
