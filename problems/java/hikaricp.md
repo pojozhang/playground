@@ -112,7 +112,9 @@ public HikariPool(final HikariConfig config)
 }
 ```
 
-其中，`HouseKeeper`线程用于维护线程池的最小连接数，它实现了`Runnable`接口。
+其中，`addConnectionExecutor`线程池用于创建连接，`closeConnectionExecutor`线程池用于关闭连接。
+
+`HouseKeeper`线程用于维护线程池的最小连接数，它实现了`Runnable`接口。
 
 ```java
 // com.zaxxer.hikari.pool.HikariPool.HouseKeeper
@@ -191,7 +193,51 @@ private synchronized void fillPool()
 }
 ```
 
-当`HikariPool`对象构造完成后，就可以通过它的`getConnection()`方法获取连接，该方法最后又会调用一个重载方法。
+`fillPool()`方法中用到两个对象来创建连接，分别是`poolEntryCreator`和`postFillPoolEntryCreator`，它们都是`PoolEntryCreator`类的实例，仅在打印日志的参数部分有所区别。
+
+```java
+private final class PoolEntryCreator implements Callable<Boolean>
+{
+    private final String loggingPrefix;
+
+    PoolEntryCreator(String loggingPrefix)
+    {
+        this.loggingPrefix = loggingPrefix;
+    }
+
+    @Override
+    public Boolean call()
+    {
+        long sleepBackoff = 250L;
+        // 判断连接池的状态，以及是否有必要创建新的连接。
+        while (poolState == POOL_NORMAL && shouldCreateAnotherConnection()) {
+            final PoolEntry poolEntry = createPoolEntry();
+            if (poolEntry != null) {
+                connectionBag.add(poolEntry);
+                logger.debug("{} - Added connection {}", poolName, poolEntry.connection);
+                if (loggingPrefix != null) {
+                    logPoolState(loggingPrefix);
+                }
+                return Boolean.TRUE;
+            }
+
+            // failed to get connection from db, sleep and retry
+            quietlySleep(sleepBackoff);
+            sleepBackoff = Math.min(SECONDS.toMillis(10), Math.min(connectionTimeout, (long) (sleepBackoff * 1.5)));
+        }
+        // Pool is suspended or shutdown or at max size
+        return Boolean.FALSE;
+    }
+
+    private synchronized boolean shouldCreateAnotherConnection() {
+        // 如果当前的连接数量还没有达到最大值，并且仍有线程在等待获取连接或者空闲连接低于阈值，那么有必要创建新的连接。
+        return getTotalConnections() < config.getMaximumPoolSize() &&
+        (connectionBag.getWaitingThreadCount() > 0 || getIdleConnections() < config.getMinimumIdle());
+    }
+}
+```
+
+当`HikariPool`对象构造完成后，就可以通过它的`getConnection()`方法获取连接，该方法又会调用一个重载方法。
 
 ```java
 // com.zaxxer.hikari.pool.HikariPool#getConnection()
@@ -202,7 +248,8 @@ public Connection getConnection() throws SQLException
 
 public Connection getConnection(final long hardTimeout) throws SQLException
 {
-    // suspendResumeLock锁的功能是暂停连接池从而允许用户修改连接池的配置等
+    // suspendResumeLock锁的功能是暂停连接池从而允许用户修改连接池的配置、模拟数据库连接故障等。
+    // 当我们没有设置isAllowPoolSuspension字段时，suspendResumeLock是一个空实现，不会起到锁的作用。
     suspendResumeLock.acquire();
     final long startTime = currentTime();
 
