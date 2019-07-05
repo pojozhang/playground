@@ -196,6 +196,7 @@ private synchronized void fillPool()
 `fillPool()`方法中用到两个对象来创建连接，分别是`poolEntryCreator`和`postFillPoolEntryCreator`，它们都是`PoolEntryCreator`类的实例，仅在打印日志的参数部分有所区别。
 
 ```java
+// com.zaxxer.hikari.pool.HikariPool.PoolEntryCreator
 private final class PoolEntryCreator implements Callable<Boolean>
 {
     private final String loggingPrefix;
@@ -211,7 +212,9 @@ private final class PoolEntryCreator implements Callable<Boolean>
         long sleepBackoff = 250L;
         // 判断连接池的状态，以及是否有必要创建新的连接。
         while (poolState == POOL_NORMAL && shouldCreateAnotherConnection()) {
+            // 构建PoolEntry对象。
             final PoolEntry poolEntry = createPoolEntry();
+            // 如果构建成功，表示成功获得连接，那么就把得到的PoolEntry对象放入connectionBag中。
             if (poolEntry != null) {
                 connectionBag.add(poolEntry);
                 logger.debug("{} - Added connection {}", poolName, poolEntry.connection);
@@ -220,12 +223,10 @@ private final class PoolEntryCreator implements Callable<Boolean>
                 }
                 return Boolean.TRUE;
             }
-
-            // failed to get connection from db, sleep and retry
+            // 如果获得连接失败，那么当前线程在等待一段时间后进行重试。
             quietlySleep(sleepBackoff);
             sleepBackoff = Math.min(SECONDS.toMillis(10), Math.min(connectionTimeout, (long) (sleepBackoff * 1.5)));
         }
-        // Pool is suspended or shutdown or at max size
         return Boolean.FALSE;
     }
 
@@ -233,6 +234,51 @@ private final class PoolEntryCreator implements Callable<Boolean>
         // 如果当前的连接数量还没有达到最大值，并且仍有线程在等待获取连接或者空闲连接低于阈值，那么有必要创建新的连接。
         return getTotalConnections() < config.getMaximumPoolSize() &&
         (connectionBag.getWaitingThreadCount() > 0 || getIdleConnections() < config.getMinimumIdle());
+    }
+}
+
+// com.zaxxer.hikari.pool.HikariPool#createPoolEntry
+private PoolEntry createPoolEntry()
+{
+    try {
+        final PoolEntry poolEntry = newPoolEntry();
+
+        final long maxLifetime = config.getMaxLifetime();
+        if (maxLifetime > 0) {
+        // variance up to 2.5% of the maxlifetime
+        final long variance = maxLifetime > 10_000 ? ThreadLocalRandom.current().nextLong( maxLifetime / 40 ) : 0;
+        final long lifetime = maxLifetime - variance;
+        poolEntry.setFutureEol(houseKeepingExecutorService.schedule(
+            () -> {
+                if (softEvictConnection(poolEntry, "(connection has passed maxLifetime)", false /* not owner */)) {
+                    addBagItem(connectionBag.getWaitingThreadCount());
+                }
+            },
+            lifetime, MILLISECONDS));
+        }
+
+        return poolEntry;
+    }
+    catch (ConnectionSetupException e) {
+        if (poolState == POOL_NORMAL) { // we check POOL_NORMAL to avoid a flood of messages if shutdown() is running concurrently
+        logger.error("{} - Error thrown while acquiring connection from data source", poolName, e.getCause());
+        lastConnectionFailure.set(e);
+        }
+        return null;
+    }
+    catch (SQLException e) {
+        if (poolState == POOL_NORMAL) { // we check POOL_NORMAL to avoid a flood of messages if shutdown() is running concurrently
+        logger.debug("{} - Cannot acquire connection from data source", poolName, e);
+        lastConnectionFailure.set(new ConnectionSetupException(e));
+        }
+        return null;
+    }
+    catch (Exception e) {
+        if (poolState == POOL_NORMAL) { // we check POOL_NORMAL to avoid a flood of messages if shutdown() is running concurrently
+        logger.error("{} - Error thrown while acquiring connection from data source", poolName, e);
+        lastConnectionFailure.set(new ConnectionSetupException(e));
+        }
+        return null;
     }
 }
 ```
