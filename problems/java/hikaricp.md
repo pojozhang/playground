@@ -1,6 +1,6 @@
 # HikariCP
 
-![版本](https://img.shields.io/badge/version-3.3.1-blue.svg?link=https://github.com/brettwooldridge/HikariCP/tree/HikariCP-3.3.1)
+![状态](https://img.shields.io/badge/status-processing-blue.svg) ![版本](https://img.shields.io/badge/version-3.3.1-blue.svg?link=https://github.com/brettwooldridge/HikariCP/tree/HikariCP-3.3.1)
 
 ## getConnection()
 
