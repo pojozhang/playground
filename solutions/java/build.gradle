@@ -43,6 +43,7 @@ dependencies {
             'guru.nidi:graphviz-java:0.8.8',
             'com.rabbitmq:amqp-client:5.7.2',
             'com.rabbitmq:http-client:3.2.0.RELEASE',
+            'org.apache.kafka:kafka-clients:2.3.0',
             'org.apache.httpcomponents:httpclient:4.5.9',
             'io.lettuce:lettuce-core:5.1.7.RELEASE',
             'org.elasticsearch.client:elasticsearch-rest-high-level-client:7.2.0',
@@ -58,7 +59,9 @@ dependencies {
     testImplementation(
             'org.assertj:assertj-core:3.12.2',
             'org.awaitility:awaitility:3.1.6',
+            'org.junit.platform:junit-platform-launcher:1.5.0',
             "org.junit.jupiter:junit-jupiter-api:$junitVersion",
+            "org.junit.vintage:junit-vintage-engine:$junitVersion",
             "org.springframework.boot:spring-boot-starter-test:$springBootVersion",
     )
 
