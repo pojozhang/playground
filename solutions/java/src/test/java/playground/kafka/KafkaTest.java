@@ -32,8 +32,6 @@ class KafkaTest {
     @Test
     void producer_should_send_messages_to_the_consumer() throws InterruptedException, TimeoutException, ExecutionException {
         final int MESSAGE_COUNT = 10;
-        Producer<String, String> producer = initProducer();
-
         AtomicInteger countDown = new AtomicInteger(MESSAGE_COUNT);
         Executors.newSingleThreadExecutor().submit(() -> {
             try (Consumer<String, String> consumer = initConsumer()) {
@@ -47,8 +45,11 @@ class KafkaTest {
             }
         });
 
-        for (int i = 0; i < MESSAGE_COUNT; i++) {
-            producer.send(new ProducerRecord<>(TOPIC, "value")).get(5, TimeUnit.SECONDS);
+        try (Producer<String, String> producer = initProducer()) {
+            for (int i = 0; i < MESSAGE_COUNT; i++) {
+                System.out.println("send " + i);
+                producer.send(new ProducerRecord<>(TOPIC, "value")).get(5, TimeUnit.SECONDS);
+            }
         }
 
         await().atMost(100, TimeUnit.SECONDS).until(() -> countDown.get() <= 0);
