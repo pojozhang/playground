@@ -13,6 +13,7 @@ import org.junit.jupiter.api.Test;
 import java.time.Duration;
 import java.util.Collections;
 import java.util.Properties;
+import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -26,7 +27,7 @@ class KafkaTest {
     private static final String BROKERS = "127.0.0.1:29092,127.0.0.1:29093,127.0.0.1:29094";
     private static final String STRING_SERIALIZER = "org.apache.kafka.common.serialization.StringSerializer";
     private static final String STRING_DESERIALIZER = "org.apache.kafka.common.serialization.StringDeserializer";
-    private static final String TOPIC = "test-topic";
+    private static final String TOPIC = "test-topic-" + UUID.randomUUID().toString().substring(0, 6);
     private static final String GROUP = "test-group";
 
     @Test
@@ -38,6 +39,7 @@ class KafkaTest {
                 consumer.subscribe(Collections.singletonList(TOPIC));
                 while (countDown.get() > 0) {
                     ConsumerRecords<String, String> records = consumer.poll(Duration.ofSeconds(1));
+                    System.out.println("consume " + records.count());
                     if (!records.isEmpty()) {
                         countDown.addAndGet(-1 * records.count());
                     }
