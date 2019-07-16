@@ -1,15 +1,8 @@
 package playground.algorithm;
 
+import playground.algorithm.common.ListNode;
+
 public class MergeTwoSortedLists {
-
-    static class ListNode {
-        int val;
-        ListNode next;
-
-        ListNode(int x) {
-            val = x;
-        }
-    }
 
     public ListNode mergeTwoLists(ListNode l1, ListNode l2) {
         ListNode mergedRoot = new ListNode(0);

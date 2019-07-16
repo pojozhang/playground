@@ -1,16 +1,8 @@
 package playground.algorithm;
 
+import playground.algorithm.common.ListNode;
+
 public class IntersectionOfTwoLinkedLists {
-
-    static class ListNode {
-        int val;
-        ListNode next;
-
-        ListNode(int x) {
-            val = x;
-            next = null;
-        }
-    }
 
     public ListNode getIntersectionNode(ListNode headA, ListNode headB) {
         ListNode ptrA = headA, ptrB = headB;

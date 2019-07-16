@@ -1,17 +1,8 @@
 package playground.algorithm;
 
+import playground.algorithm.common.ListNode;
+
 public class LinkedListCycle2 {
-
-    static class ListNode {
-
-        int val;
-        ListNode next;
-
-        ListNode(int x) {
-            val = x;
-            next = null;
-        }
-    }
 
     public ListNode detectCycle(ListNode head) {
         ListNode fast = head, slow = head;

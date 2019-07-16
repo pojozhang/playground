@@ -1,5 +1,7 @@
 package playground.algorithm;
 
+import playground.algorithm.common.ListNode;
+
 /**
  * 给定两个非空链表来代表两个非负整数，位数按照逆序方式存储，它们的每个节点只存储单个数字。将这两数相加会返回一个新的链表。
  * 你可以假设除了数字 0 之外，这两个数字都不会以零开头。
@@ -34,19 +36,5 @@ public class AddTwoNumbers {
 
     private ListNode getNext(ListNode listNode) {
         return listNode == null ? null : listNode.next;
-    }
-
-    static class ListNode {
-        public int val;
-        public ListNode next;
-
-        public ListNode(int x) {
-            this.val = x;
-        }
-
-        @Override
-        public String toString() {
-            return val + (next == null ? "" : " > " + next.toString());
-        }
     }
 }

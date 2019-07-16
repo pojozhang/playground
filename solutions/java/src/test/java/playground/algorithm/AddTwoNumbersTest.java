@@ -1,8 +1,7 @@
 package playground.algorithm;
 
 import org.junit.jupiter.api.Test;
-
-import playground.algorithm.AddTwoNumbers.ListNode;
+import playground.algorithm.common.ListNode;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -15,7 +14,7 @@ class AddTwoNumbersTest {
         ListNode l2 = buildNode(new int[]{2, 7, 8});
 
         ListNode result = solution.addTwoNumbers(l1, l2);
-        
+
         assertEquals(2, result.val, result.toString());
         assertEquals(7, result.next.val, result.toString());
         assertEquals(8, result.next.next.val, result.toString());

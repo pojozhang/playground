@@ -1,15 +1,8 @@
 package playground.algorithm;
 
+import playground.algorithm.common.ListNode;
+
 public class RemoveNthNodeFromEndOfList {
-
-    static class ListNode {
-        int val;
-        ListNode next;
-
-        ListNode(int x) {
-            val = x;
-        }
-    }
 
     public ListNode removeNthFromEnd(ListNode head, int n) {
         ListNode fast = head;
