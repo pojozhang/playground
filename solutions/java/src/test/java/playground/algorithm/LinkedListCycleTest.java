@@ -1,10 +1,10 @@
 package playground.algorithm;
 
+import org.junit.jupiter.api.Test;
+import playground.algorithm.common.ListNode;
+
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-
-import org.junit.jupiter.api.Test;
-import playground.algorithm.LinkedListCycle.ListNode;
 
 class LinkedListCycleTest {
 
