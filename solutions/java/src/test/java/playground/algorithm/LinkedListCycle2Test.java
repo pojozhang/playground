@@ -12,8 +12,7 @@ class LinkedListCycle2Test {
 
     @Test
     void case_1() {
-        ListNode head = new ListNode(0);
-        head.next = new ListNode(1);
+        ListNode head = ListNode.of(0, 1);
 
         assertNull(solution.detectCycle(head));
     }
