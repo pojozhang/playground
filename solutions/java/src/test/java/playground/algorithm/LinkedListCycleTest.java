@@ -12,16 +12,14 @@ class LinkedListCycleTest {
 
     @Test
     void case_1() {
-        ListNode head = new ListNode(0);
-        head.next = new ListNode(1);
+        ListNode head = ListNode.of(0, 1);
 
         assertFalse(solution.hasCycle(head));
     }
 
     @Test
     void case_2() {
-        ListNode head = new ListNode(0);
-        head.next = new ListNode(1);
+        ListNode head = ListNode.of(0, 1);
         head.next.next = head;
 
         assertTrue(solution.hasCycle(head));
