@@ -74,7 +74,7 @@
 - [x] [删除排序链表中的重复元素](remove-duplicates-from-sorted-list.md)
 - [x] [相交链表](intersection-of-two-linked-lists.md)
 - [x] [合并两个有序链表](merge-two-sorted-lists.md)
-- [ ] [两两交换链表中的节点](swap-nodes-in-pairs.md)
+- [x] [两两交换链表中的节点](swap-nodes-in-pairs.md)
 - [x] [奇偶链表](odd-even-linked-list.md)
 
 ## 堆
