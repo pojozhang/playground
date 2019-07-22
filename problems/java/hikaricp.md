@@ -242,15 +242,17 @@ private PoolEntry createPoolEntry()
 {
     try {
         final PoolEntry poolEntry = newPoolEntry();
-
+        // 连接的存活时间。
         final long maxLifetime = config.getMaxLifetime();
         if (maxLifetime > 0) {
-        // variance up to 2.5% of the maxlifetime
+        // 设置一个随机的偏差variance，以防止大量连接同时失效。
         final long variance = maxLifetime > 10_000 ? ThreadLocalRandom.current().nextLong( maxLifetime / 40 ) : 0;
         final long lifetime = maxLifetime - variance;
+
+        // 创建一个定时任务用来关闭连接，触发时间是连接的存活时间。
         poolEntry.setFutureEol(houseKeepingExecutorService.schedule(
             () -> {
-                if (softEvictConnection(poolEntry, "(connection has passed maxLifetime)", false /* not owner */)) {
+                if (softEvictConnection(poolEntry, "(connection has passed maxLifetime)", false)) {
                     addBagItem(connectionBag.getWaitingThreadCount());
                 }
             },
@@ -260,26 +262,43 @@ private PoolEntry createPoolEntry()
         return poolEntry;
     }
     catch (ConnectionSetupException e) {
-        if (poolState == POOL_NORMAL) { // we check POOL_NORMAL to avoid a flood of messages if shutdown() is running concurrently
-        logger.error("{} - Error thrown while acquiring connection from data source", poolName, e.getCause());
-        lastConnectionFailure.set(e);
+        if (poolState == POOL_NORMAL) {
+            logger.error("{} - Error thrown while acquiring connection from data source", poolName, e.getCause());
+            lastConnectionFailure.set(e);
         }
         return null;
     }
     catch (SQLException e) {
-        if (poolState == POOL_NORMAL) { // we check POOL_NORMAL to avoid a flood of messages if shutdown() is running concurrently
-        logger.debug("{} - Cannot acquire connection from data source", poolName, e);
-        lastConnectionFailure.set(new ConnectionSetupException(e));
+        if (poolState == POOL_NORMAL) {
+            logger.debug("{} - Cannot acquire connection from data source", poolName, e);
+            lastConnectionFailure.set(new ConnectionSetupException(e));
         }
         return null;
     }
     catch (Exception e) {
-        if (poolState == POOL_NORMAL) { // we check POOL_NORMAL to avoid a flood of messages if shutdown() is running concurrently
-        logger.error("{} - Error thrown while acquiring connection from data source", poolName, e);
-        lastConnectionFailure.set(new ConnectionSetupException(e));
+        if (poolState == POOL_NORMAL) {
+            logger.error("{} - Error thrown while acquiring connection from data source", poolName, e);
+            lastConnectionFailure.set(new ConnectionSetupException(e));
         }
         return null;
     }
+}
+
+// 使连接失效。
+private boolean softEvictConnection(final PoolEntry poolEntry, final String reason, final boolean owner)
+{
+    // 打开失效标记。
+    poolEntry.markEvicted();
+    // owner变量表示是否是用户触发的，比如用户可以主动调用HikariDataSource#evictConnection(Connection)方法使连接失效，此时owner变量的值是true，如果不是用户主动触发的，该变量的值就是false。
+    // connectionBag.reserve()方法用于保留还未被使用的对象，如果对象已经在被使用中，那么该方法返回false，表示保留失败，否则返回true。
+    if (owner || connectionBag.reserve(poolEntry)) {
+        // 如果是用户主动触发的，或者连接还未被使用的，那么关闭连接。
+        closeConnection(poolEntry, reason);
+        return true;
+    }
+
+    // 如果既不是用户主动触发，也不是闲置中的连接，那么在之后连接再次被取出时，由于被标记为了已失效，因此也不会被使用。
+    return false;
 }
 ```
 
