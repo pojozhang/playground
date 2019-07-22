@@ -8,7 +8,7 @@ import org.springframework.transaction.IllegalTransactionStateException;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.UnexpectedRollbackException;
 import org.springframework.transaction.support.DefaultTransactionStatus;
-import playground.spring.BaseSpringTest;
+import playground.spring.SpringTestBase;
 import playground.spring.repository.FilmRepository;
 import playground.spring.service.TransactionService;
 
@@ -16,7 +16,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.transaction.interceptor.TransactionAspectSupport.currentTransactionStatus;
 import static util.TestUtils.tryCatch;
 
-class TransactionPropagationTest extends BaseSpringTest {
+class TransactionPropagationTest extends SpringTestBase {
 
     @Autowired
     private TransactionService transactionService;

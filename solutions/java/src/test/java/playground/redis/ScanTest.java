@@ -6,7 +6,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-class ScanTest extends BaseRedisTest {
+class ScanTest extends RedisTestBase {
 
     @Test
     void scan() {

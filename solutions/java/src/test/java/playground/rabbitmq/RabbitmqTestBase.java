@@ -16,7 +16,7 @@ import java.util.Set;
 import java.util.concurrent.*;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-abstract class BaseRabbitmqTest {
+abstract class RabbitmqTestBase {
 
     static final String VIRTUAL_HOST = "playground";
     static final String DIRECT_EXCHANGE = "playground-direct";

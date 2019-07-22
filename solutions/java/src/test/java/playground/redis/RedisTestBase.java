@@ -8,7 +8,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.TestInstance;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-abstract class BaseRedisTest {
+abstract class RedisTestBase {
 
     private RedisClient client;
     private StatefulRedisConnection<String, String> connection;

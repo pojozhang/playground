@@ -3,12 +3,12 @@ package playground.spring.aop;
 import org.junit.jupiter.api.Test;
 import org.mockito.InOrder;
 import org.springframework.boot.test.mock.mockito.SpyBean;
-import playground.spring.BaseSpringTest;
+import playground.spring.SpringTestBase;
 import playground.spring.service.EchoService;
 
 import static org.mockito.Mockito.*;
 
-class EchoServiceAspectTest extends BaseSpringTest {
+class EchoServiceAspectTest extends SpringTestBase {
 
     @SpyBean
     private EchoServiceAspect echoServiceAspect;

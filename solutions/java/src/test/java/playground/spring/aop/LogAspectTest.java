@@ -2,13 +2,13 @@ package playground.spring.aop;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.mock.mockito.SpyBean;
-import playground.spring.BaseSpringTest;
+import playground.spring.SpringTestBase;
 import playground.spring.service.EchoService;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 
-class LogAspectTest extends BaseSpringTest {
+class LogAspectTest extends SpringTestBase {
 
     @SpyBean
     private LogAspect logAspect;

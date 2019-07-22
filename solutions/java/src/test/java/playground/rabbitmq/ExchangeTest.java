@@ -9,7 +9,7 @@ import java.util.concurrent.TimeoutException;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-class ExchangeTest extends BaseRabbitmqTest {
+class ExchangeTest extends RabbitmqTestBase {
 
     @Test
     void a_message_goes_to_the_queues_whose_binding_key_exactly_matches_the_routing_key_when_using_direct_exchange() throws IOException, InterruptedException, TimeoutException {
