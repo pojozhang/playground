@@ -50,6 +50,8 @@ public Connection getConnection() throws SQLException
 }
 ```
 
+## 构造HikariPool
+
 `HikariDataSource`类中的`getConnection()`方法最后会把请求转发给`HikariPool`类处理，下面是`HikariPool`对象的构造方法。
 
 ```java
@@ -103,7 +105,7 @@ public HikariPool(final HikariConfig config)
 
         final long startTime = currentTime();
         while (elapsedMillis(startTime) < config.getInitializationFailTimeout() && getTotalConnections() < config.getMinimumIdle()) {
-        quietlySleep(MILLISECONDS.toMillis(100));
+            quietlySleep(MILLISECONDS.toMillis(100));
         }
 
         addConnectionExecutor.setCorePoolSize(1);
@@ -113,6 +115,8 @@ public HikariPool(final HikariConfig config)
 ```
 
 其中，`addConnectionExecutor`线程池用于创建连接，`closeConnectionExecutor`线程池用于关闭连接。
+
+## HouseKeeper
 
 `HouseKeeper`线程用于维护线程池的最小连接数，它实现了`Runnable`接口。
 
@@ -160,7 +164,7 @@ private final class HouseKeeper implements Runnable
                 int toRemove = notInUse.size() - config.getMinimumIdle();
                 for (PoolEntry entry : notInUse) {
                     // 判断需要被删除的连接的数量，以及连接的空闲时间，如果符合条件则关闭连接。
-                    // connectionBag.reserve(entry)的用处是把该项标记为不可用。
+                    // connectionBag.reserve()的作用是把该项标记为不可用，该方法返回false表示连接正在被使用，返回true表示连接闲置。
                     if (toRemove > 0 && elapsedMillis(entry.lastAccessed, now) > idleTimeout && connectionBag.reserve(entry)) {
                         closeConnection(entry, "(connection has passed idleTimeout)");
                         toRemove--;
@@ -171,7 +175,7 @@ private final class HouseKeeper implements Runnable
             // 打印日志。
             logPoolState(afterPrefix);
 
-            // 增加连接数量使得连接数不低于最小空闲连接数。
+            // 增加连接数量使得空闲连接数在不超过最大连接数的情况下不低于最小空闲连接数。
             fillPool();
         }
         catch (Exception e) {
@@ -179,11 +183,18 @@ private final class HouseKeeper implements Runnable
         }
     }
 }
+```java
 
+## 填充连接池
+
+`fillPool()`方法用来维持空闲连接的数量。
+
+```java
 // 该方法是同步的。
 private synchronized void fillPool()
 {
     // 计算要新增的连接的数量。
+    // 连接总数不能超过最大连接数。
     final int connectionsToAdd = Math.min(config.getMaximumPoolSize() - getTotalConnections(), config.getMinimumIdle() - getIdleConnections())
                                 - addConnectionQueue.size();
     // 增加连接。
