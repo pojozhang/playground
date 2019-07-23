@@ -24,7 +24,7 @@ import static org.awaitility.Awaitility.await;
 
 class KafkaTest {
 
-    private static final String BROKERS = "127.0.0.1:29092,127.0.0.1:29093,127.0.0.1:29094";
+    private static final String BROKERS = "127.0.0.1:29092";
     private static final String STRING_SERIALIZER = "org.apache.kafka.common.serialization.StringSerializer";
     private static final String STRING_DESERIALIZER = "org.apache.kafka.common.serialization.StringDeserializer";
     private static final String TOPIC = "test-topic-" + UUID.randomUUID().toString().substring(0, 6);
