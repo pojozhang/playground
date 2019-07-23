@@ -183,7 +183,7 @@ private final class HouseKeeper implements Runnable
         }
     }
 }
-```java
+```
 
 ## 填充连接池
 
