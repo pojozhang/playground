@@ -314,6 +314,8 @@ private boolean softEvictConnection(final PoolEntry poolEntry, final String reas
 }
 ```
 
+## getConnection()
+
 当`HikariPool`对象构造完成后，就可以通过它的`getConnection()`方法获取连接，该方法又会调用一个重载方法。
 
 ```java
@@ -351,6 +353,7 @@ public Connection getConnection(final long hardTimeout) throws SQLException
             else {
                 // 记录状态
                 metricsTracker.recordBorrowStats(poolEntry, startTime);
+                // 创建Connection的代理类。
                 return poolEntry.createProxyConnection(leakTaskFactory.schedule(poolEntry), now);
             }
         } while (timeout > 0L);
@@ -367,6 +370,32 @@ public Connection getConnection(final long hardTimeout) throws SQLException
     }
 }
 ```
+
+## 动态创建类
+
+当我们基于源代码调试时，会发现程序运行到`poolEntry.createProxyConnection()`这一步就会报错，进入该方法查看后，发现方法体没有实现任何功能，仅仅是抛出了异常。
+
+```java
+static ProxyConnection getProxyConnection(final PoolEntry poolEntry, final Connection connection, final FastList<Statement> openStatements, final ProxyLeakTask leakTask, final long now, final boolean isReadOnly, final boolean isAutoCommit){
+    // Body is replaced (injected) by JavassistProxyFactory
+    throw new IllegalStateException("You need to run the CLI build and you need target/classes in your classpath to run.");
+}
+```
+
+那么真正的实现去哪了呢？实际上看了作者的注释就能明白，真正的方法体会由Javassist动态生成，为了得到一个可正常运行的版本，我们需要用Maven进行构建。
+
+```shell
+mvn test package
+```
+
+上述命令执行完成后会发现在`target/classes/com/zaxxer/hikari/pool`目录下生成了几个以HikariProxy开头的类文件，分别是：
+
+1. HikariProxyCallableStatement.class
+2. HikariProxyConnection.class
+3. HikariProxyPreparedStatement.class
+4. HikariProxyResultSet.class
+5. HikariProxyStatement.class
+
 
 ## ConcurrentBag
 
