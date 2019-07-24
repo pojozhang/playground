@@ -2,7 +2,7 @@
 
 ![状态](https://img.shields.io/badge/status-processing-blue.svg) ![版本](https://img.shields.io/badge/version-3.3.1-blue.svg?link=https://github.com/brettwooldridge/HikariCP/tree/HikariCP-3.3.1)
 
-## getConnection()
+## 入口
 
 数据库连接池的核心就是`getConnection()`方法，其位于`HikariDataSource`类中。
 
@@ -185,9 +185,9 @@ private final class HouseKeeper implements Runnable
 }
 ```
 
-## 填充连接池
+## 创建连接
 
-`fillPool()`方法用来维持空闲连接的数量。
+`fillPool()`方法用来维持连接池中空闲连接的数量。
 
 ```java
 // 该方法是同步的。
@@ -224,6 +224,7 @@ private final class PoolEntryCreator implements Callable<Boolean>
         // 判断连接池的状态，以及是否有必要创建新的连接。
         while (poolState == POOL_NORMAL && shouldCreateAnotherConnection()) {
             // 构建PoolEntry对象。
+            // createPoolEntry()方法负责构建JDBC的Connection对象，以及执行初始化SQL等操作。
             final PoolEntry poolEntry = createPoolEntry();
             // 如果构建成功，表示成功获得连接，那么就把得到的PoolEntry对象放入connectionBag中。
             if (poolEntry != null) {
@@ -341,6 +342,7 @@ public Connection getConnection(final long hardTimeout) throws SQLException
 
             final long now = currentTime();
             // 如果取出的连接已被标记为不可用，或者连接的上一次访问时间距离现在已经超过了阈值并且连接已断开，那么就强制关闭连接。
+            // 这里不直接判断连接是否存活的原因是处于性能的考虑，因为检测连接存活需要执行SQL语句，所以这里加上一个时间阈值，当连接上一次的访问时间超过了一定的范围才会进行检测。
             if (poolEntry.isMarkedEvicted() || (elapsedMillis(poolEntry.lastAccessed, now) > aliveBypassWindowMs && !isConnectionAlive(poolEntry.connection))) {
                 closeConnection(poolEntry, poolEntry.isMarkedEvicted() ? EVICTED_CONNECTION_MESSAGE : DEAD_CONNECTION_MESSAGE);
                 // 更新timeout字段，进入下一个循环。
