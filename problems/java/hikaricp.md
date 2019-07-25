@@ -376,19 +376,25 @@ public Connection getConnection(final long hardTimeout) throws SQLException
 当我们基于源代码调试时，会发现程序运行到`poolEntry.createProxyConnection()`这一步就会报错，进入该方法查看后，发现方法体没有实现任何功能，仅仅是抛出了异常。
 
 ```java
+// com.zaxxer.hikari.pool.PoolEntry#createProxyConnection
+Connection createProxyConnection(final ProxyLeakTask leakTask, final long now){
+    return ProxyFactory.getProxyConnection(this, connection, openStatements, leakTask, now, isReadOnly, isAutoCommit);
+}
+
+// com.zaxxer.hikari.pool.ProxyFactory#getProxyConnection
 static ProxyConnection getProxyConnection(final PoolEntry poolEntry, final Connection connection, final FastList<Statement> openStatements, final ProxyLeakTask leakTask, final long now, final boolean isReadOnly, final boolean isAutoCommit){
     // Body is replaced (injected) by JavassistProxyFactory
     throw new IllegalStateException("You need to run the CLI build and you need target/classes in your classpath to run.");
 }
 ```
 
-那么真正的实现去哪了呢？实际上看了作者的注释就能明白，真正的方法体会由Javassist动态生成，为了得到一个可正常运行的版本，我们需要用Maven进行构建。
+那么真正的实现去哪了呢？实际上看了作者的注释就能明白，真正的方法体会由Javassist动态生成。为了得到一个可正常运行的版本，我们需要用Maven进行构建。
 
 ```shell
 mvn test package
 ```
 
-上述命令执行完成后会发现在`target/classes/com/zaxxer/hikari/pool`目录下生成了几个以HikariProxy开头的类文件，分别是：
+上述命令会调用`com.zaxxer.hikari.util.JavassistProxyFactory`类动态生成类文件，命令执行完成后会在`target/classes/com/zaxxer/hikari/pool`路径下生成几个以HikariProxy开头的类文件，分别是：
 
 1. HikariProxyCallableStatement.class
 2. HikariProxyConnection.class
@@ -396,6 +402,27 @@ mvn test package
 4. HikariProxyResultSet.class
 5. HikariProxyStatement.class
 
+此时再去看编译后的`getProxyConnection()`方法，可以看到原来抛出异常的代码已经被替换掉了。
+
+```java
+static ProxyConnection getProxyConnection(PoolEntry var0, Connection var1, FastList<Statement> var2, ProxyLeakTask var3, long var4, boolean var6, boolean var7) {
+    return new HikariProxyConnection(var0, var1, var2, var3, var4, var6, var7);
+}
+```
+
+那么作者为什么要动态地创建类呢？如果我们看一下这些生成的类中的方法实现，就会发现其中大部分都是在基类方法的外面包了一层异常捕获，比如下面这段代码。
+
+```java
+public Statement createStatement() throws SQLException {
+    try {
+        return super.createStatement();
+    } catch (SQLException var2) {
+        throw this.checkException(var2);
+    }
+}
+```
+
+作者认为手动编写这些代码比较麻烦，因为有的类中需要重写几十个方法，因此采用了动态创建类的方法，可以在[这里](https://github.com/brettwooldridge/HikariCP/issues/1198)查看作者的回复。
 
 ## ConcurrentBag
 
