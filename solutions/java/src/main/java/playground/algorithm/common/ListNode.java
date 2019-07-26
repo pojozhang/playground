@@ -1,5 +1,7 @@
 package playground.algorithm.common;
 
+import java.util.StringJoiner;
+
 public class ListNode {
     public int val;
     public ListNode next;
@@ -31,5 +33,16 @@ public class ListNode {
             listNode = listNode.next;
         }
         return nextNode == null && listNode == null;
+    }
+
+    @Override
+    public String toString() {
+        final int maxDepth = 20;
+        StringJoiner joiner = new StringJoiner("->");
+        int depth = 0;
+        for (ListNode node = this; node != null && depth++ < 100; node = node.next) {
+            joiner.add(String.valueOf(node.val));
+        }
+        return joiner.toString();
     }
 }

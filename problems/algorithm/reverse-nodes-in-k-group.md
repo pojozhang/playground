@@ -16,3 +16,5 @@ k是一个正整数，它的值小于或等于链表的长度。
 2. **你不能只是单纯的改变节点内部的值**，而是需要实际的进行节点交换。
 
 ## 实现
+
+- [Java](https://github.com/pojozhang/playground/blob/master/solutions/java/src/main/java/playground/algorithm/ReverseNodesInKGroup.java)
