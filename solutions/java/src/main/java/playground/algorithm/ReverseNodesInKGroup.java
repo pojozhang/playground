@@ -23,7 +23,7 @@ public class ReverseNodesInKGroup {
         return size;
     }
 
-    // fixed->current(head)->next->nextNext
+    // fixed->current(head)->next
     private void reverseKGroup(ListNode fixed, ListNode head, int k, int left) {
         if (left < k) {
             fixed.next = head;
