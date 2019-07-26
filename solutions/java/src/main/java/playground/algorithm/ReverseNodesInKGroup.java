@@ -33,7 +33,7 @@ public class ReverseNodesInKGroup {
         ListNode previous = null;
         ListNode current = head;
         ListNode next;
-        for (int i = 0; current != null && i < k; i++) {
+        for (int i = 0; i < k; i++) {
             next = current.next;
             current.next = previous;
             previous = current;
