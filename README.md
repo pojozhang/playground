@@ -1,6 +1,6 @@
 ![](logo.jpg)
 
-[![Build Status](https://travis-ci.org/pojozhang/playground.svg?branch=master)](https://travis-ci.org/pojozhang/playground) [![Build Report](https://img.shields.io/badge/build-report-blue.svg)](https://pojozhang.github.io/playground-report) ![](https://img.shields.io/github/last-commit/pojozhang/playground.svg) ![GitHub repo size in bytes](https://img.shields.io/github/repo-size/pojozhang/playground.svg) [![996.icu](https://img.shields.io/badge/link-996.icu-red.svg)](https://996.icu)
+[![Build Status](https://travis-ci.org/pojozhang/playground.svg?branch=master)](https://travis-ci.org/pojozhang/playground) [![CI Report](https://img.shields.io/badge/ci-report-blue.svg)](https://pojozhang.github.io/playground-report) ![](https://img.shields.io/github/last-commit/pojozhang/playground.svg) ![GitHub repo size in bytes](https://img.shields.io/github/repo-size/pojozhang/playground.svg) [![996.icu](https://img.shields.io/badge/link-996.icu-red.svg)](https://996.icu)
 
 - [名词解释](problems/terminology/README.md)
 - [数据结构](problems/structure/README.md)
@@ -17,6 +17,7 @@
 - [Redis](problems/redis/README.md)
 - [RabbitMQ](problems/rabbitmq/README.md)
 - [RocketMQ](problems/rocketmq/README.md)
+- [Kafka](problems/kafka/README.md)
 - [Elasticsearch](problems/elasticsearch/README.md)
 - [Docker](problems/docker/README.md)
 - [硬件](problems/hardware/README.md)
