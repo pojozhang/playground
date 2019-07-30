@@ -36,6 +36,7 @@ dependencies {
     )
 
     implementation(
+            'org.jetbrains:annotations:17.0.0',
             'org.apache.commons:commons-lang3:3.9',
             'com.google.guava:guava:28.0-jre',
             'com.alibaba:fastjson:1.2.58',
