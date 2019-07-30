@@ -72,4 +72,15 @@ class QueryTest extends ElasticsearchTestBase {
 
         assertEquals(0, response.getHits().getTotalHits().value);
     }
+
+    @Test
+    void term_query_should_find_documents_that_contain_the_exact_term_in_a_analyzed_field() throws IOException {
+        IndexRequest indexRequest = new IndexRequest(INDEX)
+                .source("text_field", "hello world");
+        index(indexRequest);
+
+        SearchResponse response = query(termQuery("text_field", "hello"));
+
+        assertEquals(1, response.getHits().getTotalHits().value);
+    }
 }
