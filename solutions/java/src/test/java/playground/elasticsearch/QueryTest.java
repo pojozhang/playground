@@ -10,6 +10,7 @@ import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 
+import static org.elasticsearch.index.query.QueryBuilders.matchQuery;
 import static org.elasticsearch.index.query.QueryBuilders.termQuery;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -80,6 +81,17 @@ class QueryTest extends ElasticsearchTestBase {
         index(indexRequest);
 
         SearchResponse response = query(termQuery("text_field", "hello"));
+
+        assertEquals(1, response.getHits().getTotalHits().value);
+    }
+
+    @Test
+    void match_query_will_analyze_the_text_before_query() throws IOException {
+        IndexRequest indexRequest = new IndexRequest(INDEX)
+                .source("text_field", "hello, my world");
+        index(indexRequest);
+
+        SearchResponse response = query(matchQuery("text_field", "hello world"));
 
         assertEquals(1, response.getHits().getTotalHits().value);
     }

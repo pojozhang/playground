@@ -58,15 +58,29 @@
 }
 ```
 
+- Wildcard Query
+
 - Match Query
+
+Match Query会在查询之前对目标词进行分词，比如用"hello world"可以匹配到"hello, my world"，这是因为"hello world"进行分词后会被分为"hello"和"world"。
+
+```json
+// 数据
+{
+    "text_field": "hello, my world"
+}
+
+// 查询
+"query": {
+    "match" : { "keyword_field" : "hello world" }
+}
+```
 
 - Match Phrase Query
 
 - Match Phrase Prefix Query
 
 - Multi Match Query
-
-- Wildcard Query
 
 - Query String Query
 
