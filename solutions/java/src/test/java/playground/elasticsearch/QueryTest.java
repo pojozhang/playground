@@ -10,8 +10,7 @@ import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 
-import static org.elasticsearch.index.query.QueryBuilders.matchQuery;
-import static org.elasticsearch.index.query.QueryBuilders.termQuery;
+import static org.elasticsearch.index.query.QueryBuilders.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class QueryTest extends ElasticsearchTestBase {
@@ -92,6 +91,39 @@ class QueryTest extends ElasticsearchTestBase {
         index(indexRequest);
 
         SearchResponse response = query(matchQuery("text_field", "hello world"));
+
+        assertEquals(1, response.getHits().getTotalHits().value);
+    }
+
+    @Test
+    void match_phrase_query_should_match_terms_in_exact_order() throws IOException {
+        IndexRequest indexRequest = new IndexRequest(INDEX)
+                .source("text_field", "I like driving and reading");
+        index(indexRequest);
+
+        SearchResponse response = query(matchPhraseQuery("text_field", "I like driving"));
+
+        assertEquals(1, response.getHits().getTotalHits().value);
+    }
+
+    @Test
+    void match_phrase_query_should_not_match_if_the_phrase_is_not_contained() throws IOException {
+        IndexRequest indexRequest = new IndexRequest(INDEX)
+                .source("text_field", "I like driving and reading");
+        index(indexRequest);
+
+        SearchResponse response = query(matchPhraseQuery("text_field", "I like reading"));
+
+        assertEquals(0, response.getHits().getTotalHits().value);
+    }
+
+    @Test
+    void match_phrase_query_should_match_terms_if_slot_is_set() throws IOException {
+        IndexRequest indexRequest = new IndexRequest(INDEX)
+                .source("text_field", "I like driving and reading");
+        index(indexRequest);
+
+        SearchResponse response = query(matchPhraseQuery("text_field", "I like reading").slop(2));
 
         assertEquals(1, response.getHits().getTotalHits().value);
     }
