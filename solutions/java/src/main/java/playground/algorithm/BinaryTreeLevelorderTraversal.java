@@ -1,5 +1,7 @@
 package playground.algorithm;
 
+import playground.algorithm.common.TreeNode;
+
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.List;
@@ -9,17 +11,6 @@ import java.util.Queue;
  * 逐层往下遍历
  */
 public class BinaryTreeLevelorderTraversal {
-
-    static class TreeNode {
-
-        int val;
-        TreeNode left;
-        TreeNode right;
-
-        TreeNode(int x) {
-            val = x;
-        }
-    }
 
     public List<Integer> levelorderTraversal(TreeNode root) {
         List<Integer> result = new ArrayList<>();

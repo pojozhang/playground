@@ -1,12 +1,12 @@
 package playground.algorithm;
 
-import static org.junit.jupiter.api.Assertions.assertIterableEquals;
+import org.junit.jupiter.api.Test;
+import playground.algorithm.common.TreeNode;
 
 import java.util.Collections;
 import java.util.List;
 
-import org.junit.jupiter.api.Test;
-import playground.algorithm.BinaryTreePostorderTraversal.TreeNode;
+import static org.junit.jupiter.api.Assertions.assertIterableEquals;
 
 class BinaryTreePostorderTraversalTest {
 

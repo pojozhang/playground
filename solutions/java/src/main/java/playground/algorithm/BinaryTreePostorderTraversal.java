@@ -1,26 +1,13 @@
 package playground.algorithm;
 
-import java.util.ArrayDeque;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Deque;
-import java.util.List;
+import playground.algorithm.common.TreeNode;
+
+import java.util.*;
 
 /**
  * 后序遍历：左子树->右子树->根节点
  */
 public class BinaryTreePostorderTraversal {
-
-    static class TreeNode {
-
-        int val;
-        TreeNode left;
-        TreeNode right;
-
-        TreeNode(int x) {
-            val = x;
-        }
-    }
 
     // 迭代实现
     public List<Integer> postorderTraversal(TreeNode root) {
