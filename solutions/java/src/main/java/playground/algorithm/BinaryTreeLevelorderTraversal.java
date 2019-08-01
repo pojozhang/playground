@@ -2,8 +2,8 @@ package playground.algorithm;
 
 import playground.algorithm.common.TreeNode;
 
-import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
 
@@ -14,7 +14,7 @@ public class BinaryTreeLevelorderTraversal {
 
     public List<Integer> levelorderTraversal(TreeNode root) {
         List<Integer> result = new ArrayList<>();
-        Queue<TreeNode> queue = new ArrayDeque<>();
+        Queue<TreeNode> queue = new LinkedList<>();
         queue.add(root);
         TreeNode node;
         while (!queue.isEmpty()) {
