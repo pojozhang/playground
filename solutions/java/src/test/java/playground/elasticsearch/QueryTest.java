@@ -118,12 +118,34 @@ class QueryTest extends ElasticsearchTestBase {
     }
 
     @Test
-    void match_phrase_query_should_match_terms_if_slot_is_set() throws IOException {
+    void match_phrase_query_should_match_terms_when_slop_is_set() throws IOException {
         IndexRequest indexRequest = new IndexRequest(INDEX)
                 .source("text_field", "I like driving and reading");
         index(indexRequest);
 
         SearchResponse response = query(matchPhraseQuery("text_field", "I like reading").slop(2));
+
+        assertEquals(1, response.getHits().getTotalHits().value);
+    }
+
+    @Test
+    void match_phrase_prefix_query_should_match_prefix_of_last_term() throws IOException {
+        IndexRequest indexRequest = new IndexRequest(INDEX)
+                .source("text_field", "I like driving and reading");
+        index(indexRequest);
+
+        SearchResponse response = query(matchPhrasePrefixQuery("text_field", "I like d"));
+
+        assertEquals(1, response.getHits().getTotalHits().value);
+    }
+
+    @Test
+    void match_phrase_prefix_query_should_match_prefix_of_last_term_when_slop_is_set() throws IOException {
+        IndexRequest indexRequest = new IndexRequest(INDEX)
+                .source("text_field", "I like driving and reading");
+        index(indexRequest);
+
+        SearchResponse response = query(matchPhrasePrefixQuery("text_field", "I like r").slop(2));
 
         assertEquals(1, response.getHits().getTotalHits().value);
     }

@@ -22,7 +22,7 @@
 
 - Term Query
 
-对于未分词的字段，Term Query要求字段的值和要查询的目标值完全一致。比如下面这个查询，当`keyword_field`的值是"hello world"时，查询中的目标值也必须是"hello world"才能进行匹配。
+对于未分词的字段，Term Query要求查询的目标值和文档中字段的值完全一致。比如下面这个查询，查询的目标值是"hello world"，当且仅当文档的`keyword_field`字段的值是"hello world"时才能进行匹配。
 
 ```json
 // 文档
@@ -84,7 +84,7 @@ Match Query会在查询之前对目标词进行分词，比如用"hello world"�
 
 - Match Phrase Query
 
-Match Phrase Query会对把输入的短语作为一个整体进行查询，并且短语中出现的单词的顺序也要匹配，比如"I like driving"可以匹配到"I like driving and reading"，不能匹配到"I like reading"。
+Match Phrase Query会对把输入的短语作为一个整体进行查询，查询短语中所有的单词都包含，并且单词的顺序也相同的文档才会匹配，比如"I like driving"可以匹配到文档"I like driving and reading"，不能匹配到"I like reading"。
 
 ```json
 // 文档
@@ -100,7 +100,7 @@ Match Phrase Query会对把输入的短语作为一个整体进行查询，并�
 }
 ```
 
-如果我们希望"I like reading"可以匹配到"I like driving and reading"，可以使用`slot`参数，它表示短语中单词之间的间距的最大范围，比如`slot`是2，那么就表示两个单词之间最多允许有另外的2个单词。当`slot`是2时，"I like reading"就可以匹配到"I driving driving and reading"，这是因为文档中"reading"和"like"之间差了两个单词的距离。
+如果我们希望"I like reading"可以匹配到"I like driving and reading"，可以使用`slop`参数，它表示短语中单词之间的间距的最大范围，比如`slop`是2，那么就表示两个单词之间最多允许有另外的2个单词。当`slop`是2时，"I like reading"就可以匹配到"I driving driving and reading"，这是因为文档中"reading"和"like"之间差了两个单词的距离。`slop`的默认值是0。
 
 ```json
 // 查询
@@ -117,6 +117,8 @@ Match Phrase Query会对把输入的短语作为一个整体进行查询，并�
 ```
 
 - Match Phrase Prefix Query
+
+Match Phrase Prefix Query和Match Phrase Query类似，只是对于短语中的最后一个单词可以进行前缀匹配，比如"I like d"可以匹配到"I like driving and reading"。该查询方式同样支持`slop`参数，当`slop`设置为2时，"I like r"可以匹配到"I like driving and reading"。
 
 - Multi Match Query
 
