@@ -163,7 +163,7 @@
 
 ## 图
 
-- [ ] [课程表](course-schedule.md)
+- [x] [课程表](course-schedule.md)
 
 ## 其它
 
