@@ -174,4 +174,43 @@ class QueryTest extends ElasticsearchTestBase {
 
         assertEquals(0, response.getHits().getTotalHits().value);
     }
+
+    @Test
+    void prefix_query_should_returns_documents_that_contain_a_specific_prefix_in_a_provided_field() throws IOException {
+        IndexRequest indexRequest = new IndexRequest(INDEX)
+                .source("text_field", "I like driving and reading",
+                        "keyword_field", "I like driving and reading");
+        index(indexRequest);
+
+        SearchResponse response1 = query(prefixQuery("text_field", "dri"));
+        SearchResponse response2 = query(prefixQuery("keyword_field", "I like"));
+
+        assertEquals(1, response1.getHits().getTotalHits().value);
+        assertEquals(1, response2.getHits().getTotalHits().value);
+    }
+
+    @Test
+    void regex_query_should_return_documents_that_contain_terms_matching_a_regular_expression() throws IOException {
+        IndexRequest indexRequest = new IndexRequest(INDEX)
+                .source("text_field", "I like driving",
+                        "keyword_field", "I like driving");
+        index(indexRequest);
+
+        SearchResponse response1 = query(regexpQuery("text_field", "driving|reading"));
+        SearchResponse response2 = query(regexpQuery("keyword_field", "I like .*"));
+
+        assertEquals(1, response1.getHits().getTotalHits().value);
+        assertEquals(1, response2.getHits().getTotalHits().value);
+    }
+
+    @Test
+    void fuzzy_query_should_return_documents_that_contain_terms_which_are_similar_to_the_query_string() throws IOException {
+        IndexRequest indexRequest = new IndexRequest(INDEX)
+                .source("text_field", "surprise");
+        index(indexRequest);
+
+        SearchResponse response = query(fuzzyQuery("text_field", "surprize"));
+
+        assertEquals(1, response.getHits().getTotalHits().value);
+    }
 }

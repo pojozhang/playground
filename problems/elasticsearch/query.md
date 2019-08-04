@@ -20,7 +20,11 @@
 }
 ```
 
-- Term Query
+## 词级别查询
+
+词级别查询在查询前不会对查询词进行分词。
+
+### Term Query
 
 对于未分词的字段，Term Query要求查询的目标值和文档中字段的值完全一致。比如下面这个查询，查询的目标值是"hello world"，当且仅当文档的`keyword_field`字段的值是"hello world"时才能进行匹配。
 
@@ -62,7 +66,7 @@
 }
 ```
 
-- Wildcard Query
+### Wildcard Query
 
 Wildcard Query支持通配符，`?`匹配一个字符，`*`匹配0个或多个字符。
 
@@ -114,7 +118,89 @@ Wildcard Query支持通配符，`?`匹配一个字符，`*`匹配0个或多个�
 }
 ```
 
-- Match Query
+### Prefix Query
+
+Prefix Query会根据输入的前缀去匹配文档。
+
+```json
+// 文档
+{
+    "text_field": "I like driving and reading"
+}
+
+// 查询
+{
+    "query": {
+        "prefix" : { "text_field" : "dri" }
+    }
+}
+
+// 文档
+{
+    "keyword_field": "I like driving and reading"
+}
+
+// 查询
+{
+    "query": {
+        "prefix" : { "keyword_field" : "I like" }
+    }
+}
+```
+
+### Regexp Query
+
+Regexp Query允许在查询词中使用正则表达式。
+
+```json
+// 文档
+{
+    "text_field": "I like driving"
+}
+
+// 查询
+{
+    "query": {
+        "regexp" : { "text_field" : "driving|reading" }
+    }
+}
+
+// 文档
+{
+    "keyword_field": "I like driving"
+}
+
+// 查询
+{
+    "query": {
+        "regexp" : { "keyword_field" : "I like .*" }
+    }
+}
+```
+
+### Fuzzy Query
+
+Fuzzy Query可以匹配单词和查询词相似的文档，比如"surprize"可以匹配到"surprise"。
+
+```json
+// 文档
+{
+    "text_field": "I like driving and reading"
+}
+
+// 查询
+{
+    "query": {
+        "fuzzy" : { "text_field" : "dri" }
+    }
+}
+```
+
+## 全文查询
+
+全文查询是指在查询前先对查询词进行分词的查询。
+
+### Match Query
 
 Match Query会在查询之前对目标词进行分词，比如用"hello world"可以匹配到"hello, my world"，这是因为"hello world"进行分词后会被分为"hello"和"world"。需要注意的是文档中只需要包含一个经过分词后的搜索关键字就能匹配查询，比如"hello god"也可以匹配到"hello, my world"，尽管后者不包含"god"。
 
@@ -132,7 +218,7 @@ Match Query会在查询之前对目标词进行分词，比如用"hello world"�
 }
 ```
 
-- Match Phrase Query
+### Match Phrase Query
 
 Match Phrase Query会对把输入的短语作为一个整体进行查询，查询短语中所有的单词都包含，并且单词的顺序也相同的文档才会匹配，比如"I like driving"可以匹配到文档"I like driving and reading"，不能匹配到"I like reading"。
 
@@ -166,23 +252,9 @@ Match Phrase Query会对把输入的短语作为一个整体进行查询，查�
 }
 ```
 
-- Match Phrase Prefix Query
+### Match Phrase Prefix Query
 
 Match Phrase Prefix Query和Match Phrase Query类似，只是对于短语中的最后一个单词可以进行前缀匹配，比如"I like d"可以匹配到"I like driving and reading"。该查询方式同样支持`slop`参数，当`slop`设置为2时，"I like r"可以匹配到"I like driving and reading"。
-
-- Multi Match Query
-
-
-
-- Query String Query
-
-- Prefix Query
-
-- Regexp Query
-
-- Fuzzy Query
-
-- Wrapper Query
 
 > 关于以上几种查询的使用，可以在[这里](https://github.com/pojozhang/playground/blob/master/solutions/java/src/test/java/playground/elasticsearch/QueryTest.java)查看示例代码。
 
