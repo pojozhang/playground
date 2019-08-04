@@ -149,4 +149,29 @@ class QueryTest extends ElasticsearchTestBase {
 
         assertEquals(1, response.getHits().getTotalHits().value);
     }
+
+    @Test
+    void wildcard_query_should_return_documents_that_contain_terms_matching_a_wildcard_pattern() throws IOException {
+        IndexRequest indexRequest = new IndexRequest(INDEX)
+                .source("text_field", "I like driving and reading",
+                        "keyword_field", "I like driving and reading");
+        index(indexRequest);
+
+        SearchResponse response1 = query(wildcardQuery("text_field", "lik*"));
+        SearchResponse response2 = query(wildcardQuery("keyword_field", "I lik*"));
+
+        assertEquals(1, response1.getHits().getTotalHits().value);
+        assertEquals(1, response2.getHits().getTotalHits().value);
+    }
+
+    @Test
+    void wildcard_query_will_not_analyze_the_query_string() throws IOException {
+        IndexRequest indexRequest = new IndexRequest(INDEX)
+                .source("text_field", "I like driving and reading");
+        index(indexRequest);
+
+        SearchResponse response = query(wildcardQuery("text_field", "I lik*"));
+
+        assertEquals(0, response.getHits().getTotalHits().value);
+    }
 }

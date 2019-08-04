@@ -64,6 +64,56 @@
 
 - Wildcard Query
 
+Wildcard Query支持通配符，`?`匹配一个字符，`*`匹配0个或多个字符。
+
+以下查询可以匹配到结果。
+
+```json
+// 文档
+{
+    "keyword_field": "I like driving"
+}
+
+// 查询
+{
+    "query": {
+        "wildcard" : { "keyword_field" : "I lik*" }
+    }
+}
+```
+
+以下查询也可以匹配到结果。
+
+```json
+// 文档
+{
+    "text_field": "I like driving"
+}
+
+// 查询
+{
+    "query": {
+        "wildcard" : { "text_field" : "lik*" }
+    }
+}
+```
+
+但是下面这个查询查不到结果，这是因为Wildcard Query**不会**对查询词进行分词，而`text_field`字段的值会被解析成"I"、"like"、"driving"，都无法和"I lik*"匹配。
+
+```json
+// 文档
+{
+    "text_field": "I like driving"
+}
+
+// 查询
+{
+    "query": {
+        "wildcard" : { "text_field" : "I lik*" }
+    }
+}
+```
+
 - Match Query
 
 Match Query会在查询之前对目标词进行分词，比如用"hello world"可以匹配到"hello, my world"，这是因为"hello world"进行分词后会被分为"hello"和"world"。需要注意的是文档中只需要包含一个经过分词后的搜索关键字就能匹配查询，比如"hello god"也可以匹配到"hello, my world"，尽管后者不包含"god"。
@@ -122,6 +172,8 @@ Match Phrase Prefix Query和Match Phrase Query类似，只是对于短语中的�
 
 - Multi Match Query
 
+
+
 - Query String Query
 
 - Prefix Query
@@ -131,10 +183,6 @@ Match Phrase Prefix Query和Match Phrase Query类似，只是对于短语中的�
 - Fuzzy Query
 
 - Wrapper Query
-
-- Nested Query
-
-- Exists Query
 
 > 关于以上几种查询的使用，可以在[这里](https://github.com/pojozhang/playground/blob/master/solutions/java/src/test/java/playground/elasticsearch/QueryTest.java)查看示例代码。
 
