@@ -80,6 +80,7 @@
 - [x] [两两交换链表中的节点](swap-nodes-in-pairs.md)
 - [x] [K个一组翻转链表](reverse-nodes-in-k-group.md)
 - [x] [奇偶链表](odd-even-linked-list.md)
+- [x] [排序链表](sort-list.md)
 
 ## 堆
 
@@ -160,6 +161,7 @@
 - [ ] [不同路径](unique-paths.md)
 - [ ] [最小路径和](minimum-path-sum.md)
 - [ ] [不同的子序列](distinct-subsequences.md)
+- [ ] [买卖股票的最佳时机](best-time-to-buy-and-sell-stock.md)
 
 ## 图
 
