@@ -60,6 +60,7 @@
 - [x] [路径总和](path-sum.md)
 - [ ] [不同的二叉搜索树](unique-binary-search-trees.md)
 - [x] [二叉树的锯齿形层次遍历](binary-tree-zigzag-level-order-traversal.md)
+- [ ] [二叉搜索树的最近公共祖先](lowest-common-ancestor-of-a-binary-search-tree.md)
 
 ## 栈
 
