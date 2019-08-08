@@ -11,8 +11,7 @@
 ```
 输入: root = [6,2,8,0,4,7,9,null,null,3,5], p = 2, q = 8
 输出: 6
-解释: 节点 `2 `和节点 `8 `的最近公共祖先是 `6。`
-
+解释: 节点 `2 `和节点 `8 `的最近公共祖先是 `6`。
 ```
 
 **示例 2:**
@@ -30,3 +29,4 @@
 
 ## 实现
 
+- [Java](https://github.com/pojozhang/playground/blob/master/solutions/java/src/main/java/playground/algorithm/LowestCommonAncestorOfABinarySearchTree.java)
