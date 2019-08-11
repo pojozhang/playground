@@ -20,4 +20,5 @@
 - [Kafka](problems/kafka/README.md)
 - [Elasticsearch](problems/elasticsearch/README.md)
 - [Docker](problems/docker/README.md)
+- [Linux](problems/linux/README.md)
 - [硬件](problems/hardware/README.md)
