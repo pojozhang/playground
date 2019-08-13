@@ -29,6 +29,7 @@
 - [x] [移除元素](remove-element.md)
 - [x] [盛最多水的容器](container-with-most-water.md)
 - [x] [下一个排列](next-permutation.md)
+- [x] [存在重复元素](contains-duplicate.md)
 
 ## 字符串
 
