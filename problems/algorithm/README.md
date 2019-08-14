@@ -46,6 +46,7 @@
 - [x] [Z字形变换](zigzag-conversion.md)
 - [ ] [正则表达式匹配](regular-expression-matching.md)
 - [x] [找出最大的连续数字](find-the-largest-continuous-number.md)
+- [x] [字符串相乘](multiply-strings.md)
 
 ## 树
 
