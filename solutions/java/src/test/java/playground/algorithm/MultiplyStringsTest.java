@@ -2,7 +2,7 @@ package playground.algorithm;
 
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class MultiplyStringsTest {
 
@@ -25,6 +25,6 @@ class MultiplyStringsTest {
 
     @Test
     void case_4() {
-        assertEquals("0", solution.multiply("9133", "9"));
+        assertEquals("0", solution.multiply("9133", "0"));
     }
 }
