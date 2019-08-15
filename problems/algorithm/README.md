@@ -84,6 +84,7 @@
 - [x] [K个一组翻转链表](reverse-nodes-in-k-group.md)
 - [x] [奇偶链表](odd-even-linked-list.md)
 - [x] [排序链表](sort-list.md)
+- [x] [删除链表中的节点](delete-node-in-a-linked-list.md)
 
 ## 堆
 
