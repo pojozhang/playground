@@ -8,3 +8,10 @@ services:
     ports:
       - "9200:9200"
       - "9300:9300"
+  kibana:
+    image: docker.elastic.co/kibana/kibana:7.3.0
+    container_name: kibana
+    environment:
+      elasticsearch.hosts: http://127.0.0.1:9200
+    ports:
+      - "5601:5601"
