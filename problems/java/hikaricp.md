@@ -424,7 +424,134 @@ public Statement createStatement() throws SQLException {
 
 作者认为手动编写这些代码比较麻烦，因为有的类中需要重写几十个方法，因此采用了动态创建类的方法，可以在[这里](https://github.com/brettwooldridge/HikariCP/issues/1198)查看作者的回复。
 
+## 连接的生命周期
+
+
+
 ## ConcurrentBag
+
+下面从构造方法看起。
+
+### ConcurrentBag(IBagStateListener)
+
+```java
+public ConcurrentBag(final IBagStateListener listener){
+    this.listener = listener;
+    this.weakThreadLocals = useWeakThreadLocals();
+
+    this.handoffQueue = new SynchronousQueue<>(true);
+    this.waiters = new AtomicInteger();
+    this.sharedList = new CopyOnWriteArrayList<>();
+    if (weakThreadLocals) {
+        this.threadList = ThreadLocal.withInitial(() -> new ArrayList<>(16));
+    }
+    else {
+        this.threadList = ThreadLocal.withInitial(() -> new FastList<>(IConcurrentBagEntry.class, 16));
+    }
+}
+```
+
+### add(T)
+
+把资源添加到集合中。
+
+```java
+public void add(final T bagEntry)
+{
+    // 检查集合状态。
+    if (closed) {
+        LOGGER.info("ConcurrentBag has been closed, ignoring add()");
+        throw new IllegalStateException("ConcurrentBag has been closed, ignoring add()");
+    }
+
+    // 把资源添加到一个列表中。
+    // sharedList的类型是CopyOnWriteArrayList。
+    sharedList.add(bagEntry);
+
+    // 如果有线程在等待资源并且该资源还没有被使用，那么就尝试把资源插入到同步队列中（offer操作），如果插入成功，说明该资源被某个线程获取，否则说明当前没有线程在等待资源，那么就继续循环。
+    while (waiters.get() > 0 && bagEntry.getState() == STATE_NOT_IN_USE && !handoffQueue.offer(bagEntry)) {
+        yield();
+    }
+}
+```
+
+### borrow(long, TimeUnit)
+
+从集合中借用一个资源。
+
+```java
+public T borrow(long timeout, final TimeUnit timeUnit) throws InterruptedException
+{
+    final List<Object> list = threadList.get();
+    for (int i = list.size() - 1; i >= 0; i--) {
+        final Object entry = list.remove(i);
+        @SuppressWarnings("unchecked")
+        final T bagEntry = weakThreadLocals ? ((WeakReference<T>) entry).get() : (T) entry;
+        if (bagEntry != null && bagEntry.compareAndSet(STATE_NOT_IN_USE, STATE_IN_USE)) {
+            return bagEntry;
+        }
+    }
+
+    // Otherwise, scan the shared list ... then poll the handoff queue
+    final int waiting = waiters.incrementAndGet();
+    try {
+        for (T bagEntry : sharedList) {
+            if (bagEntry.compareAndSet(STATE_NOT_IN_USE, STATE_IN_USE)) {
+                // If we may have stolen another waiter's connection, request another bag add.
+                if (waiting > 1) {
+                    listener.addBagItem(waiting - 1);
+                }
+                return bagEntry;
+            }
+        }
+
+        listener.addBagItem(waiting);
+
+        timeout = timeUnit.toNanos(timeout);
+        do {
+            final long start = currentTime();
+            final T bagEntry = handoffQueue.poll(timeout, NANOSECONDS);
+            if (bagEntry == null || bagEntry.compareAndSet(STATE_NOT_IN_USE, STATE_IN_USE)) {
+                return bagEntry;
+            }
+
+            timeout -= elapsedNanos(start);
+        } while (timeout > 10_000);
+
+        return null;
+    }
+    finally {
+        waiters.decrementAndGet();
+    }
+}
+```
+
+### requite(T)
+
+### reserve(T)
+
+### remove(T)
+
+从集合中删除资源。
+
+```java
+public boolean remove(final T bagEntry)
+{
+    // CAS修改资源状态。
+    if (!bagEntry.compareAndSet(STATE_IN_USE, STATE_REMOVED) && !bagEntry.compareAndSet(STATE_RESERVED, STATE_REMOVED) && !closed) {
+        LOGGER.warn("Attempt to remove an object from the bag that was not borrowed or reserved: {}", bagEntry);
+        return false;
+    }
+
+    // 从列表中移除资源。
+    final boolean removed = sharedList.remove(bagEntry);
+    if (!removed && !closed) {
+        LOGGER.warn("Attempt to remove an object from the bag that does not exist: {}", bagEntry);
+    }
+
+    return removed;
+}
+```
 
 ## FastList
 
@@ -432,3 +559,4 @@ public Statement createStatement() throws SQLException {
 
 1. [《HikariCP源码分析之leakDetectionThreshold及实战解决Spark/Scala连接池泄漏》](https://www.javazhiyin.com/13856.html)
 2. [《聊聊hikari连接池的isAllowPoolSuspension》](https://segmentfault.com/a/1190000013062326)
+3. [《Hikaricp源码解读（3）——ConcurrentBag介绍》](https://blog.csdn.net/taisenki/article/details/78329558)
