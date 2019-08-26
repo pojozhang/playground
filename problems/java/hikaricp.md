@@ -482,22 +482,24 @@ public void add(final T bagEntry)
 ```java
 public T borrow(long timeout, final TimeUnit timeUnit) throws InterruptedException
 {
+    //从ThreadLocal中取出资源列表，遍历列表，找到一个未被使用的资源。
     final List<Object> list = threadList.get();
     for (int i = list.size() - 1; i >= 0; i--) {
         final Object entry = list.remove(i);
-        @SuppressWarnings("unchecked")
         final T bagEntry = weakThreadLocals ? ((WeakReference<T>) entry).get() : (T) entry;
         if (bagEntry != null && bagEntry.compareAndSet(STATE_NOT_IN_USE, STATE_IN_USE)) {
             return bagEntry;
         }
     }
 
-    // Otherwise, scan the shared list ... then poll the handoff queue
+    // 如果ThreadLocal中没有可用的资源，那么进行下面的步骤。
+    // 更新等待线程计数。
     final int waiting = waiters.incrementAndGet();
     try {
+        // 遍历全部资源，找到一个未被使用的资源。
         for (T bagEntry : sharedList) {
             if (bagEntry.compareAndSet(STATE_NOT_IN_USE, STATE_IN_USE)) {
-                // If we may have stolen another waiter's connection, request another bag add.
+                // 增加资源。
                 if (waiting > 1) {
                     listener.addBagItem(waiting - 1);
                 }
@@ -505,6 +507,7 @@ public T borrow(long timeout, final TimeUnit timeUnit) throws InterruptedExcepti
             }
         }
 
+        // 如果资源都在被使用，那么请求增加资源。
         listener.addBagItem(waiting);
 
         timeout = timeUnit.toNanos(timeout);
@@ -521,6 +524,7 @@ public T borrow(long timeout, final TimeUnit timeUnit) throws InterruptedExcepti
         return null;
     }
     finally {
+        // 更新等待线程计数。
         waiters.decrementAndGet();
     }
 }
