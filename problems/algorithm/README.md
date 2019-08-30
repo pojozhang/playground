@@ -31,6 +31,7 @@
 - [x] [盛最多水的容器](container-with-most-water.md)
 - [x] [下一个排列](next-permutation.md)
 - [x] [存在重复元素](contains-duplicate.md)
+- [x] [除自身以外数组的乘积](product-of-array-except-self.md)
 
 ## 字符串
 
