@@ -1,11 +1,11 @@
 package playground.rabbitmq;
 
 import com.rabbitmq.client.Delivery;
-import org.awaitility.Duration;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
+import java.time.Duration;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
@@ -28,14 +28,14 @@ class ConfirmationTest extends RabbitmqTestBase {
         publish(DIRECT_EXCHANGE, QUEUE, PAYLOAD);
         Delivery delivery = receive(QUEUE, 5, TimeUnit.SECONDS);
 
-        await().pollInterval(Duration.ONE_SECOND)
-                .atMost(Duration.ONE_MINUTE)
+        await().pollInterval(Duration.ofSeconds(1))
+                .atMost(Duration.ofMinutes(1))
                 .until(() -> unacknowledgedMessages(QUEUE) == 1);
 
         ack(delivery);
 
-        await().pollInterval(Duration.ONE_SECOND)
-                .atMost(Duration.ONE_MINUTE)
+        await().pollInterval(Duration.ofSeconds(1))
+                .atMost(Duration.ofMinutes(1))
                 .until(() -> unacknowledgedMessages(QUEUE) == 0);
     }
 
@@ -44,16 +44,16 @@ class ConfirmationTest extends RabbitmqTestBase {
         publish(DIRECT_EXCHANGE, QUEUE, PAYLOAD);
         Delivery firstDelivery = receive(QUEUE, 5, TimeUnit.SECONDS);
 
-        await().pollInterval(Duration.ONE_SECOND)
-                .atMost(Duration.ONE_MINUTE)
+        await().pollInterval(Duration.ofSeconds(1))
+                .atMost(Duration.ofMinutes(1))
                 .until(() -> unacknowledgedMessages(QUEUE) == 1);
 
         nack(firstDelivery, true);
         Delivery secondDelivery = receive(QUEUE, 5, TimeUnit.SECONDS);
         nack(secondDelivery, false);
 
-        await().pollInterval(Duration.ONE_SECOND)
-                .atMost(Duration.ONE_MINUTE)
+        await().pollInterval(Duration.ofSeconds(1))
+                .atMost(Duration.ofMinutes(1))
                 .until(() -> unacknowledgedMessages(QUEUE) == 0);
     }
 
@@ -62,16 +62,16 @@ class ConfirmationTest extends RabbitmqTestBase {
         publish(DIRECT_EXCHANGE, QUEUE, PAYLOAD);
         Delivery firstDelivery = receive(QUEUE, 5, TimeUnit.SECONDS);
 
-        await().pollInterval(Duration.ONE_SECOND)
-                .atMost(Duration.ONE_MINUTE)
+        await().pollInterval(Duration.ofSeconds(1))
+                .atMost(Duration.ofMinutes(1))
                 .until(() -> unacknowledgedMessages(QUEUE) == 1);
 
         reject(firstDelivery, true);
         Delivery secondDelivery = receive(QUEUE, 5, TimeUnit.SECONDS);
         reject(secondDelivery, false);
 
-        await().pollInterval(Duration.ONE_SECOND)
-                .atMost(Duration.ONE_MINUTE)
+        await().pollInterval(Duration.ofSeconds(1))
+                .atMost(Duration.ofMinutes(1))
                 .until(() -> unacknowledgedMessages(QUEUE) == 0);
     }
 

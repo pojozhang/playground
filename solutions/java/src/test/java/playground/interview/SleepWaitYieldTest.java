@@ -1,12 +1,12 @@
 package playground.interview;
 
-import static org.awaitility.Awaitility.await;
+import org.junit.jupiter.api.Test;
 
+import java.time.Duration;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
-import org.awaitility.Duration;
-import org.junit.jupiter.api.Test;
+import static org.awaitility.Awaitility.await;
 
 class SleepWaitYieldTest {
 
@@ -42,8 +42,8 @@ class SleepWaitYieldTest {
         });
         threadB.start();
 
-        await().atLeast(Duration.ONE_SECOND)
-                .atMost(Duration.TEN_SECONDS)
+        await().atLeast(Duration.ofSeconds(1))
+                .atMost(Duration.ofSeconds(10))
                 .until(() -> latch.getCount() == 0);
     }
 
@@ -64,7 +64,7 @@ class SleepWaitYieldTest {
         });
         thread.start();
 
-        await().atMost(Duration.FIVE_SECONDS)
+        await().atMost(Duration.ofSeconds(5))
                 .until(() -> thread.getState() == Thread.State.TIMED_WAITING);
     }
 
