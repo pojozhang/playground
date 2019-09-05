@@ -3,6 +3,6 @@ update_configs:
   - package_manager: "java:gradle"
     directory: "/solutions/java"
     update_schedule: "daily"
-  - package_manager: "go:dep"
+  - package_manager: "go:modules"
     directory: "/solutions/go/src/playground"
     update_schedule: "daily"
