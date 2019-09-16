@@ -32,6 +32,7 @@
 - [x] [下一个排列](next-permutation.md)
 - [x] [存在重复元素](contains-duplicate.md)
 - [x] [除自身以外数组的乘积](product-of-array-except-self.md)
+- [x] [买卖股票的最佳时机](best-time-to-buy-and-sell-stock.md)
 
 ## 字符串
 
@@ -168,7 +169,6 @@
 - [ ] [不同路径](unique-paths.md)
 - [ ] [最小路径和](minimum-path-sum.md)
 - [ ] [不同的子序列](distinct-subsequences.md)
-- [ ] [买卖股票的最佳时机](best-time-to-buy-and-sell-stock.md)
 
 ## 图
 
