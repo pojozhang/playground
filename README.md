@@ -12,6 +12,7 @@
 - [分布式系统](problems/distribution-system/README.md)
 - [网络](problems/net/README.md)
 - [安全](problems/security/README.md)
+- [正则表达式](problems/regex/README.md)
 - [Java](problems/java/README.md)
 - [MySQL](problems/mysql/README.md)
 - [Redis](problems/redis/README.md)
