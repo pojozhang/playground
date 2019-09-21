@@ -110,6 +110,7 @@
 - [x] [N皇后](n-queens.md)
 - [x] [N皇后 II](n-queens-ii.md)
 - [x] [括号生成](generate-parentheses.md)
+- [x] [子集](subsets.md)
 
 ## 分治
 
