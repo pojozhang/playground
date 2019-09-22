@@ -430,26 +430,7 @@ public Statement createStatement() throws SQLException {
 
 ## ConcurrentBag
 
-下面从构造方法看起。
-
-### ConcurrentBag(IBagStateListener)
-
-```java
-public ConcurrentBag(final IBagStateListener listener){
-    this.listener = listener;
-    this.weakThreadLocals = useWeakThreadLocals();
-
-    this.handoffQueue = new SynchronousQueue<>(true);
-    this.waiters = new AtomicInteger();
-    this.sharedList = new CopyOnWriteArrayList<>();
-    if (weakThreadLocals) {
-        this.threadList = ThreadLocal.withInitial(() -> new ArrayList<>(16));
-    }
-    else {
-        this.threadList = ThreadLocal.withInitial(() -> new FastList<>(IConcurrentBagEntry.class, 16));
-    }
-}
-```
+ConcurrentBag是一个线程安全的集合类，下面先从`add()`方法看起。
 
 ### add(T)
 
@@ -496,10 +477,11 @@ public T borrow(long timeout, final TimeUnit timeUnit) throws InterruptedExcepti
     // 更新等待线程计数。
     final int waiting = waiters.incrementAndGet();
     try {
-        // 遍历全部资源，找到一个未被使用的资源。
+        // 从线程共享的列表中遍历全部资源，找到一个未被使用的资源。
         for (T bagEntry : sharedList) {
+            // 用CAS把资源的状态改为正在使用中。
             if (bagEntry.compareAndSet(STATE_NOT_IN_USE, STATE_IN_USE)) {
-                // 增加资源。
+                // 请求增加资源。
                 if (waiting > 1) {
                     listener.addBagItem(waiting - 1);
                 }
@@ -507,7 +489,7 @@ public T borrow(long timeout, final TimeUnit timeUnit) throws InterruptedExcepti
             }
         }
 
-        // 如果资源都在被使用，那么请求增加资源。
+        // 执行到这里，说明当前没有资源或者资源都在被使用，那么请求增加资源。
         listener.addBagItem(waiting);
 
         timeout = timeUnit.toNanos(timeout);
