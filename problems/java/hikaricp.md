@@ -449,8 +449,9 @@ public void add(final T bagEntry)
     // sharedList的类型是CopyOnWriteArrayList。
     sharedList.add(bagEntry);
 
-    // 如果有线程在等待资源并且该资源还没有被使用，那么就尝试把资源插入到同步队列中（offer操作），如果插入成功，说明该资源被某个线程获取，否则说明当前没有线程在等待资源，那么就继续循环。
+    // 如果有线程在等待资源并且该资源还没有被使用，那么就尝试把资源插入到同步队列中（offer操作），如果offer()方法返回true，说明该资源已经被某个线程获取，否则说明当前没有线程在等待资源，那么就继续循环。
     while (waiters.get() > 0 && bagEntry.getState() == STATE_NOT_IN_USE && !handoffQueue.offer(bagEntry)) {
+        // 尝试让出CPU时间。
         yield();
     }
 }
@@ -492,14 +493,17 @@ public T borrow(long timeout, final TimeUnit timeUnit) throws InterruptedExcepti
         // 执行到这里，说明当前没有资源或者资源都在被使用，那么请求增加资源。
         listener.addBagItem(waiting);
 
+        // 超时时间。
         timeout = timeUnit.toNanos(timeout);
         do {
             final long start = currentTime();
+            // 等待add()方法被调用产生一个新资源。
             final T bagEntry = handoffQueue.poll(timeout, NANOSECONDS);
             if (bagEntry == null || bagEntry.compareAndSet(STATE_NOT_IN_USE, STATE_IN_USE)) {
                 return bagEntry;
             }
 
+            // 更新剩余超时时间。
             timeout -= elapsedNanos(start);
         } while (timeout > 10_000);
 
@@ -514,7 +518,45 @@ public T borrow(long timeout, final TimeUnit timeUnit) throws InterruptedExcepti
 
 ### requite(T)
 
+回收一个资源。
+
+```java
+public void requite(final T bagEntry)
+{
+    // 将资源的状态设置为未被使用。
+    bagEntry.setState(STATE_NOT_IN_USE);
+
+    // 如果有线程在等待资源，那么尝试把当前资源放到同步队列中。
+    for (int i = 0; waiters.get() > 0; i++) {
+        if (bagEntry.getState() != STATE_NOT_IN_USE || handoffQueue.offer(bagEntry)) {
+            return;
+        }
+        else if ((i & 0xff) == 0xff) {
+            parkNanos(MICROSECONDS.toNanos(10));
+        }
+        else {
+            yield();
+        }
+    }
+
+    // 把资源放到ThreadLocal的资源列表中。
+    final List<Object> threadLocalList = threadList.get();
+    if (threadLocalList.size() < 50) {
+        threadLocalList.add(weakThreadLocals ? new WeakReference<>(bagEntry) : bagEntry);
+    }
+}
+```
+
 ### reserve(T)
+
+把资源状态设置为被保留的。
+
+```java
+public boolean reserve(final T bagEntry)
+{
+    return bagEntry.compareAndSet(STATE_NOT_IN_USE, STATE_RESERVED);
+}
+```
 
 ### remove(T)
 
