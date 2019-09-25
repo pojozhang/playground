@@ -424,10 +424,6 @@ public Statement createStatement() throws SQLException {
 
 作者认为手动编写这些代码比较麻烦，因为有的类中需要重写几十个方法，因此采用了动态创建类的方法，可以在[这里](https://github.com/brettwooldridge/HikariCP/issues/1198)查看作者的回复。
 
-## 连接的生命周期
-
-
-
 ## ConcurrentBag
 
 ConcurrentBag是一个线程安全的集合类，下面先从`add()`方法看起。
@@ -582,6 +578,15 @@ public boolean remove(final T bagEntry)
 ```
 
 ## FastList
+
+## 连接的生命周期
+
+### 连接的创建
+
+1. 如果设置了`initializationTimeout`配置项，在初始化`HikariPool`对象时（也就是首次获取连接时）会以同步调用的方式创建一个连接，以验证连接的可用性，如果创建失败会重试，直到连接的建立时间超过`initializationTimeout`，如果还是没有成功那么就抛异常，实现fail-fast机制。
+2. 其他情况下都由`addConnectionExecutor`线程池负责创建新的连接，这是一个只有一个线程的线程池。
+
+### 连接的关闭
 
 ## 参考
 
