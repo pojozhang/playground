@@ -1,6 +1,6 @@
 # HikariCP
 
-![状态](https://img.shields.io/badge/status-processing-blue.svg) ![版本](https://img.shields.io/badge/version-3.3.1-blue.svg?link=https://github.com/brettwooldridge/HikariCP/tree/HikariCP-3.3.1)
+![版本](https://img.shields.io/badge/version-3.3.1-blue.svg?link=https://github.com/brettwooldridge/HikariCP/tree/HikariCP-3.3.1)
 
 ## 入口
 
@@ -579,17 +579,51 @@ public boolean remove(final T bagEntry)
 
 ## FastList
 
+`ConcurrentBag`类中用到了`FastList`作为每个线程ThreadLocal中的资源列表。它实现了`List`接口，但仅仅实现了一些必要的方法，它的原理和`ArrayList`类似，底层存储都是基于数组，最大的区别是删除了索引范围的检查。
+对比两者的`get()`方法可以看到，`FastList`中的方法没有对索引范围进行检查，因此执行速度上会更快。
+
+```java
+// com.zaxxer.hikari.util.FastList#get
+public T get(int index)
+{
+    return elementData[index];
+}
+
+// java.util.ArrayList#get
+public E get(int index) {
+    rangeCheck(index);
+    return elementData(index);
+}
+```
+
 ## 连接的生命周期
 
 ### 连接的创建
 
-1. 如果设置了`initializationTimeout`配置项，在初始化`HikariPool`对象时（也就是首次获取连接时）会以同步调用的方式创建一个连接，以验证连接的可用性，如果创建失败会重试，直到连接的建立时间超过`initializationTimeout`，如果还是没有成功那么就抛异常，实现fail-fast机制。
-2. 其他情况下都由`addConnectionExecutor`线程池负责创建新的连接，这是一个只有一个线程的线程池。
+如果设置了`initializationTimeout`配置项，在初始化`HikariPool`对象时（也就是首次获取连接时）会以同步调用的方式创建一个连接，以验证连接的可用性，如果创建失败会重试，直到连接的建立时间超过`initializationTimeout`，如果还是没有成功那么就抛异常，实现fail-fast机制。在其他情况下都由`addConnectionExecutor`线程池负责创建新的连接，这是一个只有一个线程的线程池。连接创建后会被放到`ConcurrentBag`集合中。
+
+### 连接的获取
+
+线程通过调用`ConcurrentBag`的`borrow()`方法获取连接。
+
+### 连接的回收
+
+当调用`ProxyConnection`对象的`close()`方法时，连接会被回收，重新放回`ConcurrentBag`集合中，这里实际上只是改变连接的状态，连接对象本身一直存放在`ConcurrentBag`集合中。
 
 ### 连接的关闭
+
+和创建连接类似，有一个专门的线程池`closeConnectionExecutor`对连接进行关闭并将其从`ConcurrentBag`集合中移除。有以下几种情况会关闭连接：
+
+1. 连接存活时间超过MaxLifetime，通过在`HikariPool#createPoolEntry`方法中注册一个定时任务来触发关闭操作。
+2. 连接空闲时间超过idleTimeout，在`HikariPool.HouseKeeper`中实现。
+
+### 连接的补充
+
+连接被关闭后需要进行补充，以保证连接数不少于minimumIdle。通过`HikariPool#fillPool`方法实现，大致流程是计算出需要新增的连接的数量然后提交给`addConnectionExecutor`线程池执行，具体可以看上文中关于`fillPool()`方法的说明。
 
 ## 参考
 
 1. [《HikariCP源码分析之leakDetectionThreshold及实战解决Spark/Scala连接池泄漏》](https://www.javazhiyin.com/13856.html)
 2. [《聊聊hikari连接池的isAllowPoolSuspension》](https://segmentfault.com/a/1190000013062326)
-3. [《Hikaricp源码解读（3）——ConcurrentBag介绍》](https://blog.csdn.net/taisenki/article/details/78329558)
+3. [《Hikaricp源码解读（3）—— ConcurrentBag介绍》](https://blog.csdn.net/taisenki/article/details/78329558)
+4. [《Hikaricp源码解读（5）—— 物理连接生命周期介绍》](https://blog.csdn.net/taisenki/article/details/78330324)
