@@ -1,6 +1,5 @@
-# Gilded Rose 
+# Gilded Rose
 
-## Requirement
 Hi and welcome to team Gilded Rose. As you know, we are a small inn with a prime location in a
 prominent city ran by a friendly innkeeper named Allison. We also buy and sell only the finest goods.
 Unfortunately, our goods are constantly degrading in quality as they approach their sell by date. We
@@ -36,5 +35,6 @@ for you).
 Just for clarification, an item can never have its Quality increase above 50, however "Sulfuras" is a
 legendary item and as such its Quality is 80 and it never alters.
 
-## Solutions
+## 实现
+
 - [Go](https://github.com/pojozhang/playground/tree/master/solutions/go/src/playground/coding-dojo/gildedrose)
