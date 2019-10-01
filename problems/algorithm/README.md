@@ -89,7 +89,7 @@
 - [x] [奇偶链表](odd-even-linked-list.md)
 - [x] [排序链表](sort-list.md)
 - [x] [删除链表中的节点](delete-node-in-a-linked-list.md)
-- [ ] [旋转链表](rotate-list.md)
+- [x] [旋转链表](rotate-list.md)
 
 ## 堆
 
