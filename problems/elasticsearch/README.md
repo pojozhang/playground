@@ -4,6 +4,7 @@
 
 - [查询](query.md)
 - [常用命令](commands.md)
+- [倒排索引](inverted-index.md)
 - [集群](cluster.md)
 
 ## 源码
