@@ -1,5 +1,19 @@
 # 常用命令
 
+## 分词
+
+- 查看分词结果
+
+```shell
+POST /index/_analyze
+{
+    "field: "field",
+    "text": "text"
+}
+```
+
+## 节点
+
 - 查看节点信息
 
 ```shell
