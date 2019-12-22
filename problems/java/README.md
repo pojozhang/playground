@@ -96,4 +96,5 @@
 
 - [Cglib](cglib.md)
 - [Guava](guava.md)
+  - [RateLimiter](rate-limiter.md)
 - [HikariCP](hikaricp.md)
