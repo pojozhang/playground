@@ -59,7 +59,7 @@ dependencies {
 
     testImplementation(
             'org.assertj:assertj-core:3.14.0',
-            'org.awaitility:awaitility:4.0.1',
+            'org.awaitility:awaitility:4.0.2',
             'org.junit.platform:junit-platform-launcher:1.5.2',
             "org.junit.jupiter:junit-jupiter-api:$junitVersion",
             "org.junit.vintage:junit-vintage-engine:$junitVersion",
