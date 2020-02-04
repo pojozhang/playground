@@ -45,7 +45,7 @@ dependencies {
             'com.rabbitmq:amqp-client:5.8.0',
             'com.rabbitmq:http-client:3.5.0.RELEASE',
             'org.apache.kafka:kafka-clients:2.4.0',
-            'org.apache.httpcomponents:httpclient:4.5.10',
+            'org.apache.httpcomponents:httpclient:4.5.11',
             'io.lettuce:lettuce-core:5.2.1.RELEASE',
             'org.elasticsearch.client:elasticsearch-rest-high-level-client:7.5.1',
             "org.springframework.boot:spring-boot-starter-web:$springBootVersion",
