@@ -36,7 +36,7 @@ dependencies {
     )
 
     implementation(
-            'org.jetbrains:annotations:18.0.0',
+            'org.jetbrains:annotations:19.0.0',
             'org.apache.commons:commons-lang3:3.9',
             'commons-io:commons-io:2.6',
             'com.google.guava:guava:28.2-jre',
