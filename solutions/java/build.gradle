@@ -40,7 +40,7 @@ dependencies {
             'org.apache.commons:commons-lang3:3.9',
             'commons-io:commons-io:2.6',
             'com.google.guava:guava:28.2-jre',
-            'com.alibaba:fastjson:1.2.62',
+            'com.alibaba:fastjson:1.2.68',
             'cglib:cglib-full:2.0.2',
             'com.rabbitmq:amqp-client:5.8.0',
             'com.rabbitmq:http-client:3.6.1.RELEASE',
