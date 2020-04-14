@@ -67,6 +67,7 @@
 - [ ] [不同的二叉搜索树](unique-binary-search-trees.md)
 - [x] [二叉树的锯齿形层次遍历](binary-tree-zigzag-level-order-traversal.md)
 - [x] [二叉搜索树的最近公共祖先](lowest-common-ancestor-of-a-binary-search-tree.md)
+- [x] [从前序与中序遍历序列构造二叉树](construct-binary-tree-from-preorder-and-inorder-traversal.md)
 
 ## 栈
 
