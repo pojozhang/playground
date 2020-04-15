@@ -75,6 +75,7 @@
 - [x] [柱状图中最大的矩形](largest-rectangle-in-histogram.md)
 - [x] [最小栈](min-stack.md)
 - [x] [逆波兰表达式求值](evaluate-reverse-polish-notation.md)
+- [x] [用栈实现队列](implement-queue-using-stacks.md)
 
 ## 链表
 
