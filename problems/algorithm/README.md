@@ -76,6 +76,7 @@
 - [x] [最小栈](min-stack.md)
 - [x] [逆波兰表达式求值](evaluate-reverse-polish-notation.md)
 - [x] [用栈实现队列](implement-queue-using-stacks.md)
+- [x] [用队列实现栈](implement-stack-using-queues.md)
 
 ## 链表
 
