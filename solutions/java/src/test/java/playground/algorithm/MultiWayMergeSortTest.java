@@ -20,7 +20,7 @@ class MultiWayMergeSortTest {
 
         solution.sort(input, output, 1000);
 
-        assertThat(output).hasSameContentAs(expected);
+        assertThat(output).hasSameTextualContentAs(expected);
 
         output.delete();
     }
