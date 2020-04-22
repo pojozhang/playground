@@ -148,6 +148,7 @@
 - [x] [x 的平方根](sqrtx.md)
 - [x] [反转整数](reverse-integer.md)
 - [x] [回文数](palindrome-number.md)
+- [x] [斐波那契数](fibonacci-number.md)
 
 ## 位运算
 
