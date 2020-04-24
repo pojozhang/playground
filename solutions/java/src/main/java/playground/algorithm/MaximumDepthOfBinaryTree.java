@@ -1,16 +1,8 @@
 package playground.algorithm;
 
+import playground.algorithm.common.TreeNode;
+
 public class MaximumDepthOfBinaryTree {
-
-    static class TreeNode {
-        int val;
-        TreeNode left;
-        TreeNode right;
-
-        TreeNode(int x) {
-            val = x;
-        }
-    }
 
     public int maxDepth(TreeNode root) {
         if (root == null) {
