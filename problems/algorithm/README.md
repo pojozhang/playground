@@ -79,6 +79,7 @@
 - [x] [逆波兰表达式求值](evaluate-reverse-polish-notation.md)
 - [x] [用栈实现队列](implement-queue-using-stacks.md)
 - [x] [用队列实现栈](implement-stack-using-queues.md)
+- [x] [验证栈序列](validate-stack-sequences.md)
 
 ## 链表
 
