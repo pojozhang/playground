@@ -44,7 +44,7 @@ dependencies {
             'cglib:cglib-full:2.0.2',
             'com.rabbitmq:amqp-client:5.9.0',
             'com.rabbitmq:http-client:3.6.1.RELEASE',
-            'org.apache.kafka:kafka-clients:2.4.1',
+            'org.apache.kafka:kafka-clients:2.5.0',
             'org.apache.httpcomponents:httpclient:4.5.12',
             'io.lettuce:lettuce-core:5.2.2.RELEASE',
             'org.elasticsearch.client:elasticsearch-rest-high-level-client:7.6.2',
