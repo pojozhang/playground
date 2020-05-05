@@ -70,6 +70,7 @@
 - [x] [二叉搜索树的最近公共祖先](lowest-common-ancestor-of-a-binary-search-tree.md)
 - [x] [从前序与中序遍历序列构造二叉树](construct-binary-tree-from-preorder-and-inorder-traversal.md)
 - [x] [另一个树的子树](subtree-of-another-tree.md)
+- [x] [二叉搜索树的后序遍历序列](sequence-of-bst.md)
 
 ## 栈
 
