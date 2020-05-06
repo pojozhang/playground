@@ -65,7 +65,7 @@
 - [x] [二叉树的层次遍历 II](binary-tree-level-order-traversal-ii.md)
 - [x] [翻转二叉树](invert-binary-tree.md)
 - [x] [路径总和](path-sum.md)
-- [ ] [路径总和 II](path-sum-ii.md)
+- [x] [路径总和 II](path-sum-ii.md)
 - [ ] [不同的二叉搜索树](unique-binary-search-trees.md)
 - [x] [二叉树的锯齿形层次遍历](binary-tree-zigzag-level-order-traversal.md)
 - [x] [二叉搜索树的最近公共祖先](lowest-common-ancestor-of-a-binary-search-tree.md)
