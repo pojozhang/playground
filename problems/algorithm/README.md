@@ -99,6 +99,7 @@
 - [x] [删除链表中的节点](delete-node-in-a-linked-list.md)
 - [x] [旋转链表](rotate-list.md)
 - [x] [返回倒数第K个节点](kth-node-from-end-of-list-lcci.md)
+- [ ] [复制带随机指针的链表](copy-list-with-random-pointer.md)
 
 ## 堆
 
