@@ -1,7 +1,5 @@
 package playground;
 
-import playground.algorithm.common.ListNode;
-
 public class CopyListWithRandomPointer {
 
     public static class Node {
@@ -17,6 +15,8 @@ public class CopyListWithRandomPointer {
     }
 
     public Node copyRandomList(Node head) {
+        Node newHead;
 
+        return newHead;
     }
 }

@@ -6,7 +6,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 class CopyListWithRandomPointerTest {
 
-    CopyListWithRandomPointer solution = new CopyListWithRandomPointer();
+    private CopyListWithRandomPointer solution = new CopyListWithRandomPointer();
 
     @Test
     void case_1() {
@@ -39,6 +39,7 @@ class CopyListWithRandomPointerTest {
         assertThat(copied.next.next.next.random).isEqualTo(11);
         assertThat(copied.next.next.next.next.val).isEqualTo(1);
         assertThat(copied.next.next.next.next.random).isEqualTo(7);
+        assertThat(copied.next.next.next.next.next).isNull();
     }
 
 }
