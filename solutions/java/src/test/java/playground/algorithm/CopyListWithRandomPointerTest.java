@@ -1,4 +1,4 @@
-package playground;
+package playground.algorithm;
 
 import org.junit.jupiter.api.Test;
 
@@ -32,14 +32,18 @@ class CopyListWithRandomPointerTest {
         assertThat(copied.val).isEqualTo(7);
         assertThat(copied.random).isNull();
         assertThat(copied.next.val).isEqualTo(13);
-        assertThat(copied.next.random).isEqualTo(7);
+        assertThat(copied.next.random.val).isEqualTo(7);
         assertThat(copied.next.next.val).isEqualTo(11);
-        assertThat(copied.next.next.random).isEqualTo(1);
+        assertThat(copied.next.next.random.val).isEqualTo(1);
         assertThat(copied.next.next.next.val).isEqualTo(10);
-        assertThat(copied.next.next.next.random).isEqualTo(11);
+        assertThat(copied.next.next.next.random.val).isEqualTo(11);
         assertThat(copied.next.next.next.next.val).isEqualTo(1);
-        assertThat(copied.next.next.next.next.random).isEqualTo(7);
+        assertThat(copied.next.next.next.next.random.val).isEqualTo(7);
         assertThat(copied.next.next.next.next.next).isNull();
     }
 
+    @Test
+    void case_2() {
+        assertThat(solution.copyRandomList(null)).isNull();
+    }
 }
