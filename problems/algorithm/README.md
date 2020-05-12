@@ -52,6 +52,7 @@
 - [x] [找出最大的连续数字](find-the-largest-continuous-number.md)
 - [x] [字符串相乘](multiply-strings.md)
 - [x] [反转字符串中的单词 III](reverse-words-in-a-string-iii.md)
+- [x] [字符串的排列](permutation-in-string.md)
 
 ## 树
 
