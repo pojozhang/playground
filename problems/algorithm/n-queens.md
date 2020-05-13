@@ -27,4 +27,5 @@ n 皇后问题研究的是如何将 n 个皇后放置在 n×n 的棋盘上，�
 
 ## 实现
 
+- [Java](https://github.com/pojozhang/playground/blob/master/solutions/java/src/main/java/playground/algorithm/NQueens.java)
 - [Go](https://github.com/pojozhang/playground/blob/master/solutions/go/src/playground/algorithm/n_queens.go)
