@@ -18,4 +18,5 @@
 
 ## 实现
 
+- [Java](https://github.com/pojozhang/playground/blob/master/solutions/java/src/main/java/playground/algorithm/MajorityElement.java)
 - [Go](https://github.com/pojozhang/playground/blob/master/solutions/go/src/playground/algorithm/majority_element.go)
