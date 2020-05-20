@@ -108,6 +108,7 @@
 - [x] [合并K个排序链表](merge-k-sorted-lists.md)
 - [x] [数据流中的第K大元素](kth-largest-element-in-a-stream.md)
 - [x] [有序矩阵中第K小的元素](kth-smallest-element-in-a-sorted-matrix.md)
+- [x] [最小的k个数](k-least-numbers.md)
 
 ## 递归
 
