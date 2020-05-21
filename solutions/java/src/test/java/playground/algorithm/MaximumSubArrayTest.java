@@ -1,8 +1,8 @@
 package playground.algorithm;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
 import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class MaximumSubArrayTest {
 
@@ -16,5 +16,10 @@ class MaximumSubArrayTest {
     @Test
     void case_2() {
         assertEquals(1, solution.maxSubArray(new int[]{-2, 1}));
+    }
+
+    @Test
+    void case_3() {
+        assertEquals(-1, solution.maxSubArray(new int[]{-1, -1, -2, -2}));
     }
 }
