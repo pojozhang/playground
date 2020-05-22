@@ -159,6 +159,7 @@
 - [x] [反转整数](reverse-integer.md)
 - [x] [回文数](palindrome-number.md)
 - [x] [斐波那契数](fibonacci-number.md)
+- [x] [数字1的个数](number-of-digit-one.md)
 
 ## 位运算
 
