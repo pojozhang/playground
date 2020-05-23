@@ -160,6 +160,7 @@
 - [x] [回文数](palindrome-number.md)
 - [x] [斐波那契数](fibonacci-number.md)
 - [x] [数字1的个数](number-of-digit-one.md)
+- [x] [把数组排成最小的数](sort-array-for-min-number.md)
 
 ## 位运算
 
