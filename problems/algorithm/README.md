@@ -132,6 +132,7 @@
 - [ ] [天际线问题](the-skyline-problem.md)
 - [x] [求众数](majority-element.md)
 - [x] [数组中的第K个最大元素](kth-largest-element-in-an-array.md)
+- [x] [数组中的逆序对](inverse-pairs.md)
 
 ## 排序
 
