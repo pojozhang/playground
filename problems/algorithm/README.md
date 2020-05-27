@@ -177,6 +177,7 @@
 - [x] [搜索旋转排序数组](search-in-rotated-sorted-array.md)
 - [x] [寻找旋转排序数组中的最小值](find-minimum-in-rotated-sorted-array.md)
 - [x] [寻找旋转排序数组中的最小值 II](find-minimum-in-rotated-sorted-array-ii.md)
+- [x] [在排序数组中查找元素的第一个和最后一个位置](find-first-and-last-position-of-element-in-sorted-array.md)
 
 ## 贪心
 
