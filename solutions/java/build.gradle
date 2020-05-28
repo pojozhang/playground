@@ -38,7 +38,7 @@ dependencies {
     implementation(
             'org.jetbrains:annotations:19.0.0',
             'org.apache.commons:commons-lang3:3.10',
-            'commons-io:commons-io:2.6',
+            'commons-io:commons-io:2.7',
             'com.google.guava:guava:29.0-jre',
             'com.alibaba:fastjson:1.2.68',
             'cglib:cglib-full:2.0.2',
