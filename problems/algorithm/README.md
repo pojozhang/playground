@@ -75,6 +75,7 @@
 - [x] [另一个树的子树](subtree-of-another-tree.md)
 - [x] [二叉搜索树的后序遍历序列](sequence-of-bst.md)
 - [x] [二叉搜索树与双向链表](convert-binary-search-tree-to-sorted-doubly-linked-list.md)
+- [x] [平衡二叉树](balanced-binary-tree.md)
 
 ## 栈
 
