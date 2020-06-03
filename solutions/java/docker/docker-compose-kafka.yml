@@ -3,7 +3,7 @@ services:
   zookeeper:
     image: zookeeper:latest
     container_name: kafka_zookeeper
-    hostname: zookeeper
+    hostname: kafka_zookeeper
     ports:
       - 2181:2181
   kafka:
@@ -14,7 +14,7 @@ services:
       - 29092:29092
     environment:
       KAFKA_BROKER_ID: 1
-      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ZOOKEEPER_CONNECT: kafka_zookeeper:2181
       KAFKA_ZOOKEEPER_CONNECTION_TIMEOUT_MS: 20000
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: INSIDE:PLAINTEXT,OUTSIDE:PLAINTEXT
       KAFKA_LISTENERS: INSIDE://0.0.0.0:9092,OUTSIDE://0.0.0.0:29092
