@@ -1,0 +1,29 @@
+version: '3'
+services:
+  zookeeper1:
+    image: zookeeper:latest
+    container_name: zookeeper1
+    hostname: zookeeper1
+    environment:
+      ZOO_MY_ID: 1
+      ZOO_SERVERS: server.1=zookeeper1:2888:3888;2181 server.2=zookeeper2:2888:3888;2181 server.3=zookeeper3:2888:3888;2181
+    ports:
+      - "12181:2181"
+  zookeeper2:
+    image: zookeeper:latest
+    container_name: zookeeper2
+    hostname: zookeeper2
+    environment:
+      ZOO_MY_ID: 2
+      ZOO_SERVERS: server.1=zookeeper1:2888:3888;2181 server.2=zookeeper2:2888:3888;2181 server.3=zookeeper3:2888:3888;2181
+    ports:
+      - "12182:2181"
+  zookeeper3:
+    image: zookeeper:latest
+    container_name: zookeeper3
+    hostname: zookeeper3
+    environment:
+      ZOO_MY_ID: 3
+      ZOO_SERVERS: server.1=zookeeper1:2888:3888;2181 server.2=zookeeper2:2888:3888;2181 server.3=zookeeper3:2888:3888;2181
+    ports:
+      - "12183:2181"
