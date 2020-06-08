@@ -10,9 +10,7 @@ import java.util.concurrent.TimeUnit;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class SessionTest {
-
-    private static final String CONNECT_STRING = "127.0.0.1:12181,127.0.0.1:12182,127.0.0.1:12183";
+public class SessionTest extends ZooKeeperTest {
 
     @Test
     void should_connect_to_zookeeper() throws IOException, InterruptedException {
