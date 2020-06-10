@@ -34,6 +34,7 @@
 - [x] [除自身以外数组的乘积](product-of-array-except-self.md)
 - [x] [买卖股票的最佳时机](best-time-to-buy-and-sell-stock.md)
 - [x] [按奇偶排序数组](sort-array-by-parity.md)
+- [x] [和为s的连续正数序列](continues-sequence-with-sum.md)
 
 ## 字符串
 
