@@ -3,6 +3,7 @@ package playground.algorithm;
 import java.util.Deque;
 import java.util.LinkedList;
 
+@SuppressWarnings("unchecked")
 public class ImplementQueueUsingStacks {
 
     public static class MyQueue {

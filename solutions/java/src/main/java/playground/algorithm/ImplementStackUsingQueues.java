@@ -3,6 +3,7 @@ package playground.algorithm;
 import java.util.LinkedList;
 import java.util.Queue;
 
+@SuppressWarnings("unchecked")
 public class ImplementStackUsingQueues {
 
     public static class MyStack {
@@ -15,7 +16,7 @@ public class ImplementStackUsingQueues {
          * Initialize your data structure here.
          */
         public MyStack() {
-            queues = new LinkedList[2];
+            queues = new Queue[2];
             queues[0] = new LinkedList<>();
             queues[1] = new LinkedList<>();
             inQueue = queues[0];
