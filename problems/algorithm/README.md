@@ -197,6 +197,7 @@
 - [ ] [最小路径和](minimum-path-sum.md)
 - [ ] [不同的子序列](distinct-subsequences.md)
 - [ ] [买卖股票的最佳时机 II](best-time-to-buy-and-sell-stock-ii.md)
+- [x] [n个骰子的点数](dices-probability.md)
 
 ## 图
 
