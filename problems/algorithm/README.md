@@ -35,6 +35,7 @@
 - [x] [买卖股票的最佳时机](best-time-to-buy-and-sell-stock.md)
 - [x] [按奇偶排序数组](sort-array-by-parity.md)
 - [x] [和为s的连续正数序列](continues-sequence-with-sum.md)
+- [x] [扑克牌中的顺子](continuous-cards.md)
 
 ## 字符串
 
