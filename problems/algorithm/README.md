@@ -195,7 +195,7 @@
 - [ ] [整数拆分](integer-break.md)
 - [ ] [石子游戏](stone-game.md)
 - [ ] [不同路径](unique-paths.md)
-- [ ] [最小路径和](minimum-path-sum.md)
+- [x] [最小路径和](minimum-path-sum.md)
 - [ ] [不同的子序列](distinct-subsequences.md)
 - [ ] [买卖股票的最佳时机 II](best-time-to-buy-and-sell-stock-ii.md)
 - [x] [n个骰子的点数](dices-probability.md)
