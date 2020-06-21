@@ -175,7 +175,7 @@
 - [x] [2的幂](power-of-two.md)
 - [x] [只出现一次的数字 II](single-number-ii.md)
 - [x] [只出现一次的数字 III](single-number-iii.md)
-- [ ] [不用加减乘除做加法](add-two-numbers2.md)
+- [x] [不用加减乘除做加法](add-two-numbers2.md)
 
 ## 二分查找
 
