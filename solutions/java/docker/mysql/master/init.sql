@@ -1,0 +1,1 @@
+CREATE USER 'repl'@'%' IDENTIFIED BY 'password';

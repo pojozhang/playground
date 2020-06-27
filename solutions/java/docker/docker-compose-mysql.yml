@@ -1,0 +1,32 @@
+version: '3'
+services:
+  mysql-master-1:
+    image: mysql:latest
+    container_name: mysql-master-1
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+    ports:
+      - "13306:3306"
+    command: [
+      "--server-id=1",
+      "--gtid_mode=ON",
+      "--enforce-gtid-consistency=true",
+      "--binlog_format=ROW"
+    ]
+    volumes:
+      - ./mysql/master:/docker-entrypoint-initdb.d
+  mysql-master-1-slave-1:
+    image: mysql:latest
+    container_name: mysql-master-1-slave-1
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+    ports:
+      - "13306:3306"
+    command: [
+      "--server-id=2",
+      "--gtid_mode=ON",
+      "--enforce-gtid-consistency=true",
+      "--binlog_format=ROW",
+      "--read_only=ON"
+    ]
+
