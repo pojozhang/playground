@@ -37,6 +37,7 @@
 - [x] [和为s的连续正数序列](continues-sequence-with-sum.md)
 - [x] [扑克牌中的顺子](continuous-cards.md)
 - [x] [数组中重复的数字](duplication-in-array.md)
+- [x] [构建乘积数组](array-construction.md)
 
 ## 字符串
 
