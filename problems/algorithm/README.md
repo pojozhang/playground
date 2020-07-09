@@ -100,6 +100,7 @@
 - [x] [环形链表](linked-list-cycle.md)
 - [x] [删除链表的倒数第N个节点](remove-nth-node-from-end-of-list.md)
 - [x] [删除排序链表中的重复元素](remove-duplicates-from-sorted-list.md)
+- [x] [删除排序链表中的重复元素 II](remove-duplicates-from-sorted-list-ii.md)
 - [x] [相交链表](intersection-of-two-linked-lists.md)
 - [x] [合并两个有序链表](merge-two-sorted-lists.md)
 - [x] [两两交换链表中的节点](swap-nodes-in-pairs.md)
