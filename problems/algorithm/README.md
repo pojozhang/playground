@@ -59,6 +59,7 @@
 - [x] [字符串的排列](permutation-in-string.md)
 - [x] [第一个只出现一次的字符](first-not-repeating-char.md)
 - [x] [翻转字符串里的单词](reverse-words-in-a-string.md)
+- [x] [字符串中的第一个唯一字符](first-unique-character-in-a-string.md)
 
 ## 树
 
