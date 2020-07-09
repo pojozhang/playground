@@ -11,7 +11,7 @@ public class LinkedListCycle2 {
             slow = slow.next;
             if (fast == slow) {
                 slow = head;
-                while (fast != slow) {
+                while (slow != fast) {
                     slow = slow.next;
                     fast = fast.next;
                 }
