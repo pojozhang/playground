@@ -7,19 +7,18 @@ import java.util.*;
 public class BinaryTreeZigzagLevelOrderTraversal {
 
     public List<List<Integer>> zigzagLevelOrder(TreeNode root) {
-        List<List<Integer>> result = new ArrayList<>();
         if (root == null) {
-            return result;
+            return Collections.emptyList();
         }
-
+        List<List<Integer>> orders = new LinkedList<>();
         Deque<TreeNode> deque = new LinkedList<>();
-        deque.add(root);
+        deque.addFirst(root);
         int level = 0;
         while (!deque.isEmpty()) {
             int size = deque.size();
-            List<Integer> list = new ArrayList<>();
+            List<Integer> order = new ArrayList<>(size);
+            TreeNode node;
             for (int i = 0; i < size; i++) {
-                TreeNode node;
                 if (level % 2 == 0) {
                     node = deque.pollFirst();
                     if (node.left != null) {
@@ -37,12 +36,11 @@ public class BinaryTreeZigzagLevelOrderTraversal {
                         deque.addFirst(node.left);
                     }
                 }
-                list.add(node.val);
+                order.add(node.val);
             }
             level++;
-            result.add(list);
+            orders.add(order);
         }
-
-        return result;
+        return orders;
     }
 }
