@@ -119,6 +119,7 @@
 - [x] [数据流中的第K大元素](kth-largest-element-in-a-stream.md)
 - [x] [有序矩阵中第K小的元素](kth-smallest-element-in-a-sorted-matrix.md)
 - [x] [最小的k个数](k-least-numbers.md)
+- [x] [数据流的中位数](find-median-from-data-stream.md)
 
 ## 递归
 
