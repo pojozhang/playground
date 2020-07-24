@@ -1,6 +1,7 @@
 package playground.algorithm;
 
-import java.util.*;
+import java.util.Deque;
+import java.util.LinkedList;
 
 public class SlidingWindowMaximum {
 
@@ -8,32 +9,27 @@ public class SlidingWindowMaximum {
         if (nums.length < 1) {
             return new int[0];
         }
-
-        List<Integer> result = new ArrayList<>();
-        Deque<Integer> deque = new ArrayDeque<>();
-        // 大小为k的窗口
-        for (int i = 0; i < k; i++) {
-            while (!deque.isEmpty() && nums[i] >= nums[deque.getLast()]) {
-                deque.pollLast();
-            }
-            deque.addLast(i);
+        if (k == 1) {
+            return nums;
         }
-
-        // 窗口向后滑动
-        for (int i = k; i < nums.length; i++) {
-            result.add(nums[deque.getFirst()]);
-            // 把超出窗口范围的元素移出队列
-            if (deque.getFirst() <= i - k) {
+        int[] result = new int[nums.length - k + 1];
+        Deque<Integer> deque = new LinkedList<>();
+        for (int i = 0; i < nums.length; i++) {
+            if (deque.isEmpty()) {
+                deque.addFirst(i);
+                continue;
+            }
+            if (i - deque.getFirst() >= k) {
                 deque.pollFirst();
             }
             while (!deque.isEmpty() && nums[i] >= nums[deque.getLast()]) {
                 deque.pollLast();
             }
             deque.addLast(i);
+            if (i >= k - 1) {
+                result[i - k + 1] = nums[deque.getFirst()];
+            }
         }
-
-        result.add(nums[deque.getFirst()]);
-
-        return result.stream().mapToInt(Integer::intValue).toArray();
+        return result;
     }
 }
