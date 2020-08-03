@@ -136,6 +136,7 @@
 - [x] [N皇后 II](n-queens-ii.md)
 - [x] [括号生成](generate-parentheses.md)
 - [x] [子集](subsets.md)
+- [x] [单词搜索](word-search.md)
 
 ## 分治
 
