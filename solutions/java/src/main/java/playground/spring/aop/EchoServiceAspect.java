@@ -17,16 +17,16 @@ public class EchoServiceAspect {
     void before(JoinPoint joinPoint) {
     }
 
+    @After(value = "echoPointcut()")
+    void after(JoinPoint joinPoint) {
+    }
+
     @AfterReturning(value = "echoPointcut()")
     void afterRunning(JoinPoint joinPoint) {
     }
 
     @AfterThrowing(value = "echoPointcut()")
     void afterThrowing(JoinPoint joinPoint) {
-    }
-
-    @After(value = "echoPointcut()")
-    void after(JoinPoint joinPoint) {
     }
 
     @Around(value = "echoPointcut()")
