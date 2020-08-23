@@ -1,0 +1,51 @@
+schemaName: order_db
+
+dataSourceCommon:
+  username: root
+  password: root
+  connectionTimeoutMilliseconds: 30000
+  idleTimeoutMilliseconds: 60000
+  maxLifetimeMilliseconds: 1800000
+  maxPoolSize: 50
+  minPoolSize: 1
+
+dataSources:
+  ds_0:
+    url: jdbc:mysql://127.0.0.1:13306/order_db_0?serverTimezone=UTC&useSSL=false
+  ds_1:
+    url: jdbc:mysql://127.0.0.1:23306/order_db_1?serverTimezone=UTC&useSSL=false
+
+rules:
+- !SHARDING
+  tables:
+    t_order:
+      actualDataNodes: ds_${0..1}.t_order_${0..9}
+      tableStrategy:
+        standard:
+          shardingColumn: order_id
+          shardingAlgorithmName: t_order_inline
+      keyGenerateStrategy:
+        column: order_id
+        keyGeneratorName: snowflake
+  defaultDatabaseStrategy:
+    standard:
+      shardingColumn: user_id
+      shardingAlgorithmName: database_inline
+  defaultTableStrategy:
+    none:
+
+  shardingAlgorithms:
+    database_inline:
+      type: INLINE
+      props:
+        algorithm.expression: ds_${user_id % 2}
+    t_order_inline:
+      type: INLINE
+      props:
+        algorithm.expression: t_order_${order_id % 9}
+
+  keyGenerators:
+      snowflake:
+        type: SNOWFLAKE
+        props:
+            worker.id: 123
