@@ -22,8 +22,8 @@ class EchoServiceAspectTest extends SpringTestBase {
         InOrder inOrder = inOrder(echoServiceAspect);
         inOrder.verify(echoServiceAspect).around(any());
         inOrder.verify(echoServiceAspect).before(any());
-        inOrder.verify(echoServiceAspect).after(any());
         inOrder.verify(echoServiceAspect).afterRunning(any());
+        inOrder.verify(echoServiceAspect).after(any());
         inOrder.verify(echoServiceAspect, never()).afterThrowing(any());
     }
 
@@ -37,8 +37,8 @@ class EchoServiceAspectTest extends SpringTestBase {
         InOrder inOrder = inOrder(echoServiceAspect);
         inOrder.verify(echoServiceAspect).around(any());
         inOrder.verify(echoServiceAspect).before(any());
-        inOrder.verify(echoServiceAspect).after(any());
         inOrder.verify(echoServiceAspect).afterThrowing(any());
+        inOrder.verify(echoServiceAspect).after(any());
         inOrder.verify(echoServiceAspect, never()).afterRunning(any());
     }
 }
