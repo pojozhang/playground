@@ -13,10 +13,9 @@ dataSources:
   ds_0:
     url: jdbc:mysql://127.0.0.1:13306/order_db_0?serverTimezone=UTC&useSSL=false
   ds_1:
-    url: jdbc:mysql://127.0.0.1:23306/order_db_1?serverTimezone=UTC&useSSL=false
+    url: jdbc:mysql://127.0.0.1:13307/order_db_1?serverTimezone=UTC&useSSL=false
 
-rules:
-- !SHARDING
+shardingRules:
   tables:
     t_order:
       actualDataNodes: ds_${0..1}.t_order_${0..9}
@@ -45,7 +44,7 @@ rules:
         algorithm.expression: t_order_${order_id % 9}
 
   keyGenerators:
-      snowflake:
-        type: SNOWFLAKE
-        props:
-            worker.id: 123
+    snowflake:
+      type: SNOWFLAKE
+      props:
+        worker.id: 123
