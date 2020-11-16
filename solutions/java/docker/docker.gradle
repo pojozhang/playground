@@ -10,6 +10,10 @@ buildscript {
 
 apply plugin: com.avast.gradle.dockercompose.DockerComposePlugin
 
+dockerCompose {
+    captureContainersOutput = true
+}
+
 def services = []
 
 fileTree(buildscript.sourceFile.parent).matching { include 'docker-compose-**.yml' }.visit {
