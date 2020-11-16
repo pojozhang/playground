@@ -1,17 +1,19 @@
-version: '3'
+version: '3.5'
 services:
   mysql-master-1:
     image: mysql:latest
     container_name: mysql-master-1
     environment:
       MYSQL_ROOT_PASSWORD: root
+    networks:
+      - mysql
     ports:
       - "13306:3306"
     command: [
-      "--server-id=1",
-      "--gtid_mode=ON",
-      "--enforce-gtid-consistency=true",
-      "--binlog_format=ROW"
+        "--server-id=1",
+        "--gtid_mode=ON",
+        "--enforce-gtid-consistency=true",
+        "--binlog_format=ROW"
     ]
     volumes:
       - ./mysql/init-master.sql:/docker-entrypoint-initdb.d/init-master.sql
@@ -22,14 +24,16 @@ services:
     container_name: mysql-master-1-slave-1
     environment:
       MYSQL_ROOT_PASSWORD: root
+    networks:
+      - mysql
     ports:
       - "13307:3306"
     command: [
-      "--server-id=2",
-      "--gtid_mode=ON",
-      "--enforce-gtid-consistency=true",
-      "--binlog_format=ROW",
-      "--read_only=ON"
+        "--server-id=2",
+        "--gtid_mode=ON",
+        "--enforce-gtid-consistency=true",
+        "--binlog_format=ROW",
+        "--read_only=ON"
     ]
     volumes:
       - ./mysql/init-master-1-slave.sql:/docker-entrypoint-initdb.d/init-master-1-slave.sql
@@ -42,14 +46,16 @@ services:
     container_name: mysql-master-1-slave-2
     environment:
       MYSQL_ROOT_PASSWORD: root
+    networks:
+      - mysql
     ports:
       - "13308:3306"
     command: [
-      "--server-id=3",
-      "--gtid_mode=ON",
-      "--enforce-gtid-consistency=true",
-      "--binlog_format=ROW",
-      "--read_only=ON"
+        "--server-id=3",
+        "--gtid_mode=ON",
+        "--enforce-gtid-consistency=true",
+        "--binlog_format=ROW",
+        "--read_only=ON"
     ]
     volumes:
       - ./mysql/init-master-1-slave.sql:/docker-entrypoint-initdb.d/init-master-1-slave.sql
@@ -63,13 +69,15 @@ services:
     container_name: mysql-master-2
     environment:
       MYSQL_ROOT_PASSWORD: root
+    networks:
+      - mysql
     ports:
       - "23306:3306"
     command: [
-      "--server-id=1",
-      "--gtid_mode=ON",
-      "--enforce-gtid-consistency=true",
-      "--binlog_format=ROW"
+        "--server-id=1",
+        "--gtid_mode=ON",
+        "--enforce-gtid-consistency=true",
+        "--binlog_format=ROW"
     ]
     volumes:
       - ./mysql/init-master.sql:/docker-entrypoint-initdb.d/init-master.sql
@@ -80,14 +88,16 @@ services:
     container_name: mysql-master-2-slave-1
     environment:
       MYSQL_ROOT_PASSWORD: root
+    networks:
+      - mysql
     ports:
       - "23307:3306"
     command: [
-      "--server-id=2",
-      "--gtid_mode=ON",
-      "--enforce-gtid-consistency=true",
-      "--binlog_format=ROW",
-      "--read_only=ON"
+        "--server-id=2",
+        "--gtid_mode=ON",
+        "--enforce-gtid-consistency=true",
+        "--binlog_format=ROW",
+        "--read_only=ON"
     ]
     volumes:
       - ./mysql/init-master-2-slave.sql:/docker-entrypoint-initdb.d/init-master-2-slave.sql
@@ -100,14 +110,16 @@ services:
     container_name: mysql-master-2-slave-2
     environment:
       MYSQL_ROOT_PASSWORD: root
+    networks:
+      - mysql
     ports:
       - "23308:3306"
     command: [
-      "--server-id=3",
-      "--gtid_mode=ON",
-      "--enforce-gtid-consistency=true",
-      "--binlog_format=ROW",
-      "--read_only=ON"
+        "--server-id=3",
+        "--gtid_mode=ON",
+        "--enforce-gtid-consistency=true",
+        "--binlog_format=ROW",
+        "--read_only=ON"
     ]
     volumes:
       - ./mysql/init-master-2-slave.sql:/docker-entrypoint-initdb.d/init-master-2-slave.sql
@@ -115,3 +127,6 @@ services:
       - mysql-master-2
     security_opt:
       - seccomp:unconfined
+networks:
+  mysql:
+    name: mysql_network

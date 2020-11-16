@@ -1,0 +1,16 @@
+version: '3.5'
+services:
+  sharding-proxy:
+    image: apache/sharding-proxy:4.1.1
+    container_name: sharding-proxy
+    volumes:
+      - ./sharding-proxy/conf:/opt/sharding-proxy/conf
+      - ./sharding-proxy/ext-lib:/opt/sharding-proxy/ext-lib
+    networks:
+      - mysql
+    ports:
+      - "33307:3307"
+networks:
+  mysql:
+    external:
+      name: mysql_network

@@ -1,9 +1,0 @@
-version: '3'
-services:
-  sharding-proxy:
-    image: apache/sharding-proxy:latest
-    container_name: sharding-proxy
-    volumes:
-      - ./shardingsphere/conf:/opt/shardingsphere-proxy/conf
-    ports:
-      - "13308:3308"

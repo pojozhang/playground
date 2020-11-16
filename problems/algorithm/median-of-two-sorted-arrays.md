@@ -24,4 +24,5 @@ nums2 = [3, 4]
 
 ## 实现
 
+- [Java](https://github.com/pojozhang/playground/blob/master/solutions/java/src/main/java/playground/algorithm/MedianOfTwoSortedArrays.java)
 - [Go](https://github.com/pojozhang/playground/blob/master/solutions/go/src/playground/algorithm/median_of_two_sorted_arrays.go)
