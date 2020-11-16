@@ -12,7 +12,7 @@ matrix:
       before_script:
         - cd solutions/java
       script:
-        - ./gradlew clean startAllServices build stopAllServices
+        - ./gradlew clean allComposeUp build allComposeDown
       after_script:
         - sh .travis.sh
       services:
