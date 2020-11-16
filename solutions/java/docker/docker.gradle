@@ -4,7 +4,7 @@ buildscript {
     }
 
     dependencies {
-        classpath 'com.avast.gradle:gradle-docker-compose-plugin:0.9.4'
+        classpath 'com.avast.gradle:gradle-docker-compose-plugin:0.13.4'
     }
 }
 
@@ -17,29 +17,24 @@ fileTree(buildscript.sourceFile.parent).matching { include 'docker-compose-**.ym
 }
 
 services.each { service ->
-    tasks.create(name: "start${service.capitalize()}", group: 'docker') {
-        doFirst {
-            dockerCompose.useComposeFiles += "${buildscript.sourceFile.parent}${File.separator}docker-compose-${service}.yml"
+    dockerCompose {
+        "$service" {
+            useComposeFiles = ["${buildscript.sourceFile.parent}${File.separator}docker-compose-${service}.yml"]
         }
-        finalizedBy composeUp
-    }
-
-    tasks.create(name: "stop${service.capitalize()}", group: 'docker') {
-        doFirst {
-            dockerCompose.useComposeFiles += "${buildscript.sourceFile.parent}${File.separator}docker-compose-${service}.yml"
-        }
-        finalizedBy composeDown
     }
 }
 
-task startAllServices(group: 'docker') {
+task allComposeUp(group: 'docker') {
     services.each { service ->
-        dependsOn += "start${service.capitalize()}"
+        dependsOn += "${service}ComposeUp"
     }
 }
 
-task stopAllServices(group: 'docker') {
+task allComposeDown(group: 'docker') {
     services.each { service ->
-        dependsOn += "stop${service.capitalize()}"
+        dependsOn += "${service}ComposeDown"
     }
 }
+
+shardingproxyComposeUp.mustRunAfter(mysqlComposeUp)
+mysqlComposeDown.mustRunAfter(shardingproxyComposeDown)

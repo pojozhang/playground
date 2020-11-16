@@ -5,5 +5,12 @@ services:
     container_name: sharding-proxy
     volumes:
       - ./sharding-proxy/conf:/opt/sharding-proxy/conf
+      - ./sharding-proxy/ext-lib:/opt/sharding-proxy/ext-lib
+    networks:
+      - mysql
     ports:
-      - "33308:3308"
+      - "33307:3307"
+networks:
+  mysql:
+    external:
+      name: mysql_network
