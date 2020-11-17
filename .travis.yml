@@ -18,7 +18,7 @@ matrix:
       services:
         - docker
     - language: go
-      go: 1.12.x
+      go: 1.15.x
       go_import_path: playground
       install:
         - export GOPATH=${TRAVIS_BUILD_DIR}/solutions/go/
@@ -27,7 +27,7 @@ matrix:
       script:
         - env GO111MODULE=on go test ./... -v
     - language: python
-      python: 3.6
+      python: 3.8
       before_script:
         - cd solutions/python
       script: pytest
