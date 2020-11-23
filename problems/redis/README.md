@@ -15,3 +15,4 @@
 ## 应用
 
 - [Redlock](redlock.md)
+- [分布式限流](rate-limit.md)
