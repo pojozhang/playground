@@ -2,6 +2,8 @@
 
 ## 基础
 
+- [常用命令](commands.md)
+- [字符集和比较规则](charset-and-collation.md)
 - [整数类型的显示宽度](display-width-of-integer.md)
 - [DATE、DATETIME和TIMESTAMP的区别](date-datetime-timestamp.md)
 - [CHAR和VARCHAR的区别](char-varchar.md)
