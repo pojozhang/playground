@@ -17,21 +17,31 @@ InnoDB有以下四种类型的数据行格式。
 3. 记录头信息
 用二进制位记录的一些特殊标识，如删除标记、记录的类型等。
 
-![记录头信息](resources/innodb-9.png)。
+![记录头信息](resources/innodb-9.png)
 
 - delete_flag: 删除标记。
 - record_type: 记录的类型。
 - heap_no: 表示当前记录在本页中的位置。比如下面的例子中，主键是1、2、3、4的记录的heap_no分别是2、3、4、5依次增加。
 
-![heap_no](resources/innodb-10.png)。
+![heap_no](resources/innodb-10.png)
 
 InnoDB会自动给每个页添加heap_no是0和1的记录，分别是`Infimum`以及`Supremum`记录，`Infimum`表示当前页中最小的记录，`Supremum`表示当前页中最大的记录。
 
-![Infimum、Supremum](resources/innodb-11.png)。
+![Infimum、Supremum](resources/innodb-11.png)
 
-- next_record: 下一条记录的相对位置。
+- next_record: 下一条记录的相对位置。如果该值是正数则表示下一条记录在当前记录的后面，否则表示下一条记录在当前记录的前面。比如下图中的第1条记录的next_record值是32，表示从记录的真实数据地址向后32字节处就是下一条记录的真实数据；第4条记录的next_record值是-111，表示从记录的真实数据地址向前111字节处就是下一条记录的真实数据。
 
-![next_record](resources/innodb-12.png)。
+![next_record](resources/innodb-13.png)
+
+用箭头表示上图会更加清晰：
+
+![next_record](resources/innodb-12.png)
+
+如果此时删掉第2条记录，只需要更新第1条记录的next_record值，第2条记录并不会从存储空间中移除。
+
+![next_record](resources/innodb-14.png)
+
+我们可以注意到，next_record并不指向下一条记录开始的位置，而是指向真实数据的地址，从这个位置向左可以读取记录头信息，向右可以读取真实数据，这也是变长字段长度列表按列的顺序逆序存储的原因。
 
 4. 记录的真实数据
 存储列的值，除了用户定义的列以外，Inndb还会为每行记录添加以下的隐藏列：
@@ -93,3 +103,18 @@ InnoDB的主键生成策略是：
 
 ![User Records](resources/innodb-8.png)
 
+InnoDB在存储数据时会把记录按照主键的大小，从小到大顺序排列，这样当我们用主键进行查询时就需要对记录进行遍历（算法复杂度O(n)），为了提高查询的效率，InnoDB将页中记录的划分成多个组（不包括被标记为删除的记录），每个组内部的记录从小到大排列，并把最后一条记录（也就是每个组最大的那条记录）在页中的地址偏移量提取出来存放在一个单独的区域中，这个区域被称为Page Directory（页目录）。
+
+![Page Directory](resources/innodb-15.png)
+
+用箭头表示上图：
+
+![Page Directory](resources/innodb-16.png)
+
+记录头信息中的n_owned表示记录所在的分组中共有几条记录。有了这些分组，我们就可以通过二分法来快速通过主键进行查找。
+
+Page Header部分存储了一些状态信息，比如当前页存储了多少条记录、Free Space的地址偏移量、记录分组数量等。
+
+File Header是各类型页通用的（非索引页特有），它存储了一些页的通用信息，如页号、上一个页的页号、下一个页的页号、页的类型等。
+
+File Trailer也是各类型页通用的，它存储了页的校验和，用于检验页是否完整。
