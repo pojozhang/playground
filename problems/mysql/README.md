@@ -2,6 +2,7 @@
 
 ## 基础
 
+- [系统数据库](system-database.md)
 - [常用命令](commands.md)
 - [字符集和比较规则](charset-and-collation.md)
 - [整数类型的显示宽度](display-width-of-integer.md)
