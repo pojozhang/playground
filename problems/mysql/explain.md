@@ -130,7 +130,7 @@ explain select avg(c)
 
 ## type
 
-`type`列表示表的连接类型，主要有以下几种类型，
+`type`列表示MySQL执行查询语句的方式，也称为访问方法或访问类型，主要有以下几种类型：
 
 - ALL
 
@@ -138,7 +138,7 @@ explain select avg(c)
 
 - index
 
-`index`在两种情况下会出现，一种是查询用了覆盖索引，只需要扫描索引中的数据，而不需要扫描原表的数据。索引中的数据通常只是原表中的几列，数据量相比原表少了很多，可以显著减少IO操作。当使用覆盖索引时`Extra`列会显示`Using index`。
+`index`在两种情况下会出现，一种是查询用了覆盖索引，只需要扫描二级索引中的数据，而不需要进行回表操作。索引中的数据通常只是原表中的几列，数据量相比原表少了很多，可以显著减少IO操作。当使用覆盖索引时`Extra`列会显示`Using index`。
 
 ```sql
 explain select rental_date from rental;
@@ -150,7 +150,7 @@ explain select rental_date from rental;
 +----+-------------+--------+------------+-------+---------------+-------------+---------+------+-------+----------+-------------+
 ```
 
-另一种情况出现在全表扫描，区别是按索引而不是按行的次序进行扫描，优点是避免了排序。
+另一种情况出现在全表扫描，区别是按索引而不是按行的顺序进行扫描，优点是避免了排序。
 
 ```sql
 explain select * from actor order by actor_id;
@@ -179,6 +179,44 @@ explain select *
 ```
 
 - ref
+
+当使用二级索引（非唯一索引），并且列与常数等值比较时，`type`列是`ref`。
+
+```sql
+explain
+select *
+from rental
+where staff_id = 1;
+
++----+-------------+--------+------------+------+-----------------+-----------------+---------+-------+------+----------+-------+
+| id | select_type | table  | partitions | type | possible_keys   | key             | key_len | ref   | rows | filtered | Extra |
++----+-------------+--------+------------+------+-----------------+-----------------+---------+-------+------+----------+-------+
+|  1 | SIMPLE      | rental | NULL       | ref  | idx_fk_staff_id | idx_fk_staff_id | 1       | const | 8040 |   100.00 | NULL  |
++----+-------------+--------+------------+------+-----------------+-----------------+---------+-------+------+----------+-------+
+```
+
+当使用二级索引且索引中包含多个列，并且最左边连续的列是和常数等值比较时，`type`列也是`ref`。
+
+```sql
+-- 用到的索引是idx_store_id_film_id(store_id, film_id)。
+explain
+select *
+from inventory
+where store_id = 1
+  and film_id = 1;
+
++----+-------------+-----------+------------+------+-------------------------------------+----------------------+---------+-------------+------+----------+-------+
+| id | select_type | table     | partitions | type | possible_keys                       | key                  | key_len | ref         | rows | filtered | Extra |
++----+-------------+-----------+------------+------+-------------------------------------+----------------------+---------+-------------+------+----------+-------+
+|  1 | SIMPLE      | inventory | NULL       | ref  | idx_fk_film_id,idx_store_id_film_id | idx_store_id_film_id | 3       | const,const |    4 |   100.00 | NULL  |
++----+-------------+-----------+------------+------+-------------------------------------+----------------------+---------+-------------+------+----------+-------+
+
+-- 以下语句的type也是ref。
+explain
+select *
+from inventory
+where store_id = 1
+```
 
 当两张表连接时，如果第二张表中的列的索引不是唯一索引或者主键，那么`type`列就是`ref`。比如下面的语句中第二张表`rental`的`staff_id`列上的索引是普通索引，不是`rental`表的主键或唯一索引，这时`type`就是`ref`。简单来说就是第一张表的某一行数据在第二张表中可能匹配到多行数据。
 
@@ -215,7 +253,7 @@ explain select *
 
 - const
 
-查询的列是主键或建立了唯一索引，查询时最多只返回一行数据。
+查询的列是主键或建立了唯一索引，查询时最多只返回一行数据。如果唯一索引有2列，而查询条件只用到了第一列，这种情况下也不是`const`，因为查询结果可能包含多条记录。此外唯一索引用`is null`查询时也不是`const`，同样是因为查询结果可能包含多条记录。
 
 ```sql
 explain select * from film where film_id = 3;
@@ -314,3 +352,4 @@ explain select * from film where film_id = 3;
 
 1. [《MySQL性能优化神器Explain使用分析》](https://segmentfault.com/a/1190000008131735)
 2. [《What does eq_ref and ref types mean in MySQL explain》](https://stackoverflow.com/questions/4508055/what-does-eq-ref-and-ref-types-mean-in-mysql-explain)
+3. 《MySQL是怎样运行的》
