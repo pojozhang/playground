@@ -30,7 +30,7 @@ explain select *
 
 ## id
 
-`id`是查询中执行`SELECT`子句或者是操作表的顺。如果查询语句中有子查询或`UNION`查询，那么`id`会递增，`id`越大的查询优先级越高，查询从`id`最大的开始执行，如下所示。
+`id`是查询中执行`SELECT`子句或者是操作表的顺序。如果查询语句中有子查询或`UNION`查询，那么`id`会递增，`id`越大的查询优先级越高，查询从`id`最大的开始执行，如下所示。
 
 ```sql
 explain select *
@@ -45,7 +45,9 @@ explain select *
 +----+-------------+------------+------------+------+---------------+---------+---------+-------+------+----------+-------------+
 ```
 
-否则`EXPLAIN`执行结果中的每一行`id`都是1，查询从上往下执行。
+> 如果优化器把子查询转换为连接查询，也可以通过执行计划查看，此时两个查询的`id`是一样的。
+
+否则`EXPLAIN`执行结果中的每一行`id`都是1，查询从上往下执行。当查询语句中存在表连接时 ，同一个`id`下排在上面的是驱动表，排在下面的被驱动表。
 
 ```sql
 explain select *
@@ -78,21 +80,57 @@ explain select *
 +----+--------------+------------+------------+------+---------------+------+---------+------+------+----------+-----------------+
 ```
 
+> 对于UNION操作MySQL需要创建内部临时表来合并多个表的查询结果，如果用UNION ALL则不需要。
+
 ## select_type
 
 表示对应的查询类型，主要有以下几种。
 
 - SIMPLE
 
-简单查询，指不含子查询或`UNION`查询。
+简单查询，指不含子查询或`UNION`查询，连接查询也算简单查询。
 
 - PRIMARY
 
-除了简单查询外，剩下的几种类型统称为复杂查询。`PRIMARY`代表复杂查询的最外层部分。
+除了简单查询外，剩下的几种类型统称为复杂查询。`PRIMARY`代表复杂查询的最外层部分，比如对于包含`UNION`、`UNION ALL`、子查询的语句，最左边的查询的select_type就是`PRIMARY`。
 
 - SUBQUERY
 
-查询语句中的子查询。
+查询语句中的子查询，这种子查询只需要执行一次，比如以下的查询语句。
+
+```sql
+explain 
+select *
+from film
+where film_id in (select film_id from film_category)
+   or title = 'title';
+
++----+-------------+---------------+------------+-------+---------------+---------------------------+---------+------+------+----------+-------------+
+| id | select_type | table         | partitions | type  | possible_keys | key                       | key_len | ref  | rows | filtered | Extra       |
++----+-------------+---------------+------------+-------+---------------+---------------------------+---------+------+------+----------+-------------+
+|  1 | PRIMARY     | film          | NULL       | ALL   | idx_title     | NULL                      | NULL    | NULL | 1000 |   100.00 | Using where |
+|  2 | SUBQUERY    | film_category | NULL       | index | PRIMARY       | fk_film_category_category | 1       | NULL | 1000 |   100.00 | Using index |
++----+-------------+---------------+------------+-------+---------------+---------------------------+---------+------+------+----------+-------------+
+```
+
+- DEPENDENT SUBQUERY
+
+同样也是查询语句中的子查询，这种子查询可能需要执行多次，比如以下的查询语句。
+
+```sql
+explain
+select *
+from film
+where film_id in (select film_id from film_category where film_category.film_id = film.film_id)
+   or title = 'title';
+
++----+--------------------+---------------+------------+------+---------------+---------+---------+---------------------+------+----------+--------------------------+
+| id | select_type        | table         | partitions | type | possible_keys | key     | key_len | ref                 | rows | filtered | Extra                    |
++----+--------------------+---------------+------------+------+---------------+---------+---------+---------------------+------+----------+--------------------------+
+|  1 | PRIMARY            | film          | NULL       | ALL  | idx_title     | NULL    | NULL    | NULL                | 1000 |   100.00 | Using where              |
+|  2 | DEPENDENT SUBQUERY | film_category | NULL       | ref  | PRIMARY       | PRIMARY | 2       | sakila.film.film_id |    1 |   100.00 | Using where; Using index |
++----+--------------------+---------------+------------+------+---------------+---------+---------+---------------------+------+----------+--------------------------+
+```
 
 - DERIVED
 
@@ -114,11 +152,30 @@ explain select avg(c)
 
 - UNION
 
-`UNION`查询中第二个之后（包括第二个）的查询，第一个查询被标为`PRIMARY`。
+`UNION`查询中第二个之后（包括第二个）的查询（第一个查询被标为`PRIMARY`）。
 
 - UNION RESULT
 
-表示从MySQL为`UNION`查询创建的匿名临时表中检索结果。
+MySQL会为`UNION`查询创建匿名临时表，从该临时表中检索结果的查询的select_type就是`UNION RESULT`。
+
+- MATERIALIZED
+
+当优化器在执行包含子查询的语句时选择将子查询物化后与外层查询进行连接查询，该子查询对应的select_type就是`MATERIALIZED`。如下面这个查询中`<subquery2>`就是由`film_category`物化后得到的临时表，再和`film`进行连接查询。
+
+```sql
+explain
+select *
+from film
+where film_id in (select film_id from film_category);
+
++----+--------------+---------------+------------+--------+---------------+---------------------------+---------+---------------------+------+----------+-------------+
+|  1 | SIMPLE       | film          | NULL       | ALL    | PRIMARY       | NULL                      | NULL    | NULL                | 1000 |   100.00 | Using where |
+|  1 | SIMPLE       | <subquery2>   | NULL       | eq_ref | <auto_key>    | <auto_key>                | 2       | sakila.film.film_id |    1 |   100.00 | NULL        |
+|  2 | MATERIALIZED | film_category | NULL       | index  | PRIMARY       | fk_film_category_category | 1       | NULL                | 1000 |   100.00 | Using index |
++----+--------------+---------------+------------+--------+---------------+---------------------------+---------+---------------------+------+----------+-------------+
+```
+
+> 把子查询结果集中的记录保存到临时表的过程称为物化。
 
 ## table
 
@@ -218,7 +275,7 @@ from inventory
 where store_id = 1
 ```
 
-当两张表连接时，如果第二张表中的列的索引不是唯一索引或者主键，那么`type`列就是`ref`。比如下面的语句中第二张表`rental`的`staff_id`列上的索引是普通索引，不是`rental`表的主键或唯一索引，这时`type`就是`ref`。简单来说就是第一张表的某一行数据在第二张表中可能匹配到多行数据。
+当两张表连接时，如果被驱动表中的列的索引不是唯一索引或者主键，那么`type`列就是`ref`。比如下面的语句中被驱动表`rental`的`staff_id`列上的索引是普通索引，不是`rental`表的主键或唯一索引，这时`type`就是`ref`。简单来说就是驱动表的某一行数据在被驱动表中可能匹配到多行数据。
 
 ```sql
 explain select staff.staff_id
@@ -235,7 +292,7 @@ explain select staff.staff_id
 
 - eq_ref
 
-和`ref`相反，当两张表连接时，如果第二张表中的列的索引是唯一索引或者主键，那么`type`列就是`eq_ref`。下面的语句中第二张表`store`表的`manager_staff_id`列上建立了唯一索引，因此改列的值是唯一的，所以此时`type`列是`eq_ref`。简单来说就是第一张表的某一行数据在第二张表中只能匹配到一行数据。
+和`ref`相反，当两张表连接时，如果被驱动表中的列的索引是非NULL唯一索引或者主键，那么`type`列就是`eq_ref`。下面的语句中被驱动表`store`表的`manager_staff_id`列上建立了唯一索引，因此改列的值是唯一的，所以此时`type`列是`eq_ref`。简单来说就是驱动表的某一行数据在被驱动表中只能匹配到一行数据。
 
 ```sql
 explain select *
@@ -249,6 +306,14 @@ explain select *
 |  1 | SIMPLE      | store | NULL       | ALL    | idx_unique_manager | NULL    | NULL    | NULL                          |    2 |   100.00 | NULL  |
 |  1 | SIMPLE      | staff | NULL       | eq_ref | PRIMARY            | PRIMARY | 1       | sakila.store.manager_staff_id |    1 |   100.00 | NULL  |
 +----+-------------+-------+------------+--------+--------------------+---------+---------+-------------------------------+------+----------+-------+
+```
+
+- ref_or_null
+
+当使用二级索引进行等值匹配并且索引列的值可以是NULL时。
+
+```sql
+select * from table where column = 'a' or column is null;
 ```
 
 - const
@@ -267,7 +332,11 @@ explain select * from film where film_id = 3;
 
 - system
 
-表中只有一行数据。
+表中只有一行数据。只有统计数据是精确的存储引擎才支持，如MyISAM、MEMORY，InnoDB不支持。
+
+- index_merge
+
+索引合并。
 
 ## possible_keys
 
@@ -307,7 +376,7 @@ explain select *
 |  1 | SIMPLE      | film_actor | NULL       | ref  | idx_fk_film_id | idx_fk_film_id | 2       | sakila.film.film_id |    5 |   100.00 | NULL  |
 ```
 
-对于`type`类型是`const`的查询，其`ref`列也为`const`。
+对于其他类型的查询，其`ref`列显示与索引列进行等值匹配`const`，比如下面的查询语句与索引列进行等值匹配的是常量（数字3）。
 
 ```sql
 explain select * from film where film_id = 3;
@@ -321,12 +390,11 @@ explain select * from film where film_id = 3;
 
 ## rows
 
-扫描行数，这是一个估算值。
+需要扫描的行数，这是一个估算值。
 
 ## filtered
 
-表示符合条件的数据的行数占需要扫描的行数（也就是`rows`列的值）的百分比，比如该列值为40，则表示在扫描的数据行中估计有40%的数据满足查询条件。
-`filtered`只有在`type`列是`ALL`和`index`时才有效，在其它情况下`filtered`的值总是100，这是因为在其它情况下符合查询条件的数据行数通常等于扫描的行数。
+表示符合条件的数据的行数占需要扫描的行数（也就是`rows`列的值）的百分比，比如该列值为40，则表示在扫描的数据行中估计有40%的数据满足查询条件。对于连接查询而言，可以通过`rows`*`filtered`计算出驱动表的扇出值。
 
 ## Extra
 
@@ -347,6 +415,91 @@ explain select * from film where film_id = 3;
 - Using filesort
 
 表示无法利用索引对查询结果进行排序。
+
+## JSON格式的执行计划
+
+通过在`EXPLAIN`和查询语句之间加入`FORMAT=JSON`就可以得到一个包含执行成本的JSON格式的执行计划。
+
+```sql
+explain format = json
+select staff.staff_id
+from staff
+         left join rental on staff.staff_id = rental.staff_id;
+```
+
+```json
+{
+  "query_block": {
+    "select_id": 1,
+    "cost_info": {
+      "query_cost": "1612.39"
+    },
+    "nested_loop": [
+      {
+        "table": {
+          "table_name": "staff",
+          "access_type": "index",
+          "key": "idx_fk_store_id",
+          "used_key_parts": [
+            "store_id"
+          ],
+          "key_length": "1",
+          "rows_examined_per_scan": 2,
+          "rows_produced_per_join": 2,
+          "filtered": "100.00",
+          "using_index": true,
+          "cost_info": {
+            "read_cost": "4.00",
+            "eval_cost": "0.20",
+            "prefix_cost": "4.20",
+            "data_read_per_join": "1K"
+          },
+          "used_columns": [
+            "staff_id"
+          ]
+        }
+      },
+      {
+        "table": {
+          "table_name": "rental",
+          "access_type": "ref",
+          "possible_keys": [
+            "idx_fk_staff_id"
+          ],
+          "key": "idx_fk_staff_id",
+          "used_key_parts": [
+            "staff_id"
+          ],
+          "key_length": "1",
+          "ref": [
+            "sakila.staff.staff_id"
+          ],
+          "rows_examined_per_scan": 8002,
+          "rows_produced_per_join": 16005,
+          "filtered": "100.00",
+          "using_index": true,
+          "cost_info": {
+            "read_cost": "7.69",
+            "eval_cost": "1600.50",
+            "prefix_cost": "1612.39",
+            "data_read_per_join": "500K"
+          },
+          "used_columns": [
+            "staff_id"
+          ]
+        }
+      }
+    ]
+  }
+}
+```
+
+其中，`cost_info`部分就是执行成本。
+
+- read_cost：I/O成本+rows*(1-filtered)条记录的CPU成本。
+- eval_cost：rows*filteded条记录的成本。
+- prefix_cost：查询总成本（之前步骤的成本+本次的成本）。
+- data_read_per_join：需要读取的数据量。
 
 ## 参考
 
