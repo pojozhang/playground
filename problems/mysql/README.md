@@ -18,6 +18,7 @@
 - [事务](transaction.md)
 - [查询成本](query-cost.md)
 - [优化器](optimizer.md)
+- [Buffer Pool](buffer-pool.md)
 
 ## 性能优化
 
