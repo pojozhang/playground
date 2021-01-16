@@ -194,7 +194,7 @@ InnoDB使用名为XDES Entry的数据结构表示一个区，其结构如下：
     前三种状态的区都是属于表空间的，而FSEG状态的区是属于某个段的。
 - Page State Bitmap：共128个比特位，分成64对，也就是该区上没一个页有一对比特位，每对的第一个比特为表示对应的页是否空闲，另一个比特位暂时没有作用。
 
-InndoDB使用名为INODE Entry的数据结构表示一个段，其结构如下：
+InnoDB使用名为INODE Entry的数据结构表示一个段，其结构如下：
 
 ![独立表空间](resources/innodb/innodb-30.png)
 
