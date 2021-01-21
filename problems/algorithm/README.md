@@ -93,6 +93,7 @@
 - [x] [用栈实现队列](implement-queue-using-stacks.md)
 - [x] [用队列实现栈](implement-stack-using-queues.md)
 - [x] [验证栈序列](validate-stack-sequences.md)
+- [x] [最大频率栈](maximum-frequency-stack.md)
 
 ## 链表
 
