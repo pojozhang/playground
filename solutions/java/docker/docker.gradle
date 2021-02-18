@@ -42,3 +42,6 @@ task allComposeDown(group: 'docker') {
 
 shardingproxyComposeUp.mustRunAfter(mysqlComposeUp)
 mysqlComposeDown.mustRunAfter(shardingproxyComposeDown)
+
+kafkaComposeUp.mustRunAfter(zookeeperComposeUp)
+zookeeperComposeDown.mustRunAfter(kafkaComposeDown)

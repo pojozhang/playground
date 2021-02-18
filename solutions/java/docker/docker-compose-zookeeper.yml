@@ -7,6 +7,8 @@ services:
     environment:
       ZOO_MY_ID: 1
       ZOO_SERVERS: server.1=zookeeper1:2888:3888;2181 server.2=zookeeper2:2888:3888;2181 server.3=zookeeper3:2888:3888;2181
+    networks:
+      - zookeeper
     ports:
       - "12181:2181"
   zookeeper2:
@@ -16,6 +18,8 @@ services:
     environment:
       ZOO_MY_ID: 2
       ZOO_SERVERS: server.1=zookeeper1:2888:3888;2181 server.2=zookeeper2:2888:3888;2181 server.3=zookeeper3:2888:3888;2181
+    networks:
+      - zookeeper
     ports:
       - "12182:2181"
   zookeeper3:
@@ -25,5 +29,10 @@ services:
     environment:
       ZOO_MY_ID: 3
       ZOO_SERVERS: server.1=zookeeper1:2888:3888;2181 server.2=zookeeper2:2888:3888;2181 server.3=zookeeper3:2888:3888;2181
+    networks:
+      - zookeeper
     ports:
       - "12183:2181"
+networks:
+  zookeeper:
+    name: zookeeper_network
