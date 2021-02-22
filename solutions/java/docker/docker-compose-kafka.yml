@@ -51,6 +51,15 @@ services:
     networks:
       - zookeeper
     restart: on-failure
+  kafdrop:
+    image: obsidiandynamics/kafdrop:latest
+    container_name: kafdrop
+    ports:
+      - 9000:9000
+    environment:
+      KAFKA_BROKERCONNECT: kafka1:9092,kafka2:9093,kafka3:9094
+    networks:
+      - zookeeper
 networks:
   zookeeper:
     external:
