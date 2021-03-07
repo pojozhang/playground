@@ -39,7 +39,6 @@ class KafkaTest {
                 consumer.subscribe(Collections.singletonList(TOPIC));
                 while (countDown.get() > 0) {
                     ConsumerRecords<String, String> records = consumer.poll(Duration.ofSeconds(1));
-                    System.out.println("consume " + records.count());
                     if (!records.isEmpty()) {
                         countDown.addAndGet(-1 * records.count());
                     }
@@ -49,7 +48,6 @@ class KafkaTest {
 
         try (Producer<String, String> producer = initProducer()) {
             for (int i = 0; i < MESSAGE_COUNT; i++) {
-                System.out.println("send " + i);
                 producer.send(new ProducerRecord<>(TOPIC, "value")).get(5, TimeUnit.SECONDS);
             }
         }
