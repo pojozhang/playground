@@ -146,21 +146,6 @@ GroupCoordinator收到leader消费者发来的分配方案后会把它和整个�
 
 当集群中有消费者第一次消费消息时会自动创建__consumer_offsets主题，其副本因子和分区数可以通过offsets.topic.replication.factor和offsets.topic.num.partitions指定。通过offsets.retention.minutes可以指定消费位移的保留时长。
 
-## 自动提交
-
-
-```java
-public void maybeAutoCommitOffsetsAsync(long now) {
-    if (autoCommitEnabled) {
-        nextAutoCommitTimer.update(now);
-        if (nextAutoCommitTimer.isExpired()) {
-            nextAutoCommitTimer.reset(autoCommitIntervalMs);
-            doAutoCommitOffsetsAsync();
-        }
-    }
-}
-```
-
 ## 参考
 
 1. 《深入理解Kafka：核心设计与实践原理》

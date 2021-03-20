@@ -20,7 +20,7 @@ Producer在投递消息时首先要决定把消息投递到Topic的哪一个分�
 
 - acks = 1（默认），只要leader副本写入消息就认为写入成功。如果leader副本在写入消息后崩溃，并且此时还没有follower副本同步该消息，此时消息丢失。
 - acks = 0，发送消息后不需要等待服务器的响应。优点是吞吐量高。
-- acks = -1，需要等ISR中的所有副本都写入消息后才会收到服务器的成功响应。注意，ISR中可能仅包含leader副本本身，在这种情况下等同于acks = 1，依然可能发生消息丢失的情况。
+- acks = -1，需要等ISR中的所有副本都写入消息后才会收到服务器的成功响应。注意，ISR中可能仅包含leader副本本身，在这种情况下等同于acks = 1，依然可能发生消息丢失的情况，需要配合broker的min.insync.replicas参数避免这种情况的发生。
 - acks = all，同acks = -1。
 
 2. max.in.flight.requests.per.connection
