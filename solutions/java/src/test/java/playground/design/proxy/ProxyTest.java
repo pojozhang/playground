@@ -1,4 +1,4 @@
-package playground.desgin;
+package playground.design.proxy;
 
 import org.junit.jupiter.api.Test;
 import playground.design.proxy.CglibDynamicProxy;
