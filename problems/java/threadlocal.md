@@ -67,7 +67,7 @@ private T setInitialValue() {
 
 ### 弱引用
 
-`ThreadLocalMap`中的`Entry`对象用到了弱引用。当外部对象对`ThreadLocal`的强引用结束后，`Entry`通过弱引用可以知道它引用的`ThreadLocal`对象已被回收，这时`ThreadLocalMap`就会进行一些清理工作。如果不是弱引用，而开发者又没有手动调用`remove()`方法进行清理，那么很容易发生内存泄漏。
+`ThreadLocalMap`中的`Entry`对象用到了弱引用。当外部对象对`ThreadLocal`的强引用结束后，在下一次GC时，`Entry`引用的`ThreadLocal`对象就会被回收。如果不是弱引用，而开发者又没有手动调用`remove()`方法进行清理，那么很容易发生内存泄漏。
 
 ```java
 // java.lang.ThreadLocal.ThreadLocalMap.Entry
@@ -94,3 +94,46 @@ static void method() {
     threadLocal.set(1);
 }
 ```
+
+### 内存泄漏
+
+虽然ThreadLocalMap.Entry的key是弱引用，但是value确实强引用，它只会在Thread对象结束生命周期时才会被回收，如果Thread生命周期很长，那么就有可能引起内存泄漏。
+
+ThreadLocal在get()、set()、remove()方法被调用时都会去扫描key为null的Entry，并把对应的value也设置为null，相关清理的方法如下。
+
+```java
+private int expungeStaleEntry(int staleSlot) {
+    Entry[] tab = table;
+    int len = tab.length;
+
+    tab[staleSlot].value = null;
+    tab[staleSlot] = null;
+    size--;
+
+    Entry e;
+    int i;
+    for (i = nextIndex(staleSlot, len);
+            (e = tab[i]) != null;
+            i = nextIndex(i, len)) {
+        ThreadLocal<?> k = e.get();
+        // 如果key是null，把value也设置成null。
+        if (k == null) {
+            e.value = null;
+            tab[i] = null;
+            size--;
+        } else {
+            int h = k.threadLocalHashCode & (len - 1);
+            if (h != i) {
+                tab[i] = null;
+
+                while (tab[h] != null)
+                    h = nextIndex(h, len);
+                tab[h] = e;
+            }
+        }
+    }
+    return i;
+}
+```
+
+所以一个好的习惯是使用完ThreadLocal对象后主动调用remove()方法进行清理。
