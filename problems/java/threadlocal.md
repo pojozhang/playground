@@ -97,7 +97,7 @@ static void method() {
 
 ### 内存泄漏
 
-虽然ThreadLocalMap.Entry的key是弱引用，但是value确实强引用，它只会在Thread对象结束生命周期时才会被回收，如果Thread生命周期很长，那么就有可能引起内存泄漏。
+虽然ThreadLocalMap.Entry的key是弱引用，但是value确实强引用，它只会在Thread对象结束生命周期时才会被回收，如果Thread生命周期很长（比如线程池中的线程），那么就有可能引起内存泄漏。
 
 ThreadLocal在get()、set()、remove()方法被调用时都会去扫描key为null的Entry，并把对应的value也设置为null，相关清理的方法如下。
 
