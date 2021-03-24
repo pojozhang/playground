@@ -154,7 +154,7 @@ list.remove(0);
 iterator.next();
 ```
 
-每次添加或删除元素就会修改`modCount`的值，当我们调用`iterator()`创建一个迭代器时，它会把`modCount`复制一份，并在每次迭代时与modCount`的当前值进行比对，如果对不上那就说明列表已经被修改过了，此时抛出`ConcurrentModificationException`异常。该设计的初衷是为了防止一个线程在遍历列表时另一个线程增加或删除了元素。
+每次添加或删除元素就会修改`modCount`的值，当我们调用`iterator()`创建一个迭代器时，它会把`modCount`复制一份，并在每次迭代时与`modCount`的当前值进行比对，如果对不上那就说明列表已经被修改过了，此时抛出`ConcurrentModificationException`异常。该设计的初衷是为了防止一个线程在遍历列表时另一个线程增加或删除了元素。
 
 我们通常用以下代码形式对列表进行遍历，先判断`hasNext()`，再通过`next()`获得元素，但是这两哥操作不是原子的，在多线程情况下当我们执行`hasNext()`之后，列表中的元素数量可能已经发生变化，因此可能出错，比如一个线程删除了一些元素，那么执行`iterator.next()`就有可能越界。
 
