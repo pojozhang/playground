@@ -189,7 +189,7 @@ final V putVal(K key, V value, boolean onlyIfAbsent) {
             }
             if (binCount != 0) {
                 // 如果table[i]处节点个数达到或超过了TREEIFY_THRESHOLD，就把链表转成红黑树。
-                // TREEIFY_THRESHOLD是值为8的常量。
+                // TREEIFY_THRESHOLD是值为8的常量，当插入第9个节点时触发树化操作。
                 if (binCount >= TREEIFY_THRESHOLD)
                     treeifyBin(tab, i);
                 if (oldVal != null)
@@ -470,7 +470,7 @@ private final void transfer(Node<K,V>[] tab, Node<K,V>[] nextTab) {
     // 扩容结束标志，true表示扩容结束。
     boolean finishing = false;
     // 每个数组会被分配数组上的一个区间，互相不重叠。
-    // i是当前线程需要进行转移的最大索引，bound是当前线程需要进行转移的最小索引，比如i=7，bound=0表示当前线程负责数组中下标为0-7的位置的重哈希操作，并且从第7个位置处开始向前依次进行重哈希的操作。。
+    // i是当前线程需要进行转移的最大索引，bound是当前线程需要进行转移的最小索引，比如i=7，bound=0表示当前线程负责数组中下标为0-7的位置的重哈希操作，并且从第7个位置处开始向前依次进行重哈希的操作。
     for (int i = 0, bound = 0;;) {
         Node<K,V> f; int fh;
         while (advance) {
