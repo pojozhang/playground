@@ -2,7 +2,7 @@
 
 IOC是Inversion of Control的缩写，意思是控制反转。通常创建对象都是通过`new`关键字主动创建的，而在Spring中由IOC容器负责对象的创建和销毁，因此称为控制反转。
 
-Spring在启动会会根据不同的渠道注册Bean到IOC容器中，最常见的是通过读取XML文件以及扫描注解的方式注册Bean。对于web应用，Spring Boot在启动时默认会构造一个`AnnotationConfigServletWebServerApplicationContext`类型对象用来存储应用上下文，我们可以通过它获得注册在IOC容器中的对象。
+Spring在启动时会根据不同的渠道注册Bean到IOC容器中，最常见的是通过读取XML文件以及扫描注解的方式注册Bean。对于web应用，Spring Boot在启动时默认会构造一个`AnnotationConfigServletWebServerApplicationContext`类型对象用来存储应用上下文，我们可以通过它获得注册在IOC容器中的对象。
 
 ![AnnotationConfigServletWebServerApplicationContext](resources/spring_ioc_1.png)
 
