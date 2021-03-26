@@ -126,7 +126,7 @@ void resync(long nowMicros) {
       // 如果当前时间已经超过下一次可以获取令牌的时间。
       // 计算这段时间内可以产生的令牌的数量，公式：产生的新的令牌数量 = 一段时长 / 产生一个令牌所需的时长。
       double newPermits = (nowMicros - nextFreeTicketMicros) / coolDownIntervalMicros();
-      // 更新库存令牌数量。
+      // 更新库存令牌数量，从这里看出RateLimiter是支持突发流量请求的。
       // maxPermits在创建SmoothBursty对象时，通过调用doSetRate()方法进行初始化，其值等于一秒产生的令牌数，因此令牌库存数量不会超过一秒产生的令牌的数量。
       storedPermits = min(maxPermits, storedPermits + newPermits);
       // 更新下一次可以获取令牌的时间。
@@ -166,7 +166,7 @@ static RateLimiter create(
 
 ### 获取令牌
 
-`SmoothWarmingUp`类的注释中用一张图说明了令牌生成策略。其X轴表示令牌库存数量，Y轴表示产生一块令牌所需的时间（也就是速率），纵坐标越大，产生令牌的速度越慢。我们可以看到当没有请求时，令牌库存数量等于`maxPermits`，这时生成速率是`coldInterval`，达到最低，当请求过来时，令牌库存数开始减少，产生令牌的速率开始增加，直到达到稳定状态。
+`SmoothWarmingUp`类的注释中用一张图说明了令牌生成策略。其X轴表示令牌库存数量，Y轴表示产生一块令牌所需的时间（也就是速率），纵坐标越大，产生令牌的速度越慢。我们可以看到当没有请求时，令牌库存数量等于`maxPermits`，这时生成速率是`coldInterval`，它的值是`stableInterval`的三倍，达到最低，当请求过来时，令牌库存数开始减少，产生令牌的速率开始增加，直到达到稳定状态。
 
 ```java
 /**
