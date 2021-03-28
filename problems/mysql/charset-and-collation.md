@@ -16,7 +16,7 @@ show charset like 'charset_name';
 我们可以用以下命令查询当前版本的数据库支持的比较规则：
 
 ```sql
--- 查询字符集
+-- 查询比较规则
 show collation like 'collation_name';
 ```
 
