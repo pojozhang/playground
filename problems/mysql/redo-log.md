@@ -4,7 +4,7 @@
 
 redo日志的格式很多，我们主要看两种。
 
-第一种是执行Insert语句时的redo日志，主要记录了插入时需要的参数，MySQL恢复数据时会根绝这些参数执行插入操作。
+第一种是执行Insert语句时的redo日志，主要记录了插入时需要的参数，MySQL恢复数据时会根据这些参数执行插入操作。
 
 ![redo日志](resources/redo-log/redo-log-2.png)
 
