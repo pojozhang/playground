@@ -213,6 +213,7 @@
 ## 图
 
 - [x] [课程表](course-schedule.md)
+- [x] [网络延迟时间](network-delay-time.md)
 
 ## 其它
 
