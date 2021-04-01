@@ -83,6 +83,7 @@
 - [x] [二叉搜索树与双向链表](convert-binary-search-tree-to-sorted-doubly-linked-list.md)
 - [x] [平衡二叉树](balanced-binary-tree.md)
 - [x] [对称二叉树](symmetric-tree.md)
+- [x] [二叉树的完全性检验](check-completeness-of-a-binary-tree.md)
 
 ## 栈
 
