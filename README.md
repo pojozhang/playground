@@ -4,7 +4,6 @@
 
 - [名词解释](problems/terminology/README.md)
 - [数据结构](problems/structure/README.md)
-- [算法](problems/algorithm/README.md)
 - [设计模式](problems/design-pattern/README.md)
 - [代码练习](problems/coding-dojo/README.md)
 - [️架构](problems/architecture/README.md)
@@ -12,14 +11,17 @@
 - [分布式系统](problems/distribution-system/README.md)
 - [网络](problems/net/README.md)
 - [安全](problems/security/README.md)
-- [正则表达式](problems/regex/README.md)
-- [Java](problems/java/README.md)
-- [MySQL](problems/mysql/README.md)
-- [Redis](problems/redis/README.md)
-- [RabbitMQ](problems/rabbitmq/README.md)
-- [RocketMQ](problems/rocketmq/README.md)
-- [Kafka](problems/kafka/README.md)
-- [Elasticsearch](problems/elasticsearch/README.md)
+- 语言
+  - [Java](problems/java/README.md)
+  - [正则表达式](problems/regex/README.md)
+- 数据库
+  - [MySQL](problems/mysql/README.md)
+  - [Redis](problems/redis/README.md)
+  - [Elasticsearch](problems/elasticsearch/README.md)
+- 消息队列
+  - [RabbitMQ](problems/rabbitmq/README.md)
+  - [Kafka](problems/kafka/README.md)
+  - RocketMQ
+- [ZooKeeper](problems/zookeeper/README.md)
 - [Docker](problems/docker/README.md)
 - [Linux](problems/linux/README.md)
-- [硬件](problems/hardware/README.md)
