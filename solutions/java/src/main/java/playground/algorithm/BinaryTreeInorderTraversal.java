@@ -12,22 +12,13 @@ public class BinaryTreeInorderTraversal {
     // 迭代实现
     public List<Integer> inorderTraversal(TreeNode root) {
         List<Integer> result = new ArrayList<>();
-        Deque<TreeNode> stack = new ArrayDeque<>();
+        Deque<TreeNode> stack = new LinkedList<>();
         TreeNode node = root;
         while (node != null || !stack.isEmpty()) {
-            // 左子树入栈
             while (node != null) {
                 stack.push(node);
                 node = node.left;
             }
-
-            /* 这里只要考虑两种情况
-             *   1                  1
-             *  /                  / \
-             * 2 <- node  node -> 2   3
-             *  \
-             *   3
-             */
             node = stack.pop();
             result.add(node.val);
             node = node.right;

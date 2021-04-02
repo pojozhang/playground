@@ -11,31 +11,25 @@ public class BinaryTreePostorderTraversal {
 
     // 迭代实现
     public List<Integer> postorderTraversal(TreeNode root) {
+        if (root == null) {
+            return Collections.emptyList();
+        }
         List<Integer> result = new ArrayList<>();
-        Deque<TreeNode> stack = new ArrayDeque<>();
-        TreeNode node = root, lastVisited = null;
-        while (node != null || !stack.isEmpty()) {
-            while (node != null) {
-                stack.push(node);
-                node = node.left;
+        Deque<TreeNode> stack1 = new LinkedList<>();
+        Deque<TreeNode> stack2 = new LinkedList<>();
+        stack1.push(root);
+        while (!stack1.isEmpty()) {
+            TreeNode node = stack1.pop();
+            stack2.push(node);
+            if (node.left != null) {
+                stack1.push(node.left);
             }
-
-            /* 这里只要考虑两种情况
-             *   1                  1
-             *  /                  / \
-             * 2 <- node  node -> 2   3
-             *  \
-             *   3
-             */
-            node = stack.peek();
-            if (node.right == lastVisited) {
-                result.add(stack.pop().val);
-                lastVisited = node;
-                node = null;
-            } else {
-                node = node.right;
-                lastVisited = node;
+            if (node.right != null) {
+                stack1.push(node.right);
             }
+        }
+        while (!stack2.isEmpty()) {
+            result.add(stack2.pop().val);
         }
         return result;
     }

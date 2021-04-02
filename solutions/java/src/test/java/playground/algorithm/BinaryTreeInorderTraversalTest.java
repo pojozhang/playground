@@ -29,8 +29,23 @@ class BinaryTreeInorderTraversalTest {
         assertIterableEquals(List.of(1, 3, 2), solution.inorderTraversalRecursively(head));
     }
 
+    /*
+     *   3
+     *  /
+     * 1
+     *  \
+     *   2
+     */
     @Test
     void case_2() {
+        TreeNode head = TreeNode.of(3, 1, null, null, 2);
+
+        assertIterableEquals(List.of(1, 2, 3), solution.inorderTraversal(head));
+        assertIterableEquals(List.of(1, 2, 3), solution.inorderTraversalRecursively(head));
+    }
+
+    @Test
+    void case_3() {
         assertIterableEquals(Collections.emptyList(), solution.inorderTraversal(null));
         assertIterableEquals(Collections.emptyList(), solution.inorderTraversalRecursively(null));
     }
