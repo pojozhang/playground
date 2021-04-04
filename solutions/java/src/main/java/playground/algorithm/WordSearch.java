@@ -2,70 +2,42 @@ package playground.algorithm;
 
 public class WordSearch {
 
+    private boolean[][] used;
+
     public boolean exist(char[][] board, String word) {
         int width = board[0].length;
         int height = board.length;
-        boolean[][] flag = new boolean[height][width];
+        used = new boolean[height][width];
         for (int row = 0; row < height; row++) {
             for (int column = 0; column < width; column++) {
-                flag[row][column] = false;
-            }
-        }
-
-        for (int row = 0; row < height; row++) {
-            for (int column = 0; column < width; column++) {
-                if (board[row][column] == word.charAt(0)) {
-                    flag[row][column] = true;
-                    if (exist(board, flag, width, height, row, column, word, 0)) {
-                        return true;
-                    }
-                    flag[row][column] = false;
+                if (exist(board, width, height, row, column, word, 0)) {
+                    return true;
                 }
             }
         }
         return false;
     }
 
-    private boolean exist(char[][] board, boolean[][] flag, int width, int height, int row, int column, String word, int index) {
-        index++;
+    private boolean exist(char[][] board, int weight, int height,
+                          int row, int column, String word, int index) {
         if (index >= word.length()) {
             return true;
         }
-        // 向上。
-        if (row > 0 && !flag[row - 1][column] && board[row - 1][column] == word.charAt(index)) {
-            flag[row - 1][column] = true;
-            if (exist(board, flag, width, height, row - 1, column, word, index)) {
-                return true;
-            }
-            flag[row - 1][column] = false;
+        if (row < 0 || row >= height || column < 0 || column >= weight) {
+            return false;
         }
-
-        // 向右。
-        if (column < width - 1 && !flag[row][column + 1] && board[row][column + 1] == word.charAt(index)) {
-            flag[row][column + 1] = true;
-            if (exist(board, flag, width, height, row, column + 1, word, index)) {
-                return true;
-            }
-            flag[row][column + 1] = false;
+        char target = word.charAt(index);
+        if (used[row][column] || board[row][column] != target) {
+            return false;
         }
-
-        // 向下。
-        if (row < height - 1 && !flag[row + 1][column] && board[row + 1][column] == word.charAt(index)) {
-            flag[row + 1][column] = true;
-            if (exist(board, flag, width, height, row + 1, column, word, index)) {
-                return true;
-            }
-            flag[row + 1][column] = false;
+        used[row][column] = true;
+        if (exist(board, weight, height, row, column + 1, word, index + 1)
+                || exist(board, weight, height, row, column - 1, word, index + 1)
+                || exist(board, weight, height, row + 1, column, word, index + 1)
+                || exist(board, weight, height, row - 1, column, word, index + 1)) {
+            return true;
         }
-
-        // 向左。
-        if (column > 0 && !flag[row][column - 1] && board[row][column - 1] == word.charAt(index)) {
-            flag[row][column - 1] = true;
-            if (exist(board, flag, width, height, row, column - 1, word, index)) {
-                return true;
-            }
-            flag[row][column - 1] = false;
-        }
+        used[row][column] = false;
         return false;
     }
 }
