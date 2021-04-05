@@ -96,6 +96,10 @@
 - [x] [验证栈序列](validate-stack-sequences.md)
 - [x] [最大频率栈](maximum-frequency-stack.md)
 
+## 队列
+
+- [x] [设计循环队列](design-circular-queue.md)
+
 ## 链表
 
 - [x] [反转链表](reverse-linked-list.md)
