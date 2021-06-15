@@ -1,10 +1,4 @@
 # 网络
 
-## TCP/IP
-
+- [DNS](dns.md)
 - [HTTPS](https.md)
-
-## 系统
-
-- 如何查看IP地址？
-
