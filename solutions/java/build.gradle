@@ -47,7 +47,7 @@ dependencies {
             'org.apache.kafka:kafka-clients:2.8.0',
             'org.apache.httpcomponents:httpclient:4.5.13',
             'io.lettuce:lettuce-core:6.1.4.RELEASE',
-            'org.elasticsearch.client:elasticsearch-rest-high-level-client:7.13.3',
+            'org.elasticsearch.client:elasticsearch-rest-high-level-client:7.13.4',
             "org.springframework.boot:spring-boot-starter-web:$springBootVersion",
             "org.springframework.boot:spring-boot-starter-aop:$springBootVersion",
             "org.springframework.boot:spring-boot-starter-data-jpa:$springBootVersion",
