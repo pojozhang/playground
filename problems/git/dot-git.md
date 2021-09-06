@@ -66,3 +66,7 @@ tree
 可以看到是一棵树。
 
 ## Commit/Tree/Blob
+
+Git中有三种对象：commit、tree和blob。commit就是一次提交，一个commit会关联一颗树，这个树记录了提交时所有文件的一个快照，除此之外，树也表示一个目录。blob对象保存了文件的内容，在Git中，只要文件内容一致，那么就是同一个blob，即使文件名不同只要内容相同就是同一个blob。实际上我们可以发现文件名是存在tree对象中的。
+
+![Commit/Tree/Blob](resources/dot-git/5.png)
