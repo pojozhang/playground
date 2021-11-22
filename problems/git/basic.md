@@ -24,3 +24,9 @@ git log [--oneline] [-n<N>] [--graph] [--all]
 ```bash
 git checkout <branch>
 ```
+
+### 撤销最后一个commit
+
+```bash
+git reset --soft HEAD~1
+```
