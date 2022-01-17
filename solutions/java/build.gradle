@@ -58,7 +58,7 @@ dependencies {
     }
 
     runtimeOnly(
-            'com.h2database:h2:2.0.206',
+            'com.h2database:h2:2.1.210',
     )
 
     testImplementation(
