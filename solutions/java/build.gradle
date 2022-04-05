@@ -6,7 +6,7 @@ buildscript {
 
 plugins {
     id 'java'
-    id 'com.github.ben-manes.versions' version '0.40.0'
+    id 'com.github.ben-manes.versions' version '0.42.0'
 }
 
 apply from: 'docker/docker.gradle'
@@ -25,7 +25,7 @@ test {
 ext {
     lombokVersion = '1.18.22'
     junitVersion = '5.8.2'
-    springBootVersion = '2.6.1'
+    springBootVersion = '2.6.5'
 }
 
 dependencies {
@@ -39,31 +39,31 @@ dependencies {
             'org.jetbrains:annotations:23.0.0',
             'org.apache.commons:commons-lang3:3.12.0',
             'commons-io:commons-io:2.11.0',
-            'com.google.guava:guava:31.0.1-jre',
-            'com.alibaba:fastjson:1.2.79',
+            'com.google.guava:guava:31.1-jre',
+            'com.alibaba:fastjson:1.2.80',
             'cglib:cglib-full:2.0.2',
-            'com.rabbitmq:amqp-client:5.14.0',
-            'com.rabbitmq:http-client:3.12.1',
-            'org.apache.kafka:kafka-clients:3.0.0',
+            'com.rabbitmq:amqp-client:5.14.2',
+            'com.rabbitmq:http-client:4.1.1',
+            'org.apache.kafka:kafka-clients:3.1.0',
             'org.apache.httpcomponents:httpclient:4.5.13',
-            'io.lettuce:lettuce-core:6.1.5.RELEASE',
-            'org.elasticsearch.client:elasticsearch-rest-high-level-client:7.16.2',
+            'io.lettuce:lettuce-core:6.1.7.RELEASE',
+            'org.elasticsearch.client:elasticsearch-rest-high-level-client:7.17.2',
             "org.springframework.boot:spring-boot-starter-web:$springBootVersion",
             "org.springframework.boot:spring-boot-starter-aop:$springBootVersion",
             "org.springframework.boot:spring-boot-starter-data-jpa:$springBootVersion",
     )
 
-    implementation('org.apache.zookeeper:zookeeper:3.7.0') {
+    implementation('org.apache.zookeeper:zookeeper:3.8.0') {
         exclude module: 'slf4j-log4j12'
     }
 
     runtimeOnly(
-            'com.h2database:h2:2.0.204',
+            'com.h2database:h2:2.1.210',
     )
 
     testImplementation(
-            'org.assertj:assertj-core:3.21.0',
-            'org.awaitility:awaitility:4.1.1',
+            'org.assertj:assertj-core:3.22.0',
+            'org.awaitility:awaitility:4.2.0',
             'org.junit.platform:junit-platform-launcher:1.8.2',
             "org.junit.jupiter:junit-jupiter-api:$junitVersion",
             "org.junit.vintage:junit-vintage-engine:$junitVersion",
