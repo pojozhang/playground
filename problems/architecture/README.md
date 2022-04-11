@@ -3,6 +3,7 @@
 ## 基础
 
 - [LVS系统](lvs.md)
+- [微服务](micro-service.md)
 
 ## 进阶
 
