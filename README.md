@@ -18,6 +18,7 @@
   - [MySQL](problems/mysql/README.md)
   - [Redis](problems/redis/README.md)
   - [Elasticsearch](problems/elasticsearch/README.md)
+  - [Mongo](problems/mongo/README.md)
 - 消息队列
   - [RabbitMQ](problems/rabbitmq/README.md)
   - [Kafka](problems/kafka/README.md)
