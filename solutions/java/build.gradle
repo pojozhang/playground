@@ -15,8 +15,8 @@ repositories {
     jcenter()
 }
 
-sourceCompatibility = JavaVersion.VERSION_11
-targetCompatibility = JavaVersion.VERSION_11
+sourceCompatibility = JavaVersion.VERSION_17
+targetCompatibility = JavaVersion.VERSION_17
 
 test {
     useJUnitPlatform()
@@ -36,6 +36,7 @@ dependencies {
     )
 
     implementation(
+            'javax.persistence:javax.persistence-api:2.2',
             'org.jetbrains:annotations:24.0.0',
             'org.apache.commons:commons-lang3:3.12.0',
             'commons-io:commons-io:2.11.0',
@@ -45,9 +46,6 @@ dependencies {
             'com.rabbitmq:amqp-client:5.16.0',
             'com.rabbitmq:http-client:5.0.0',
             'org.apache.kafka:kafka-clients:3.3.2',
-            'org.apache.httpcomponents:httpclient:4.5.14',
-            'io.lettuce:lettuce-core:6.2.2.RELEASE',
-            'org.elasticsearch.client:elasticsearch-rest-high-level-client:7.17.8',
             "org.springframework.boot:spring-boot-starter-web:$springBootVersion",
             "org.springframework.boot:spring-boot-starter-aop:$springBootVersion",
             "org.springframework.boot:spring-boot-starter-data-jpa:$springBootVersion",
