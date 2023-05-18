@@ -39,7 +39,7 @@ dependencies {
             'javax.persistence:javax.persistence-api:2.2',
             'org.jetbrains:annotations:24.0.1',
             'org.apache.commons:commons-lang3:3.12.0',
-            'commons-io:commons-io:2.11.0',
+            'commons-io:commons-io:2.12.0',
             'com.google.guava:guava:31.1-jre',
             'com.alibaba:fastjson:2.0.32',
             'cglib:cglib-full:2.0.2',
