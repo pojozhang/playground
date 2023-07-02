@@ -138,7 +138,7 @@ List listB = new ArrayList<>();
 Enum<E extends Enum<E>>
 ```
 
-自限定所做的就是要求在继承关系中，强制要求将正在定义的类当做参数传递给基类，这是它的定义。下面我们看一个例子。
+自限定的目的是强制要求将正在定义的类当做参数传递给基类。下面我们看一个例子。
 
 首先我们定义一个抽象基类。
 
@@ -183,6 +183,8 @@ class A extends Generics<Integer>{
 
 答案是可以的，这里我们就用到了自限定泛型。这时如果`A`里的泛型参数是`Integer`那么是无法通过编译的。通过这种方法我们对子类的泛型参数进行了限制。
 
+在这个例子里，上面提到的“将正在定义的类当做参数传递给基类”一句中，“正在定义的类”指`class A`，“传给基类”指把基类中`compareTo`方法里的参数替换为正在定义的类`A`。
+
 ```java
 abstract class Generics<T extends Generics<T>> implements Comparable<T>{
 }
@@ -209,7 +211,7 @@ void f(){
 
 ## 类型擦除
 
-泛型信息只存在代码编译阶段，编译完成后相关的泛型信息会被擦除。比如下面的代码中，`Integer`的信息被擦除了，导致程序打印结果是“true”。
+泛型信息只存在代码编译阶段，编译完成后相关的泛型信息会被擦除并被替换为它们的非泛型上界，例如：`List<T>`被擦除为`List`，普通类型擦除为Object。比如下面的代码中，`Integer`的信息被擦除了，导致程序打印结果是“true”。
 
 ```java
 public static void main(String[] args) {
