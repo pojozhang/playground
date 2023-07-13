@@ -1,12 +1,10 @@
 # 间隙锁
 
-间隙锁是为了在可重复读的隔离级别下解决幻读的问题。
+间隙锁是为了在可重复读的隔离级别下解决`SELECT FOR UPDATE`出现幻读的问题。
 
-那么什么是幻读呢？
+幻读的定义：**一个事务读取到其他事务最新插入的数据**。
 
-幻读是指一个事务中前后两次相同的查询（**这里的查询指当前读，比如SELECT FOR UPDATE**），后一次查询看到了前一次查询没有看到的记录，并且该记录是在当前事务执行期间**新插入**的行，下面看一个例子。
-
-我们首先创建一张表，并往里插入一条数据。
+下面看一个例子。我们首先创建一张表，并往里插入一条数据。
 
 ```sql
 CREATE TABLE `test` (
@@ -60,8 +58,6 @@ select * from test where value = 1 for update
 ```sql
 SET TRANSACTION ISOLATION LEVEL READ COMMITTED
 ```
-
-需要注意的是，**在可重复读的隔离级别下，如果没有间隙锁，只有“当前读”才会存在幻读的问题，比如`SELECT FOR UPDATE`或`UPDATE`语句，而普通查询`SELECT`语句是快照读，因此不存在幻读问题。**
 
 ## 例子
 
@@ -131,3 +127,7 @@ update user set age = 10 where age = 5;
 ![](resources/gap_lock_7.jpg)
 
 **InnoDB会在所有可能会出现幻读的地方都加上间隙锁，而并不一定是只加在某一个记录的前面或者后面的区间。**
+
+## 参考
+
+1. [《MySQL到底有没有解决幻读问题？》](https://heapdump.cn/article/4547714)
