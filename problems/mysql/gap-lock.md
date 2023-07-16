@@ -127,7 +127,3 @@ update user set age = 10 where age = 5;
 ![](resources/gap_lock_7.jpg)
 
 **InnoDB会在所有可能会出现幻读的地方都加上间隙锁，而并不一定是只加在某一个记录的前面或者后面的区间。**
-
-## 参考
-
-1. [《MySQL到底有没有解决幻读问题？》](https://heapdump.cn/article/4547714)
