@@ -16,7 +16,7 @@
 - [间隙锁](gap-lock.md)
 - [为什么索引使用B+树](b-tree.md)
 - [MVCC](mvcc.md)
-- [Redo日志](redo-log.md)
+- [redolog、undolog、binlog](log.md)
 - [查询成本](query-cost.md)
 - [优化器](optimizer.md)
 - [Buffer Pool](buffer-pool.md)
