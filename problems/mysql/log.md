@@ -161,9 +161,9 @@ bin lo g的落盘时机由数据库配置`sync_binlog`控制：
 
 假设不用两阶段提交，那么可能有以下两种情况：
 
-1. 先写binlog，再写redolog
+1. 先写binlog，再写redolog  
 这种情况下如果写完binlog后数据库宕机，那么由于binlog中已经存在数据，会被从库同步到该条数据，但是主库由于没有redolog，因此在恢复后主库没有该条数据，导致主从数据不一致。
-2. 先写redolog，再写binlog
+2. 先写redolog，再写binlog  
 这种情况下如果写完redolog后数据库宕机，那么由于binlog中不存在数据，从库无法同步到数据，因此也会导致主从数据不一致。
 
 所以综上所述，两阶段提交的目的是保证redolog和binlog的数据一致性。
