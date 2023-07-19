@@ -20,15 +20,24 @@ redo日志的格式很多，我们主要看两种。
 
 ![redo日志](resources/redo-log/redo-log-3.png)
 
-如果不是单一日志，则在多个redo日志的最后一定有一个类型为MLOG_MULTI_REC_END的redo日志，表示这一组redo日志需要被原子的执行。在数据库重启进行恢复时，只有当解析到类型为MLOG_MULTI_REC_END的redo日志，才认为解析到了一组完整的redo日志，才会进行恢复。否则的话直接放弃前面解析到的redo日志。
+如果不是单一日志，则在多个redo日志的最后一定有一个类型为`MLOG_MULTI_REC_END`的redo日志，表示这一组redo日志需要被原子的执行。在数据库重启进行恢复时，只有当解析到类型为`MLOG_MULTI_REC_END`的redo日志，才认为解析到了一组完整的redo日志，才会进行恢复。否则的话直接放弃前面解析到的redo日志。
 
 ![redo日志](resources/redo-log/redo-log-4.png)
 
-redo日志并不是每生成一条就立刻刷盘的，而是写到一个缓冲区中，称为Log Buffer。当满足以下任意一个条件时才会刷盘：
+redo日志并不是每生成一条就立刻刷盘的，而是写到一个缓冲区中，称为`Log Buffer`。
+ ![](resources/2023-07-19-23-04-50.png)
+当满足以下任意一个条件时才会刷盘：
 
-- Log Buffer空间不足。
-- 事务进行提交。
-- 后台线程定时刷盘（约以每秒1次的频率）。
+- `Log Buffer`空间不足。
+- 事务进行提交。这种场景取决于`innodb_flush_log_at_trx_commit`参数。
+  - 值为0: 提交事务时不刷盘。
+  - ![](resources/2023-07-19-23-16-36.png)
+  - 值为1（默认）: 每次提交事务时刷盘（fsync）。
+  - ![](resources/2023-07-19-23-15-32.png)
+  - 值为2: 媒体提交事务只把日志写入文件系统缓存。
+  - ![](resources/2023-07-19-23-14-45.png)
+- 后台线程定时刷盘：约以每秒1次的频率，因此一个未提交的事务也可能刷盘。
+  - ![](resources/2023-07-19-23-04-29.png)
 - 正常关闭数据库时。
 - 做Checkpoint时。
 
@@ -94,7 +103,7 @@ Update操作对应的undo日志结构如下：
 
 ![undo日志](resources/undo-log/undo-log-6.png)
 
-### Undo页
+### undo页
 
 Undo日志记录在类型为FIL_PAGE_UNDO_LOG的页中，其结构如下图所示：
 
@@ -126,7 +135,7 @@ InnoDB规定针对普通表和临时表的undo日志要分别记录，因此一�
 
 ![undo日志](resources/undo-log/undo-log-11.png)
 
-大部分事物可能只修改了少量的数据，如果每个事务在开始后都需要创建一个undo日志链表（只包含一个undo日志页），那么就比较浪费空间，因此为了提高空间利用率，在满足一定条件下可以复用undo日志页。
+大部分事务可能只修改了少量的数据，如果每个事务在开始后都需要创建一个undo日志链表（只包含一个undo日志页），那么就比较浪费空间，因此为了提高空间利用率，在满足一定条件下可以复用undo日志页。
 
 1. 链表中只包含一个undo日志页。
 2. 该undo页已经使用的空间小于整个页空间的3/4。
@@ -137,7 +146,7 @@ InnoDB规定针对普通表和临时表的undo日志要分别记录，因此一�
 
 ## binlog
 
-binlog让数据库拥有集群间数据同步、数据备份、恢复数据的能力。binlog是数据库的Server层产生的，并非存储引擎层产生。
+binlog让数据库拥有集群间数据同步、数据备份、恢复数据的能力。binlog是数据库的Server层产生的，并非存储引擎层产生。无论用了哪一种存储引擎，只要发生了表数据更新就会产生binlog。
 
 ![MySQL架构图](resources/2023-07-18-22-08-34.png)
 
@@ -145,7 +154,25 @@ redolog中的记录描述物理层面的修改，例如：对某个数据页的�
 
 所有未提交的事务产生的binlog会先记录到内存中，当事务被提交时再把内存中的记录写入binlog文件中。
 
-bin lo g的落盘时机由数据库配置`sync_binlog`控制：
+### 记录格式
+
+binlog有三种格式，可以通过`binlog_format`参数指定。
+
+- `statement`：记录SQL原文，例如执行`UPDATE TABLE SET update_time = now() WHERE ID = 1`，记录的内容如下：
+  ![](resources/2023-07-19-23-31-02.png)
+当从库同步这条记录时，由于语句中的`now()`会取当前时间，因此会和主库的数据不一致。
+- `row`：除了原始SQL语句，还包含了具体的参数，从而解决了`statement`格式下遇到的问题，记录的内容如下：
+  ![](resources/2023-07-19-23-38-37.png)
+
+- `mixed`：`row`格式解决了`statement`遇到的问题，但是需要占用更多的空间，所以有了`mixed`这种折中的格式，记录的内容是前两者的混合。MySQL会判断执行的SQL语句是否可能引起数据不一致，如果是那么就用`row`格式，否则用`statement`格式。
+
+### 持久化
+
+事务执行过程中会先把日志写入`binlog cache`，当事务提交时再把缓存中的内容写入binlog文件中。一个事务的binlog文件无法被拆开，无论多大都要确保一次性写入。MySQL会给每个线程分配一个块内存空间作为`binlog cache`。可以通过`binlog_cache_size`参数控制单个线程`binlog cache`大小，如果内容超过了这个参数，就会通过Swap机制暂存到磁盘。
+
+![](resources/2023-07-19-23-47-18.png)
+
+bin log的落盘时机由数据库配置`sync_binlog`控制：
 
 - `sync_binlog` = 0时，由操作系统决定落盘的时机，如果在落盘前系统宕机，那么这部分数据会丢失。
 - `sync_binlog` = 1时，每次事务提交时落盘。
@@ -158,6 +185,8 @@ bin lo g的落盘时机由数据库配置`sync_binlog`控制：
 ![事务执行流程](resources/2023-07-18-23-56-26.png)
 
 假设目前`sync_binlog`参数设置为1，也就是事务提交时对binlog落盘。那么假设现在对一条数据进行了更新操作并提交了事务，此时MySQL会先写redolog，将其标记为prepare阶段，然后写binlog并落盘，此时MySQL发生了宕机重启，这时就需要决定刚才未完成的事务需要回滚还是提交（也就是把处于prepare状态的redolog标记为已提交）。MySQL的策略是对比redolog和binlog是否在逻辑上达成一致，具体方式是：在redolog中存在一个标识事务的XID，如果在binlog结束的位置上也有一个相同的XID，那么就认为这两者逻辑上一致。如果一致那么提交事务，否则进执行滚。
+
+![](resources/2023-07-19-23-53-29.png)
 
 假设不用两阶段提交，那么可能有以下两种情况：
 
@@ -175,3 +204,4 @@ bin lo g的落盘时机由数据库配置`sync_binlog`控制：
 3. [《MySQL的 binlog有啥用？在哪里？谁写的？怎么配置？》](https://mp.weixin.qq.com/s/DN1shuyxPJ6BkE_RLezAnA)
 4. [《MySQL两阶段提交》](https://www.cnblogs.com/ZhuChangwu/p/14255838.html)
 5. [《MySQL为什么需要两阶段提交》](https://segmentfault.com/a/1190000041624620)
+6. [MySQL三大日志(binlog、redo log和undo log)详解](https://github.com/Snailclimb/JavaGuide/blob/main/docs/database/mysql/mysql-logs.md)
