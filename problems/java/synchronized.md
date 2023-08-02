@@ -94,7 +94,47 @@ public void test() {
 
 JVM对此进行了优化，不会直接使用重量级锁，而是采取多种优化机制，下面一一介绍。
 
-#### 自旋锁
+#### 锁升级
+
+处于性能考虑，`synchronized`并不会直接使用重量级锁，而是有一个锁升级的过程：从偏向锁到轻量级锁，再到重量级锁。每一级锁比上一级消耗更多的资源。
+
+##### Mark Word
+
+在了解锁升级之前，我们需要对JVM中对象的内存布局有一定的了解。一个Java对象主要分为3个部分：对象头、对象本身的数据以及用来对齐填充的数据，其中对象头又可分为Mark Word、指向方法区中类型数据的指针，如果是数组对象，那么还有额外的长度字段。
+
+![对象的内存布局](resources/synchronized_1.png)
+
+Mark Word是JVM实现轻量级锁的关键，包含哈希码、GC分代年龄等数据，这部分数据的长度是32位或64位（取决于虚拟机是32位或64位）。Mark Word中存储的内容不是固定的，它会根据长度为2的标志位决定当前存储的内容，如下图所示。
+
+![Mark Word](resources/synchronized_2.png)
+
+##### 偏向锁
+
+偏向锁应对的场景：不存在锁竞争，至始至终只有一个线程使用这把锁。
+
+偏向锁的字面意思是这把锁偏向于第一个获得它的线程。当锁对象第一次被线程获取时，线程会通过CAS把线程的ID记录在Mark Word中，如果设置成功，那么该线程就持有了这个偏向锁，以后再进入该锁相关的同步块时不用再进行任何同步操作。如果发生了竞争，根据锁对象目前是否处于被锁定的状态，JVM会撤销锁对象的偏向把它恢复到未锁定状态或者升级为轻量级锁。
+
+##### 轻量级锁
+
+当有第二个线程加入锁竞争时，偏向锁就升级为轻量级锁。轻量级锁是一把自旋锁。
+
+轻量级锁应对的场景：对于大部分的锁，在整个同步周期内都不存在竞争。
+
+当一个线程进入同步块后，如果锁对象处于未锁定状态，JVM会在当前线程的栈帧中建立一个称为Lock Record的空间用来存储锁对象当前的Mark Word的拷贝，该副本被称为Displaced Mark Word。
+
+![](resources/synchronized_3.png)
+
+然后用CAS将锁对象的Mark Word更新为指向Lock Record的指针，如果更新成功，那么当前线程就持有该对象的锁，这时会更新对象头中标志位，让对象进入轻量级锁定状态。
+
+![](resources/synchronized_4.png)
+
+如果更新失败，虚拟机会检查Mark Word是否是指向当前线程的栈帧，因为`synchronized`是可重入的，如果是，那么说明当前线程已经持有该对象的锁，可以直接进入同步块；否则说明锁已经被其它线程占用，这时只能升级为重量级锁，当前线程会修改锁对象的标志位并修改其Mark Word内容为指向重量级锁的指针，然后进入阻塞的状态，这时当轻量级锁持有者解锁时，使用CAS把Displaced Mark Word替换回去会发现更新失败，这是因为锁对象的Mark Word已经被修改了，持有轻量级锁的线程就会得知有其它线程在竞争，因此它需要释放锁并唤醒阻塞的线程。
+
+> 注意，锁对象在堆中，而Lock Record在线程的栈帧中。
+
+轻量级锁的核心思想是尽可能用CAS操作，减少重量级锁的阻塞和唤醒线程操作。
+
+###### 自旋锁
 
 通常共享数据被一个线程锁定后，它的锁定状态只会持续较短的时候然后就会被释放。针对这种情况JVM引入了自旋锁的概念，自旋是指循环，自旋锁就是指通过循环的方式获得锁，伪代码如下。
 
@@ -111,42 +151,11 @@ for(; ; ){
 1. 如果一个锁被占用的时间较长，那么其它线程的自旋浪费了CPU时间。
 2. 如果有大量的线程试图获得一把锁，那么就会有大量的线程进行自旋，比较消耗CPU资源。
 
-#### 轻量级锁
+##### 重量级锁
 
-在某些情况下锁竞争并不存在，如果每次进入同步块前都申请重量级锁而在实际运行中又没有线程竞争那么就比较浪费，因此JVM引入了轻量级锁的概念。
+重量级锁应对的场景：锁竞争比较激烈，锁持有时间较长。使用重量级锁后避免大量线程进行忙等（死循环）。
 
-在了解轻量级锁之前，我们需要对JVM中对象的内存布局有一定的了解。一个Java对象主要分为3个部分：对象头、对象本身的数据以及用来对齐填充的数据，其中对象头又可分为Mark Word、指向方法区中类型数据的指针，如果是数组对象，那么还有额外的长度字段。
-
-![对象的内存布局](resources/synchronized_1.png)
-
-Mark Word是JVM实现轻量级锁的关键，包含哈希码、GC分代年龄等数据，这部分数据的长度是32位或64位（取决于虚拟机是32位或64位）。Mark Word中存储的内容不是固定的，它会根据长度为2的标志位决定当前存储的内容，如下图所示。
-
-![Mark Word](resources/synchronized_2.png)
-
-在了解了Mark Word后，让我们回到轻量级锁的实现上。当一个线程进入同步块后，如果锁对象处于未锁定状态，JVM会在当前线程的栈帧中建立一个称为Lock Record的空间用来存储锁对象当前的Mark Word的拷贝，该副本被称为Displaced Mark Word。
-
-![](resources/synchronized_3.png)
-
-然后用CAS将锁对象的Mark Word更新为指向Lock Record的指针，如果更新成功，那么当前线程就持有该对象的锁，这时会更新对象头中标志位，让对象进入轻量级锁定状态。
-
-![](resources/synchronized_4.png)
-
-如果更新失败，虚拟机会检查Mark Word是否是指向当前线程的栈帧，因为`synchronized`是可重入的，如果是，那么说明当前线程已经持有该对象的锁，可以直接进入同步块；否则说明锁已经被其它线程占用，这时只能膨胀为重量级锁，当前线程会修改锁对象的标志位并修改其Mark Word内容为指向重量级锁的指针，然后进入阻塞的状态，这时当轻量级锁持有者解锁时，使用CAS把Displaced Mark Word替换回去会发现更新失败，这是因为锁对象的Mark Word已经被修改了，持有轻量级锁的线程就会得知有其它线程在竞争，因此它需要释放锁并唤醒阻塞的线程。
-
-> 注意，锁对象在堆中，而Lock Record在线程的栈帧中。
-
-我们注意到，当有多个线程争抢一把锁时，轻量级锁需要膨胀为重量级锁，那么轻量级锁有什么用呢？
-轻量级锁的目的是提升线程同步的性能，它基于一个经验：对于大部分的锁，在整个同步周期内都不存在竞争。意思是在没有竞争的情况下使用轻量级锁可以提升性能，当然这个提升是相较重量级锁而言的。而在有竞争的时候，由于轻量级锁在重量级锁的基础上还要多执行一些操作，因此性能会更差。
-
-轻量级锁的核心思想是尽可能用CAS操作，减少重量级锁的阻塞和唤醒线程操作。
-
-#### 偏向锁
-
-比轻量级锁更极端的情况是有时候不但没有锁竞争，甚至至始至终只有一个线程使用这把锁，那么每次申请轻量级锁也是一种浪费。
-
-偏向锁的字面意思是这把锁偏向于第一个获得它的线程。偏向锁和轻量级锁类似，也是针对无竞争情况下对同步的优化，它比轻量级锁更进一步，只需要在初始化时执行一次CAS操作，下面我们看下它的原理。
-
-偏向锁也是利用对象头中的Mark Word，当锁对象第一次被线程获取时，线程会通过CAS把线程的ID记录在Mark Word中，如果设置成功，那么该线程就持有了这个偏向锁，以后再进入该锁相关的同步块时不用再进行任何同步操作。如果发生了竞争，根据锁对象目前是否处于被锁定的状态，JVM会撤销锁对象的偏向把它恢复到未锁定状态或者膨胀为轻量级锁。
+重量级锁依赖底层操作系统的互斥锁实现。当操作系统检测到重量级锁后会对加入锁竞争的线程进行阻塞，当阻塞或唤醒一个线程时涉及用户态到内核态的转换，因此开销较大。
 
 #### 锁消除
 
@@ -205,37 +214,7 @@ void test() {
 
 `synchronized`的有序性和`volatile`的有序性的理解有所区别，`volatile`的有序性是指禁止指令重排序，而`synchronized`的有序性和`as-if-serial`语义有关，它的意思是无论如何重排序，单线程程序的执行结果都不能被改变，由于`synchronized`代码块一次只能被一个线程所访问，实际上就是单线程的，因此可以保证有序性。`synchronized`**没有**禁止指令重排序的作用。
 
-## 源码分析
-
-下面我们基于OpenJDK8的[源码](https://github.com/unofficial-openjdk/openjdk/tree/jdk8u/jdk8u)对`synchronized`关键字的原理进行分析。
-
-从上文中我们已经知道`synchronized`代码块对应的字节码中会加入`monitorenter`和`monitorexit`指令，我们可以在[这里](https://github.com/unofficial-openjdk/openjdk/blob/jdk8u/jdk8u/hotspot/src/share/vm/interpreter/interpreterRuntime.cpp)找到`monitorenter`命令的入口，当解释器执行该命令时会执行`InterpreterRuntime::monitorenter`方法。
-
-```cpp
-IRT_ENTRY_NO_ASYNC(void, InterpreterRuntime::monitorenter(JavaThread* thread, BasicObjectLock* elem))
-#ifdef ASSERT
-  thread->last_frame().interpreter_frame_verify_monitor(elem);
-#endif
-  if (PrintBiasedLockingStatistics) {
-    Atomic::inc(BiasedLocking::slow_path_entry_count_addr());
-  }
-  Handle h_obj(thread, elem->obj());
-  assert(Universe::heap()->is_in_reserved_or_null(h_obj()),
-         "must be NULL or an object");
-  if (UseBiasedLocking) {
-    // Retry fast entry if bias is revoked to avoid unnecessary inflation
-    ObjectSynchronizer::fast_enter(h_obj, elem->lock(), true, CHECK);
-  } else {
-    ObjectSynchronizer::slow_enter(h_obj, elem->lock(), CHECK);
-  }
-  assert(Universe::heap()->is_in_reserved_or_null(elem->obj()),
-         "must be NULL or an object");
-#ifdef ASSERT
-  thread->last_frame().interpreter_frame_verify_monitor(elem);
-#endif
-IRT_END
-```
-
 ## 参考
 
 1. [《浅谈偏向锁、轻量级锁、重量级锁》](https://juejin.im/post/5a5c09d051882573282164ae)
+2. [《再有人说synchronized是重量级锁，就把这篇文章扔给他看》](https://www.51cto.com/article/721086.html)
