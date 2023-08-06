@@ -10,9 +10,37 @@ Java中有一些对象称为`GC Roots`，如果一个`GC Roots`对象引用了�
 
 以下几种类型的对象可以作为`GC Roots`。
 
-1. 虚拟机栈中引用的对象。
-2. 方法区中静态属性引用的对象。
-3. 方法区中常量引用的对象。
+1. 虚拟机栈中引用的对象。以下代码块中的变量`o`即是`GC Root`，当`o`的值变为`null`后`o`指向的`Object`对象就可以被回收。
+
+```java
+void test(){
+    Object o = new Object();
+    o = null;
+}
+```
+
+2. 方法区中静态属性引用的对象。以下代码块中即使把变量`a`的值置为`null`后，`staticObject`指向的`Object`对象也不会被回收，这是因为`staticObject`是静态属性，也就是`GC Root`。
+
+```java
+class A {
+    static Object staticObject;
+}
+
+void test(){
+    A a = new A();
+    a.staticObject = new Object();
+    a = null;
+}
+```
+
+3. 方法区中常量引用的对象。以下代码块中变量`o`是`GC Root`，因此`o`指向的`Object`对象不会被回收。
+
+```java
+class A {
+    static final Object o = new Object();
+}
+```
+
 4. 本地方法栈中JNI引用的对象。
 
 ## 对象的自救
@@ -73,11 +101,11 @@ public class Test {
 
 - Partial GC  
 回收部分堆，又可以细分为几下几类。
-    - Young GC  
+  - Young GC  
     回收新生代，也称Minor GC。
-    - Old GC  
+  - Old GC  
     回收老年代，也称Major GC。
-    - Mixed GC  
+  - Mixed GC  
     回收整个新生代以及部分老年代。
 - Full GC  
 回收整个堆，包括新生代，老年代和永久代（或者元空间）。
@@ -135,6 +163,12 @@ public class Test {
 ### 动态对象年龄判定
 
 除了上面的年龄阈值，当Survivor区中对象的空间超过一定百分比（可以通过`-XX:TargetSurvivorRatio`设置，默认是50%）后，年龄较大的对象也会被晋升至老年代即使它还没有达到正常晋升所要求的年龄阈值。
+
+### Survivor区
+
+Survivor区的主要目的是充当Eden和Old区的缓冲，如果没有Survivor区，那么每次Young GC后Eden区中存活的对象都转移到Old区，那么Old区很快会被填满，此外，虽然很多对象不会经过一次Young GC就被回收，但通常也不会存活很久，经过几次Young GC也会被回收。因此Survivor区的意义就是减少对象进入Old区的概率，进而减少Old GC的频率（Old GC的垃圾回收算法效率通常比较低）。
+
+Survivor区被进一步划分成From和To区域的原因是：Survivor区中的对象也会经历过多次GC后才会被清理（Eden区中的对象最多只会经历一次GC），因此我们也需要用一种垃圾回收算法对Survivor区中的对象进行清理，而根据上述的几种算法（复制、标记-清除等），结合Survivor区对象存活时间的特性，最终选用复制算法对Survivor区进行垃圾回收，因此自然也需要划分成两个子区域。
 
 ### 空间分配担保
 
@@ -337,3 +371,4 @@ RSet的作用是避免在可达性分析时进行全堆扫描，比如Region1中
 13. [《G1垃圾收集器介绍》](https://www.jianshu.com/p/0f1f5adffdc1)
 14. [《G1垃圾收集器之RSet》](https://www.jianshu.com/p/870abddaba41)
 15. [《深入理解 Java G1 垃圾收集器》](http://blog.jobbole.com/109170/)
+16. [《咱们从头到尾说一次 Java 垃圾回收》](https://zhuanlan.zhihu.com/p/73628158?utm_source=ZHShareTargetIDMore&utm_medium=social&utm_oi=780955102717415424)
