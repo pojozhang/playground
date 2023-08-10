@@ -67,7 +67,7 @@ private T setInitialValue() {
 
 ### 弱引用
 
-`ThreadLocalMap`中的`Entry`对象用到了弱引用。当外部对象对`ThreadLocal`的强引用结束后，在下一次GC时，`Entry`引用的`ThreadLocal`对象就会被回收。如果不是弱引用，而开发者又没有手动调用`remove()`方法进行清理，那么很容易发生内存泄漏。
+`ThreadLocalMap`中的`Entry`对象用到了弱引用，需要注意的是这里仅对Map中的key也就是`TheadLocal`对象使用了弱引用，对Map中的值还是强引用。当外部对象对`ThreadLocal`的强引用结束后，`ThreadLocal`对象上就只剩下了弱引用，在下一次GC时，`Entry`引用的`ThreadLocal`对象就会被回收。如果是强引用，而开发者又没有手动调用`remove()`方法进行清理，那么该`ThreadLocal`对象就一直保留在`ThreadLocalMap`中，那么就可能会发生内存泄漏。
 
 ```java
 // java.lang.ThreadLocal.ThreadLocalMap.Entry
@@ -95,11 +95,13 @@ static void method() {
 }
 ```
 
-### 内存泄漏
+### 是否会内存泄漏
 
-虽然ThreadLocalMap.Entry的key是弱引用，但是value确实强引用，它只会在Thread对象结束生命周期时才会被回收，如果Thread生命周期很长（比如线程池中的线程），那么就有可能引起内存泄漏。
+如果没有手动调用`remove()`方法清理`TheadLocal`对象，那么可能造成内存泄漏。
 
-ThreadLocal在get()、set()、remove()方法被调用时都会去扫描key为null的Entry，并把对应的value也设置为null，相关清理的方法如下。
+`ThreadLocal`提供了自动清理`Entry`的能力，但是存在滞后性。首先自动清理也需要通过调用一些方法进行触发，因此当不再操作`ThreadLocal`对象时，就无法触发自动清理。其次，即使触发了自动清理，并不能保证将所有过期的数据全部清理完。
+
+`ThreadLocal`在get()、set()、remove()方法被调用时都会去扫描key为null的Entry，并把对应的value也设置为null，相关清理的方法如下。注意以下代码块中`for`循环的结束条件，该方法只是清理连续的key是`null`的Entry，而不是清理所有的无效Entry。
 
 ```java
 private int expungeStaleEntry(int staleSlot) {
@@ -113,7 +115,7 @@ private int expungeStaleEntry(int staleSlot) {
     Entry e;
     int i;
     for (i = nextIndex(staleSlot, len);
-            (e = tab[i]) != null;
+            (e = tab[i]) != null; // 当Entry是null时不再继续清理。
             i = nextIndex(i, len)) {
         ThreadLocal<?> k = e.get();
         // 如果key是null，把value也设置成null。

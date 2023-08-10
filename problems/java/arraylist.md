@@ -282,7 +282,7 @@ public boolean remove(Object o) {
     final Object[] es = elementData;
     final int size = this.size;
     int i = 0;
-    // 先便利数组进行查找。
+    // 先遍历数组进行查找。
     found: {
         if (o == null) {
             for (; i < size; i++)
