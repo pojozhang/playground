@@ -66,7 +66,7 @@ dependencies {
             'org.elasticsearch.client:elasticsearch-rest-high-level-client:7.17.13',
             'org.elasticsearch:elasticsearch-core:7.17.10',
             'io.lettuce:lettuce-core:6.3.0.RELEASE',
-            'org.assertj:assertj-core:3.25.0',
+            'org.assertj:assertj-core:3.25.1',
             'org.awaitility:awaitility:4.2.0',
             'org.junit.platform:junit-platform-launcher:1.10.1',
             "org.junit.jupiter:junit-jupiter-api:$junitVersion",
