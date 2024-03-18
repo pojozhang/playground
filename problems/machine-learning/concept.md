@@ -112,7 +112,10 @@ Loss： $L$ = 所有数据的偏差值的平均数 $\displaystyle\frac{1}{N}\sum
 
 ![扩展特征](resources/2024-03-16-14-58-55.png)
 
-用矩阵表示： $\begin{bmatrix}
+用矩阵表示：
+
+$$
+\begin{bmatrix}
     r_1 \\
     r_2 \\
     r_3
@@ -128,7 +131,8 @@ Loss： $L$ = 所有数据的偏差值的平均数 $\displaystyle\frac{1}{N}\sum
     x_1 \\
     x_2 \\
     x_3
-\end{bmatrix}$
+\end{bmatrix}
+$$
 
 进一步简化： $\textbf{\textit{r}} = \textbf{\textit{b}} + \textbf{\textit{w}} \textbf{\textit{x}}$
 
@@ -137,34 +141,47 @@ Loss： $L$ = 所有数据的偏差值的平均数 $\displaystyle\frac{1}{N}\sum
 ![扩展特征](resources/2024-03-16-19-26-26.png)
 
 最后，将向量 $\textbf{\textit{a}}$ 代入后得到 $y = b + \textbf{\textit{c}}^T \sigma(\textbf{\textit{b}} + \textbf{\textit{W}}\textbf{\textit{x}})$ 。
-其中， $\textbf{\textit{x}}$ 称为特征， $\textbf{\textit{W}}$、$\textbf{\textit{b}}$ 、 $\textbf{\textit{c}}^T$ 、 $b$ 称为未知参数。所有未知参数构成的矩阵记作 $\theta$ 。
+其中， $\textbf{\textit{x}}$ 称为特征， $\textbf{\textit{W}}$ 、 $\textbf{\textit{b}}$ 、 $\textbf{\textit{c}}^T$ 、 $b$ 称为未知参数。所有未知参数构成的矩阵记作 $\theta$ 。
 
 ![未知参数](resources/2024-03-18-00-05-38.png)
 
 我们需要找到让Loss最小的一组未知参数，记做 $\boldsymbol\theta^\star$ ，步骤和上文中只有两个未知参数的情况类似。
 
 1. 随机找一组初始的参数 $\boldsymbol\theta^0$ 。
-2. 为每一个未知的参数都计算它对L的微分并构成向量 $\textbf{\textit{g}} = \begin{bmatrix}
-    \frac{\partial L}{\partial \theta_1} | _{\boldsymbol\theta = \boldsymbol\theta^0} \\
-    \frac{\partial L}{\partial \theta_2} | _{\boldsymbol\theta = \boldsymbol\theta^0} \\
-    \vdots \\
-\end{bmatrix}$ 。这个向量被称为Gradient，通常会简写成 $\textbf{\textit{g}} = \nabla L(\theta^0)$ 。
-3. 根据2得到的偏移量更新参数，$\begin{bmatrix}
-   \theta_1^1 \\
-   \theta_2^1 \\
-   \vdots \\
-    \end{bmatrix} =
-    \begin{bmatrix}
-   \theta_1^0 \\
-   \theta_2^0 \\
-   \vdots \\
-    \end{bmatrix} -
-    \begin{bmatrix}
-    \eta\frac{\partial L}{\partial \theta_1} | _{\theta = \theta^0} \\
-    \eta\frac{\partial L}{\partial \theta_2} | _{\theta = \theta^0} \\
-    \vdots \\
-    \end{bmatrix}$，即 $\boldsymbol\theta^1 = \boldsymbol\theta^0 - \eta\textbf{\textit{g}}$ 。
-4. 重复步骤3直到Gradient是零向量或达到迭代阈值。
+2. 为每一个未知的参数都计算它对L的微分并构成向量：
+   
+$$
+\textbf{\textit{g}} = \begin{bmatrix}
+\frac{\partial L}{\partial \theta_1} | _{\boldsymbol\theta = \boldsymbol\theta^0} \\
+\frac{\partial L}{\partial \theta_2} | _{\boldsymbol\theta = \boldsymbol\theta^0} \\
+\vdots \\
+\end{bmatrix}
+$$
+   
+这个向量被称为Gradient，通常会简写成 $\textbf{\textit{g}} = \nabla L(\theta^0)$ 。
+
+3. 根据2得到的偏移量更新参数：
+
+$$
+\begin{bmatrix}
+\theta_1^1 \\
+\theta_2^1 \\
+\vdots \\
+\end{bmatrix} =
+\begin{bmatrix}
+\theta_1^0 \\
+\theta_2^0 \\
+\vdots \\
+\end{bmatrix} -
+\begin{bmatrix}
+\eta\frac{\partial L}{\partial \theta_1} | _{\theta = \theta^0} \\
+\eta\frac{\partial L}{\partial \theta_2} | _{\theta = \theta^0} \\
+\vdots \\
+\end{bmatrix}
+$$
+
+即 $\boldsymbol\theta^1 = \boldsymbol\theta^0 - \eta\textbf{\textit{g}}$ 。
+5. 重复步骤3直到Gradient是零向量或达到迭代阈值。
 
 #### ReLU
 
