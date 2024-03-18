@@ -58,7 +58,7 @@ Loss： $L$ = 所有数据的偏差值的平均数 $\displaystyle\frac{1}{N}\sum
 
 #### 梯度下降
 
-我们可以先随机找一个初始的 $w$ 计作 $w^0$ ，计算这一点的斜率，如果斜率小于0，那么增加 $w$ 的值；如果斜率大于0，那么减小 $w$ 的值。每次调整的增量（图中 $w^1-w^0$ ）由 $\eta \frac{\partial L}{\partial w}|_ {w = w^0}$ 决定，其中 $\displaystyle\eta$ 是学习速率（learning rate），它的值需要人工设定。 $\frac{\partial L}{\partial w} |_{w = w^0}$ 是微分，代表斜率。
+我们可以先随机找一个初始的 $w$ 计作 $w^0$ ，计算这一点的斜率，如果斜率小于0，那么增加 $w$ 的值；如果斜率大于0，那么减小 $w$ 的值。每次调整的增量（图中 $w^1-w^0$ ）由 $\eta \frac{\partial L}{\partial w}|_ {w = w^0}$ 决定，其中 $\eta$ 是学习速率（learning rate），它的值需要人工设定。 $\frac{\partial L}{\partial w} |_{w = w^0}$ 是微分，代表斜率。
 
 > 在机器学习中需要人工设定的参数称为超参数（hyperparameters）。
 
@@ -68,7 +68,7 @@ Loss： $L$ = 所有数据的偏差值的平均数 $\displaystyle\frac{1}{N}\sum
 
 ![极小值和最小值](resources/2024-03-15-17-16-27.png)
 
-#### 激活函数
+#### Sigmoid函数
 
 线性模型的问题是 $x$ 和 $y$ 的关系总是一条直线，导致 $x$ 和 $y$ 的趋势始终保持一致，例如： $x$ 越大， $y$ 总是越大。这并不能满足所有场景的需求，在实际情况下 $x$ 和 $y$ 可能是这样的关系（下图红色线段所示）：
 
@@ -88,15 +88,15 @@ Loss： $L$ = 所有数据的偏差值的平均数 $\displaystyle\frac{1}{N}\sum
 
 ![曲线](resources/2024-03-16-00-13-45.png)
 
-蓝色函数可以用sigmoid函数 $y = c\frac{1} {1 + e^{-(b+wx_1)}}$ 近似表示。
+蓝色函数可以用Sigmoid函数 $y = c\frac{1} {1 + e^{-(b+wx_1)}}$ 近似表示。
 
-![sigmoid函数](resources/2024-03-16-10-35-17.png)
+![Sigmoid函数](resources/2024-03-16-10-35-17.png)
 
 通过调整参数 $w$ 、 $b$ 、 $c$ 来获得不同的函数图像。
 
 ![调整参数](resources/2024-03-16-11-02-21.png)
 
-通过叠加多个sigmoid函数，就可以把红色函数表示成如下形式： $\displaystyle y = b + \sum_{i}c_i sigmoid(b_i + w_i x_1)$ 。通过不同的 $w$ 、 $b$ 、 $c$ 参数组合就可以构造出不同的曲线。
+通过叠加多个Sigmoid函数，就可以把红色函数表示成如下形式： $\displaystyle y = b + \sum_{i}c_i sigmoid(b_i + w_i x_1)$ 。通过不同的 $w$ 、 $b$ 、 $c$ 参数组合就可以构造出不同的曲线。
 
 ![红色函数](resources/2024-03-16-11-18-37.png)
 
@@ -104,7 +104,7 @@ Loss： $L$ = 所有数据的偏差值的平均数 $\displaystyle\frac{1}{N}\sum
 
 在上面的例子中只使用了一个特征，即通过前一天的视频点击量 $x_1$ 预测下一天的点击量 $y$ 。我们可以加入更多特征进行预测，例如加入前三天的视频点击量，即 $y = b + wx_1 + wx_2 + wx_3$ ，简化后得到 $\displaystyle y = b + \sum_{j}w_j x_j$ ，加入激活函数后得到 $\displaystyle y = b + \sum_{i}c_i sigmoid(b_i + \sum_{j}w_{ij} x_j)$ 。
 
-假设 $i$ 和 $j$ 的取值范围都是[1,3]，即有3个特征 $x_1$ 、 $x_2$ 、 $x_3$ ，并且有3个蓝色函数构成模型。展开 $\displaystyle b_i+\sum_{i} w_{ij} x_j$ 部分得到：
+假设 $i$ 和 $j$ 的取值范围都是[1,3]，即有3个特征 $x_1$ 、 $x_2$ 、 $x_3$ ，并且有3个蓝色函数构成模型。展开 $\displaystyle b_i+\sum_{i} w_{ij} x_j$ 得到：
 
 - $r_1 = b_1 + w_{11}x_1 + w_{12}x_2 + w_{13}x_3$
 - $r_2 = b_2 + w_{21}x_1 + w_{22}x_2 + w_{23}x_3$
@@ -112,8 +112,7 @@ Loss： $L$ = 所有数据的偏差值的平均数 $\displaystyle\frac{1}{N}\sum
 
 ![扩展特征](resources/2024-03-16-14-58-55.png)
 
-用矩阵表示：
-$\begin{bmatrix}
+用矩阵表示： $\begin{bmatrix}
     r_1 \\
     r_2 \\
     r_3
@@ -131,10 +130,58 @@ $\begin{bmatrix}
     x_3
 \end{bmatrix}$
 
-进一步简化： $\textbf{\textit{r}} = \textbf{\textit{b}} + \textbf{\textit{w}} \textbf{\textit{x}}$ 
+进一步简化： $\textbf{\textit{r}} = \textbf{\textit{b}} + \textbf{\textit{w}} \textbf{\textit{x}}$
 
 原式 $\displaystyle y = b + \sum_{i}c_i sigmoid(b_i + \sum_{j}w_{ij} x_j)$ 简化为 $\displaystyle y = b + \sum_{i}c_i sigmoid(r_i)$ 。将 $sigmoid(r_i)$ 写做 $\sigma(\textbf{\textit{r}}) = \textbf{\textit{a}}$ ，得到 $y = b + c_1a_1 + c_2a_2 + c_3a_3$ ，简化成 $y = b +\textbf{\textit{c}}^T \textbf{\textit{a}}$ 。
 
 ![扩展特征](resources/2024-03-16-19-26-26.png)
 
-最后，将向量 $\textbf{\textit{a}}$ 代入后得到 $y = b + \textbf{\textit{c}}^T \sigma(\textbf{\textit{b}} + \textbf{\textit{w}}\textbf{\textit{x}})$ 。
+最后，将向量 $\textbf{\textit{a}}$ 代入后得到 $y = b + \textbf{\textit{c}}^T \sigma(\textbf{\textit{b}} + \textbf{\textit{W}}\textbf{\textit{x}})$ 。
+其中， $\textbf{\textit{x}}$ 称为特征， $\textbf{\textit{W}}$、$\textbf{\textit{b}}$ 、 $\textbf{\textit{c}}^T$ 、 $b$ 称为未知参数。所有未知参数构成的矩阵记作 $\theta$ 。
+
+![未知参数](resources/2024-03-18-00-05-38.png)
+
+我们需要找到让Loss最小的一组未知参数，记做 $\boldsymbol\theta^\star$ ，步骤和上文中只有两个未知参数的情况类似。
+
+1. 随机找一组初始的参数 $\boldsymbol\theta^0$ 。
+2. 为每一个未知的参数都计算它对L的微分并构成向量 $\textbf{\textit{g}} = \begin{bmatrix}
+    \frac{\partial L}{\partial \theta_1} | _{\boldsymbol\theta = \boldsymbol\theta^0} \\
+    \frac{\partial L}{\partial \theta_2} | _{\boldsymbol\theta = \boldsymbol\theta^0} \\
+    \vdots \\
+\end{bmatrix}$ 。这个向量被称为Gradient，通常会简写成 $\textbf{\textit{g}} = \nabla L(\theta^0)$ 。
+3. 根据2得到的偏移量更新参数，$\begin{bmatrix}
+   \theta_1^1 \\
+   \theta_2^1 \\
+   \vdots \\
+    \end{bmatrix} =
+    \begin{bmatrix}
+   \theta_1^0 \\
+   \theta_2^0 \\
+   \vdots \\
+    \end{bmatrix} -
+    \begin{bmatrix}
+    \eta\frac{\partial L}{\partial \theta_1} | _{\theta = \theta^0} \\
+    \eta\frac{\partial L}{\partial \theta_2} | _{\theta = \theta^0} \\
+    \vdots \\
+    \end{bmatrix}$，即 $\boldsymbol\theta^1 = \boldsymbol\theta^0 - \eta\textbf{\textit{g}}$ 。
+4. 重复步骤3直到Gradient是零向量或达到迭代阈值。
+
+#### ReLU
+
+我们还可以用ReLU（Rectified Linear Unit）函数替代Sigmoid函数。一个ReLU函数的表达式是： $y = c max(0, b + wx_1)$ ，其图像如下图所示。
+
+![ReLU](resources/2024-03-18-13-18-19.png)
+
+一个S型函数需要两个ReLU函数组成，因此用ReLU替换Sigmoid后 $\displaystyle y = b + \sum_{i}c_i sigmoid(b_i + \sum_{j}w_{ij} x_j)$ 换成 $\displaystyle y = b + \sum_{2i}c_i max(b_i + \sum_{j}w_{ij} x_j)$ 。
+
+Sigmoid和ReLU都被称为激活函数（Activation Function）。
+
+#### 神经网络
+
+通过激活函数得到向量 $\textbf{\textit{a}}$ 后，可以 $\textbf{\textit{a}}$ 作为参数再次计算，一直循环往复下去。
+
+![多层运算](resources/2024-03-18-13-34-38.png)
+
+像ReLU、Sigmoid这样的运算单元叫做神经元（Neuron），多个神经元组成神经网络（Neuron Network）。每一层神经元叫做隐藏层（Hidden Layer），多个隐藏层组成了深度学习（Deep Learning）。
+
+![神经网络](resources/2024-03-18-13-46-09.png)
