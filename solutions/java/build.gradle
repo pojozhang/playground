@@ -64,7 +64,7 @@ dependencies {
     testImplementation(
             'org.elasticsearch:elasticsearch:7.17.10',
             'org.elasticsearch.client:elasticsearch-rest-high-level-client:7.17.13',
-            'org.elasticsearch:elasticsearch-core:7.17.10',
+            'org.elasticsearch:elasticsearch-core:8.13.0',
             'io.lettuce:lettuce-core:6.3.2.RELEASE',
             'org.assertj:assertj-core:3.25.3',
             'org.awaitility:awaitility:4.2.1',
