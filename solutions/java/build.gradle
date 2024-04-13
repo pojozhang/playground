@@ -62,7 +62,7 @@ dependencies {
     )
 
     testImplementation(
-            'org.elasticsearch:elasticsearch:7.17.10',
+            'org.elasticsearch:elasticsearch:8.13.2',
             'org.elasticsearch.client:elasticsearch-rest-high-level-client:7.17.13',
             'org.elasticsearch:elasticsearch-core:8.13.2',
             'io.lettuce:lettuce-core:6.3.2.RELEASE',
