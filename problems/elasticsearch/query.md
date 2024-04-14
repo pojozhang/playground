@@ -256,8 +256,6 @@ Match Phrase Query会对把输入的短语作为一个整体进行查询，查�
 
 Match Phrase Prefix Query和Match Phrase Query类似，只是对于短语中的最后一个单词可以进行前缀匹配，比如"I like d"可以匹配到"I like driving and reading"。该查询方式同样支持`slop`参数，当`slop`设置为2时，"I like r"可以匹配到"I like driving and reading"。
 
-> 关于以上几种查询的使用，可以在[这里](https://github.com/pojozhang/playground/blob/master/solutions/java/src/test/java/playground/elasticsearch/QueryTest.java)查看示例代码。
-
 ## 参考
 
 1. [《Elasticsearch Query DSL 整理总结（三）—— Match Phrase Query 和 Match Phrase Prefix Query》](https://www.cnblogs.com/reycg-blog/p/10012238.html)
