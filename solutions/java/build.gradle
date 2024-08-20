@@ -26,7 +26,7 @@ test {
 
 ext {
     lombokVersion = '1.18.34'
-    junitVersion = '5.10.3'
+    junitVersion = '5.11.0'
     springBootVersion = '3.3.2'
 }
 
@@ -40,9 +40,9 @@ dependencies {
     implementation(
             'javax.persistence:javax.persistence-api:2.2',
             'org.jetbrains:annotations:24.1.0',
-            'org.apache.commons:commons-lang3:3.15.0',
+            'org.apache.commons:commons-lang3:3.16.0',
             'commons-io:commons-io:2.16.1',
-            'com.google.guava:guava:33.2.1-jre',
+            'com.google.guava:guava:33.3.0-jre',
             'com.alibaba:fastjson:2.0.52',
             'cglib:cglib-full:2.0.2',
             'com.rabbitmq:amqp-client:5.21.0',
@@ -58,14 +58,14 @@ dependencies {
     }
 
     runtimeOnly(
-            'com.h2database:h2:2.3.230',
+            'com.h2database:h2:2.3.232',
     )
 
     testImplementation(
             'io.lettuce:lettuce-core:6.4.0.RELEASE',
             'org.assertj:assertj-core:3.26.3',
-            'org.awaitility:awaitility:4.2.1',
-            'org.junit.platform:junit-platform-launcher:1.10.3',
+            'org.awaitility:awaitility:4.2.2',
+            'org.junit.platform:junit-platform-launcher:1.11.0',
             "org.junit.jupiter:junit-jupiter-api:$junitVersion",
             "org.junit.vintage:junit-vintage-engine:$junitVersion",
             "org.springframework.boot:spring-boot-starter-test:$springBootVersion",
