@@ -53,7 +53,7 @@ dependencies {
             "org.springframework.boot:spring-boot-starter-data-jpa:$springBootVersion",
     )
 
-    implementation('org.apache.zookeeper:zookeeper:3.9.2') {
+    implementation('org.apache.zookeeper:zookeeper:3.9.3') {
         exclude module: 'slf4j-log4j12'
     }
 
