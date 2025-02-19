@@ -62,7 +62,7 @@ dependencies {
     )
 
     testImplementation(
-            'io.lettuce:lettuce-core:6.5.3.RELEASE',
+            'io.lettuce:lettuce-core:6.5.4.RELEASE',
             'org.assertj:assertj-core:3.27.3',
             'org.awaitility:awaitility:4.2.2',
             'org.junit.platform:junit-platform-launcher:1.11.4',
