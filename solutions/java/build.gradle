@@ -42,7 +42,7 @@ dependencies {
             'org.jetbrains:annotations:26.0.2',
             'org.apache.commons:commons-lang3:3.17.0',
             'commons-io:commons-io:2.18.0',
-            'com.google.guava:guava:33.4.0-jre',
+            'com.google.guava:guava:33.4.6-jre',
             'com.alibaba:fastjson:2.0.56',
             'cglib:cglib-full:2.0.2',
             'com.rabbitmq:amqp-client:5.25.0',
