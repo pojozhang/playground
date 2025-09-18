@@ -25,7 +25,7 @@ test {
 }
 
 ext {
-    lombokVersion = '1.18.38'
+    lombokVersion = '1.18.42'
     junitVersion = '5.13.4'
     springBootVersion = '3.5.4'
 }
