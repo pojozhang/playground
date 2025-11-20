@@ -27,7 +27,7 @@ test {
 ext {
     lombokVersion = '1.18.42'
     junitVersion = '6.0.0'
-    springBootVersion = '3.5.6'
+    springBootVersion = '3.5.8'
 }
 
 dependencies {
